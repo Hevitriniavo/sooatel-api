@@ -3,7 +3,7 @@
 
 $\mathcal{{Spring \ java \ 21  } \ \}$
 
-• $\ \ \textcolor{blueviolet}{Gestion  \ d' \un  \ restaurant    }$  
+• $\ \ \textcolor{blueviolet}{Gestion  \ d'\ un  \ restaurant    }$  
 
 
 ````sql
