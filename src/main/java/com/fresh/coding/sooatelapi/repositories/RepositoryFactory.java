@@ -29,4 +29,8 @@ public class RepositoryFactory {
     public RoleRepository getRoleRepository() {
         return getRepositoryFor("roleRepository");
     }
+
+    public UnitRepository getUnitRepository() {
+        return getRepositoryFor("unitRepository");
+    }
 }
