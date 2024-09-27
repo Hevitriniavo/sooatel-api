@@ -5,7 +5,6 @@ import com.fresh.coding.sooatelapi.enums.RoleName;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,25 +13,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Getter
 @Setter
 @Builder
-public class Role {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Role extends Model {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RoleName name;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 
     @ManyToMany
     @JoinTable(
@@ -44,18 +33,4 @@ public class Role {
     @JsonBackReference
     private List<User> users = new ArrayList<>();
 
-    @PrePersist
-    public void beforeCreate() {
-        if (createdAt == null) {
-            this.createdAt = LocalDateTime.now();
-        }
-        if (updatedAt == null) {
-            this.updatedAt = LocalDateTime.now();
-        }
-    }
-
-    @PreUpdate
-    public void beforeUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

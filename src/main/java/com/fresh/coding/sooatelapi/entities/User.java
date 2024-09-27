@@ -6,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,15 +16,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Getter
 @Setter
 @Builder
-public class User implements UserDetails {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class User extends Model implements UserDetails {
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -39,29 +34,11 @@ public class User implements UserDetails {
     @Column(columnDefinition = "TEXT")
     private String token;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     @Builder.Default
     private List<Role> roles = new ArrayList<>();
 
-    @PrePersist
-    public void beforeCreate() {
-        if (createdAt == null) {
-            this.createdAt = LocalDateTime.now();
-        }
-        if (updatedAt == null) {
-            this.updatedAt = LocalDateTime.now();
-        }
-    }
-
-    @PreUpdate
-    public void beforeUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

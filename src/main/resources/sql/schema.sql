@@ -23,7 +23,8 @@ CREATE TABLE roles_users (
 
 CREATE TABLE units (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL,
+    abbreviation VARCHAR(50) NOT NULL,
 );
 
 CREATE TABLE ingredients (
@@ -76,7 +77,6 @@ CREATE TABLE menu_ingredients (
 CREATE TABLE purchases (
   id SERIAL PRIMARY KEY,
   ingredient_id INT REFERENCES ingredients(id) ON DELETE CASCADE,
-  purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   quantity DOUBLE PRECISION NOT NULL,
   cost DECIMAL(10, 2) NOT NULL,
   description TEXT

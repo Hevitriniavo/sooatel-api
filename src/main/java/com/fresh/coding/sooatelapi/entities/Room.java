@@ -1,0 +1,43 @@
+package com.fresh.coding.sooatelapi.entities;
+
+import com.fresh.coding.sooatelapi.enums.RoomStatus;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Room extends Model {
+
+    @Column(nullable = false, unique = true)
+    private Integer roomNumber;
+
+    @Column(nullable = false)
+    private Integer capacity;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RoomStatus status;
+
+    @Column(nullable = false)
+    private Double price;
+
+    @ManyToOne
+    @JoinColumn
+    private Floor floor;
+
+
+    @OneToMany(mappedBy = "room")
+    @Builder.Default
+    private List<MenuOrder> menuOrders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room")
+    @Builder.Default
+    private List<Reservation> reservations = new ArrayList<>();
+}
