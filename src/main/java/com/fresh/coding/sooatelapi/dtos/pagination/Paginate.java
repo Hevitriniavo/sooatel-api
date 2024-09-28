@@ -10,5 +10,4 @@ import java.io.Serializable;
 public class Paginate<T> implements Serializable {
     private T items;
     private PageInfo pageInfo;
-    private Integer totalPage;
 }

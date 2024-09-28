@@ -1,7 +1,9 @@
 package com.fresh.coding.sooatelapi.controllers;
 
+import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.unit.CreateUnit;
 import com.fresh.coding.sooatelapi.dtos.unit.UnitSummarized;
+import com.fresh.coding.sooatelapi.dtos.unit.UpdateUnit;
 import com.fresh.coding.sooatelapi.services.UnitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +27,26 @@ public class UnitController {
         return unitService.create(toCreate);
     }
 
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public UnitSummarized updateUnit(@RequestBody @Valid UpdateUnit toUpdate) {
+        return unitService.update(toUpdate);
+    }
+
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUnit(@PathVariable Long id) {
+         unitService.delete(id);
+    }
+
     @GetMapping
-    public List<UnitSummarized> getAllUnits() {
-        return unitService.getAllUnits();
+    @ResponseStatus(HttpStatus.OK)
+    public Paginate<List<UnitSummarized>> getAllUnits(
+            @RequestParam(name = "unit_name", required = false) String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return unitService.getAllUnits(name, page, size);
     }
 }

@@ -10,4 +10,7 @@ import java.io.Serializable;
 public class PageInfo implements Serializable {
     private Boolean hasNext;
     private Boolean hasPrevious;
+    private Integer totalPages;
+    private Integer currentPage;
+    private Integer totalItems;
 }
