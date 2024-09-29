@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Validated
 @RequestMapping("/ingredients")
@@ -27,5 +29,11 @@ public class IngredientController {
     @ResponseStatus(HttpStatus.OK)
     public IngredientSummarized updateIngredient(@RequestBody @Valid UpdateIngredient toUpdate){
         return ingredientService.update(toUpdate);
+    }
+
+    @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<IngredientSummarized> getAllIngredients(){
+        return ingredientService.findAllIngredients();
     }
 }

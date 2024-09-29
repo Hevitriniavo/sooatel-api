@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +68,15 @@ public class IngredientServiceImpl implements IngredientService {
         return this.toIngredientSummarized(updatedIngredient);
     }
 
+    @Override
+    public List<IngredientSummarized> findAllIngredients() {
+        var ingredientRepository = factory.getIngredientRepository();
+        var ingredients = ingredientRepository.findAll();
+
+        return ingredients.stream()
+                .map(this::toIngredientSummarized)
+                .collect(Collectors.toList());
+    }
 
     private IngredientSummarized toIngredientSummarized(Ingredient ingredient){
         return new IngredientSummarized(
