@@ -13,6 +13,7 @@ public interface UnitService {
     UnitSummarized create(@NonNull CreateUnit toCreate);
 
     Paginate<List<UnitSummarized>> getAllUnits(String name, int page, int size);
+    List<UnitSummarized> getAllUnits();
 
     UnitSummarized update(@NonNull UpdateUnit toUpdate);
 

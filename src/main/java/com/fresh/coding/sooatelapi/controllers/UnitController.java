@@ -49,4 +49,10 @@ public class UnitController {
             @RequestParam(defaultValue = "10") int size) {
         return unitService.getAllUnits(name, page, size);
     }
+
+    @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<UnitSummarized> getAllUnits() {
+        return unitService.getAllUnits();
+    }
 }

@@ -59,6 +59,14 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
+    public List<UnitSummarized> getAllUnits() {
+        var unitRepository = factory.getUnitRepository();
+        return unitRepository.findAll().stream()
+                .map(this::createUnitSummarized)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public UnitSummarized update(@NonNull UpdateUnit toUpdate) {
         var unitRepository = factory.getUnitRepository();
         var existingUnitOpt = unitRepository.findById(toUpdate.getId());
