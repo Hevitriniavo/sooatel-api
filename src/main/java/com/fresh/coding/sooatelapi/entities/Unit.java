@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -25,4 +26,5 @@ public class Unit extends Model {
     @Builder.Default
     @OneToMany(mappedBy = "unit")
     private List<Ingredient> ingredients = new ArrayList<>();
+
 }

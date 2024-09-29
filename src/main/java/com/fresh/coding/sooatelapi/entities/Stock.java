@@ -1,10 +1,10 @@
 package com.fresh.coding.sooatelapi.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,4 +20,8 @@ public class Stock extends Model {
     @OneToOne
     @JoinColumn(nullable = false, unique = true)
     private Ingredient ingredient;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "stock")
+    private List<Operation> operations = new ArrayList<>();
 }

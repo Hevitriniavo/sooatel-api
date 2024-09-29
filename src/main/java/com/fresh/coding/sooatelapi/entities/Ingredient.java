@@ -18,7 +18,7 @@ public class Ingredient extends Model {
     private String name;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Unit unit;
 
     @OneToOne(mappedBy = "ingredient")
@@ -31,4 +31,11 @@ public class Ingredient extends Model {
     @Builder.Default
     @OneToMany(mappedBy = "ingredient")
     private List<Purchase> purchases = new ArrayList<>();
+
+
+    public void removeOperations(List<Operation> operations) {
+        for (Operation operation : operations) {
+            operation.setStock(null);
+        }
+    }
 }

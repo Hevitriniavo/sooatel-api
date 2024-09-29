@@ -78,6 +78,22 @@ public class IngredientServiceImpl implements IngredientService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        var ingredientRepository = factory.getIngredientRepository();
+        var ingredient = ingredientRepository.findById(id)
+                .orElseThrow(() -> new HttpNotFoundException("Ingredient not found"));
+
+        var stock = ingredient.getStock();
+        if (stock != null) {
+            ingredient.removeOperations(stock.getOperations());
+            factory.getStockRepository().delete(stock);
+        }
+        ingredientRepository.delete(ingredient);
+    }
+
+
     private IngredientSummarized toIngredientSummarized(Ingredient ingredient){
         return new IngredientSummarized(
                 ingredient.getId(),

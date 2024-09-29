@@ -11,4 +11,5 @@ public interface IngredientService {
     IngredientSummarized create(@NonNull CreateIngredient toCreate);
     IngredientSummarized update(@NonNull UpdateIngredient toUpdate);
     List<IngredientSummarized> findAllIngredients();
+    void delete(Long id);
 }

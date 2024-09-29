@@ -83,11 +83,19 @@ public class UnitServiceImpl implements UnitService {
     @Override
     public void delete(Long id) {
         var unitRepository = factory.getUnitRepository();
+        var ingredientRepository = factory.getIngredientRepository();
+
         if (!unitRepository.existsById(id)) {
             throw new HttpNotFoundException("Unit with ID " + id + " not found.");
         }
+
+        var updatedCount = ingredientRepository.setUnitToNullByUnitId(id);
+
+        System.out.println("Updated " + updatedCount + " ingredients to detach from Unit ID " + id);
+
         unitRepository.deleteById(id);
     }
+
 
 
 

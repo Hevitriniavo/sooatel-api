@@ -36,4 +36,11 @@ public class IngredientController {
     public List<IngredientSummarized> getAllIngredients(){
         return ingredientService.findAllIngredients();
     }
+
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteIngredient(@PathVariable Long id){
+        ingredientService.delete(id);
+    }
 }
