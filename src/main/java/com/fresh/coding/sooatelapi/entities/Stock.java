@@ -18,6 +18,6 @@ public class Stock extends Model {
     private Double quantity;
 
     @OneToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, unique = true)
     private Ingredient ingredient;
 }

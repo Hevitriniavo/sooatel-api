@@ -16,10 +16,10 @@ import java.util.List;
 @Builder
 public class Unit extends Model {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String abbreviation;
 
     @Builder.Default

@@ -33,4 +33,16 @@ public class RepositoryFactory {
     public UnitRepository getUnitRepository() {
         return getRepositoryFor("unitRepository");
     }
+
+    public IngredientRepository getIngredientRepository() {
+        return getRepositoryFor("ingredientRepository");
+    }
+
+    public StockRepository getStockRepository() {
+        return getRepositoryFor("stockRepository");
+    }
+
+    public OperationRepository getOperationRepository() {
+        return getRepositoryFor("operationRepository");
+    }
 }

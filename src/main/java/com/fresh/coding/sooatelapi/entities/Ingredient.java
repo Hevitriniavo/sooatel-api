@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class Ingredient extends Model {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @ManyToOne

@@ -37,7 +37,6 @@ public class UnitServiceImpl implements UnitService {
     @Override
     public Paginate<List<UnitSummarized>> getAllUnits(String name, int page, int size) {
         var unitRepository = factory.getUnitRepository();
-        System.out.println(name);
         Page<Unit> unitPage;
         if (name != null && !name.isBlank() && !name.isEmpty()) {
             unitPage = unitRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page , size));
