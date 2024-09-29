@@ -42,6 +42,10 @@ public class RepositoryFactory {
         return getRepositoryFor("stockRepository");
     }
 
+    public PurchaseRepository getPurchaseRepository() {
+        return getRepositoryFor("purchaseRepository");
+    }
+
     public OperationRepository getOperationRepository() {
         return getRepositoryFor("operationRepository");
     }
