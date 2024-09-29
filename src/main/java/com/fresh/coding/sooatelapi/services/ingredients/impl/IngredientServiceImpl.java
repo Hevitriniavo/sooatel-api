@@ -2,6 +2,7 @@ package com.fresh.coding.sooatelapi.services.ingredients.impl;
 
 import com.fresh.coding.sooatelapi.dtos.ingredients.CreateIngredient;
 import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarized;
+import com.fresh.coding.sooatelapi.dtos.ingredients.UpdateIngredient;
 import com.fresh.coding.sooatelapi.entities.Ingredient;
 import com.fresh.coding.sooatelapi.entities.Operation;
 import com.fresh.coding.sooatelapi.entities.Stock;
@@ -45,6 +46,27 @@ public class IngredientServiceImpl implements IngredientService {
         return this.toIngredientSummarized(savedIngredient);
     }
 
+    @Override
+    @Transactional
+    public IngredientSummarized update(@NonNull UpdateIngredient toUpdate) {
+        var ingredientRepository = factory.getIngredientRepository();
+        var unitRepository = factory.getUnitRepository();
+
+        var ingredient = ingredientRepository.findById(toUpdate.getId())
+                .orElseThrow(() -> new HttpNotFoundException("Ingredient not found"));
+
+        var unit = unitRepository.findById(toUpdate.getUnitId())
+                .orElseThrow(() -> new HttpNotFoundException("Unit not found"));
+
+        ingredient.setName(toUpdate.getName());
+        ingredient.setUnit(unit);
+
+        var updatedIngredient = ingredientRepository.save(ingredient);
+
+        return this.toIngredientSummarized(updatedIngredient);
+    }
+
+
     private IngredientSummarized toIngredientSummarized(Ingredient ingredient){
         return new IngredientSummarized(
                 ingredient.getId(),
@@ -66,7 +88,7 @@ public class IngredientServiceImpl implements IngredientService {
                 .stock(stock)
                 .type(OperationType.INITIAL)
                 .date(LocalDateTime.now())
-                .description("Initial stock for ingredient ID " + stock.getIngredient().getId())
+                .description("Stock initial pour l'ID de l'ingrédient " + stock.getIngredient().getId())
                 .build();
     }
 

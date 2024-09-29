@@ -2,6 +2,7 @@ package com.fresh.coding.sooatelapi.controllers;
 
 import com.fresh.coding.sooatelapi.dtos.ingredients.CreateIngredient;
 import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarized;
+import com.fresh.coding.sooatelapi.dtos.ingredients.UpdateIngredient;
 import com.fresh.coding.sooatelapi.services.ingredients.IngredientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +21,11 @@ public class IngredientController {
     @ResponseStatus(HttpStatus.CREATED)
     public IngredientSummarized createIngredient(@RequestBody @Valid CreateIngredient toCreate){
         return ingredientService.create(toCreate);
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public IngredientSummarized updateIngredient(@RequestBody @Valid UpdateIngredient toUpdate){
+        return ingredientService.update(toUpdate);
     }
 }
