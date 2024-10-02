@@ -2,6 +2,7 @@ package com.fresh.coding.sooatelapi.services.impl;
 
 import com.fresh.coding.sooatelapi.dtos.pagination.PageInfo;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
+import com.fresh.coding.sooatelapi.dtos.searchs.UnitSearch;
 import com.fresh.coding.sooatelapi.dtos.unit.CreateUnit;
 import com.fresh.coding.sooatelapi.dtos.unit.UnitSummarized;
 import com.fresh.coding.sooatelapi.dtos.unit.UpdateUnit;
@@ -35,11 +36,11 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
-    public Paginate<List<UnitSummarized>> getAllUnits(String name, int page, int size) {
+    public Paginate<List<UnitSummarized>> getAllUnits(UnitSearch search, int page, int size) {
         var unitRepository = factory.getUnitRepository();
         Page<Unit> unitPage;
-        if (name != null && !name.isBlank() && !name.isEmpty()) {
-            unitPage = unitRepository.findByNameContainingIgnoreCase(name, PageRequest.of(page , size));
+        if (search.getName() != null && !search.getName().isBlank() && !search.getName().isEmpty()) {
+            unitPage = unitRepository.findByNameContainingIgnoreCase(search.getName(), PageRequest.of(page, size));
         } else {
             unitPage = unitRepository.findAll(PageRequest.of(page, size));
         }
@@ -95,8 +96,6 @@ public class UnitServiceImpl implements UnitService {
 
         unitRepository.deleteById(id);
     }
-
-
 
 
     private UnitSummarized createUnitSummarized(Unit unit) {

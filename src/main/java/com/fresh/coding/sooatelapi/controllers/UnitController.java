@@ -1,6 +1,7 @@
 package com.fresh.coding.sooatelapi.controllers;
 
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
+import com.fresh.coding.sooatelapi.dtos.searchs.UnitSearch;
 import com.fresh.coding.sooatelapi.dtos.unit.CreateUnit;
 import com.fresh.coding.sooatelapi.dtos.unit.UnitSummarized;
 import com.fresh.coding.sooatelapi.dtos.unit.UpdateUnit;
@@ -44,10 +45,10 @@ public class UnitController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Paginate<List<UnitSummarized>> getAllUnits(
-            @RequestParam(name = "unit_name", required = false) String name,
+            @RequestBody UnitSearch unitSearch,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return unitService.getAllUnits(name, page, size);
+        return unitService.getAllUnits(unitSearch, page, size);
     }
 
     @GetMapping("/all")

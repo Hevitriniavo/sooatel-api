@@ -10,12 +10,14 @@ import java.time.LocalDateTime;
 @Setter
 public final class IngredientSummarizedWithUnitName extends IngredientBase implements Serializable {
     private Long id;
+    private Long unitId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String unitName;
 
     public IngredientSummarizedWithUnitName (
             Long id,
+            Long unitId,
             String name,
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
@@ -23,6 +25,7 @@ public final class IngredientSummarizedWithUnitName extends IngredientBase imple
     ) {
         super(name);
         this.id = id;
+        this.unitId = unitId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.unitName = unitName;
