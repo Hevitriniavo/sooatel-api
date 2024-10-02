@@ -25,7 +25,6 @@ public class RepositoryFactory {
         return getRepositoryFor("userRepository");
     }
 
-
     public RoleRepository getRoleRepository() {
         return getRepositoryFor("roleRepository");
     }
@@ -51,5 +50,9 @@ public class RepositoryFactory {
     }
     public CategoryRepository getCategoryRepository() {
         return getRepositoryFor("categoryRepository");
+    }
+
+    public MenuRepository getMenuRepository() {
+        return getRepositoryFor("menuRepository");
     }
 }
