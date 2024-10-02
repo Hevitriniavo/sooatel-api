@@ -49,4 +49,7 @@ public class RepositoryFactory {
     public OperationRepository getOperationRepository() {
         return getRepositoryFor("operationRepository");
     }
+    public CategoryRepository getCategoryRepository() {
+        return getRepositoryFor("categoryRepository");
+    }
 }

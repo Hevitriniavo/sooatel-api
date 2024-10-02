@@ -1,4 +1,4 @@
-package com.fresh.coding.sooatelapi.services.impl;
+package com.fresh.coding.sooatelapi.services.units.impl;
 
 import com.fresh.coding.sooatelapi.dtos.pagination.PageInfo;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
@@ -9,7 +9,7 @@ import com.fresh.coding.sooatelapi.dtos.unit.UpdateUnit;
 import com.fresh.coding.sooatelapi.entities.Unit;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
-import com.fresh.coding.sooatelapi.services.UnitService;
+import com.fresh.coding.sooatelapi.services.units.UnitService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;

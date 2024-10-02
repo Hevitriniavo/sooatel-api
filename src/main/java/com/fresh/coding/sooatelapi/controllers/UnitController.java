@@ -5,7 +5,7 @@ import com.fresh.coding.sooatelapi.dtos.searchs.UnitSearch;
 import com.fresh.coding.sooatelapi.dtos.unit.CreateUnit;
 import com.fresh.coding.sooatelapi.dtos.unit.UnitSummarized;
 import com.fresh.coding.sooatelapi.dtos.unit.UpdateUnit;
-import com.fresh.coding.sooatelapi.services.UnitService;
+import com.fresh.coding.sooatelapi.services.units.UnitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
