@@ -8,6 +8,9 @@ import com.fresh.coding.sooatelapi.services.categories.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -30,6 +33,14 @@ public class CategoryServiceImpl implements CategoryService {
         var savedCategory = categoryRepository.save(category);
 
         return toSummarized(savedCategory);
+    }
+
+    @Override
+    public List<CategorySummarized> findAllCategories() {
+        var categoryRepository = factory.getCategoryRepository();
+        return categoryRepository.findAll()
+                .stream().map(this::toSummarized)
+                .collect(Collectors.toList());
     }
 
     private CategorySummarized toSummarized(Category category){

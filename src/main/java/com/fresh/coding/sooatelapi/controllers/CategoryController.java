@@ -5,11 +5,11 @@ import com.fresh.coding.sooatelapi.dtos.categories.SaveCategory;
 import com.fresh.coding.sooatelapi.services.categories.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Validated
@@ -19,7 +19,14 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.OK)
     public CategorySummarized save(@Valid @RequestBody  SaveCategory toSave){
         return categoryService.save(toSave);
+    }
+
+    @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<CategorySummarized> getAllCategories(){
+        return categoryService.findAllCategories();
     }
 }
