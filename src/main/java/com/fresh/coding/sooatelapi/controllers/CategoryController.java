@@ -36,11 +36,16 @@ public class CategoryController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Paginate<List<CategorySummarized>> getAllUnits(
+    public Paginate<List<CategorySummarized>> getAllCategories(
             @RequestBody CategorySearch categorySearch,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return categoryService.findAllCategories(categorySearch, page, size);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUnit(@PathVariable Long id) {
+         categoryService.deleteById(id);
+    }
 }

@@ -13,4 +13,6 @@ public interface CategoryService {
     List<CategorySummarized> findAllCategories();
 
     Paginate<List<CategorySummarized>> findAllCategories(CategorySearch categorySearch, int page, int size);
+
+    void deleteById(Long id);
 }
