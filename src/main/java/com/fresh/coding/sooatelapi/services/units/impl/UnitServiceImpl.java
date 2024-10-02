@@ -1,6 +1,5 @@
 package com.fresh.coding.sooatelapi.services.units.impl;
 
-import com.fresh.coding.sooatelapi.dtos.pagination.PageInfo;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.UnitSearch;
 import com.fresh.coding.sooatelapi.dtos.unit.CreateUnit;
@@ -9,12 +8,11 @@ import com.fresh.coding.sooatelapi.dtos.unit.UpdateUnit;
 import com.fresh.coding.sooatelapi.entities.Unit;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
+import com.fresh.coding.sooatelapi.services.EntityService;
 import com.fresh.coding.sooatelapi.services.units.UnitService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UnitServiceImpl implements UnitService {
     private final RepositoryFactory factory;
+    private final EntityService entityService;
 
     @Override
     public UnitSummarized create(@NonNull CreateUnit toCreate) {
@@ -37,25 +36,7 @@ public class UnitServiceImpl implements UnitService {
 
     @Override
     public Paginate<List<UnitSummarized>> getAllUnits(UnitSearch search, int page, int size) {
-        var unitRepository = factory.getUnitRepository();
-        Page<Unit> unitPage;
-        if (search.getName() != null && !search.getName().isBlank() && !search.getName().isEmpty()) {
-            unitPage = unitRepository.findByNameContainingIgnoreCase(search.getName(), PageRequest.of(page, size));
-        } else {
-            unitPage = unitRepository.findAll(PageRequest.of(page, size));
-        }
-
-        var unitSummaries = unitPage.stream()
-                .map(this::createUnitSummarized)
-                .collect(Collectors.toList());
-
-        var hasNext = unitPage.hasNext();
-        var hasPrevious = unitPage.hasPrevious();
-        var totalPages = unitPage.getTotalPages();
-        var currentPage = unitPage.getNumber();
-        var totalItems = (int) unitPage.getTotalElements();
-        var pageInfo = new PageInfo(hasNext, hasPrevious, totalPages, currentPage, totalItems);
-        return new Paginate<>(unitSummaries, pageInfo);
+        return entityService.getAllUnits(search, page, size);
     }
 
     @Override

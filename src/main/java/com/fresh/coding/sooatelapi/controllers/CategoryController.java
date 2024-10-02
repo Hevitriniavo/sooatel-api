@@ -2,6 +2,10 @@ package com.fresh.coding.sooatelapi.controllers;
 
 import com.fresh.coding.sooatelapi.dtos.categories.CategorySummarized;
 import com.fresh.coding.sooatelapi.dtos.categories.SaveCategory;
+import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
+import com.fresh.coding.sooatelapi.dtos.searchs.CategorySearch;
+import com.fresh.coding.sooatelapi.dtos.searchs.UnitSearch;
+import com.fresh.coding.sooatelapi.dtos.unit.UnitSummarized;
 import com.fresh.coding.sooatelapi.services.categories.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,4 +33,14 @@ public class CategoryController {
     public List<CategorySummarized> getAllCategories(){
         return categoryService.findAllCategories();
     }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Paginate<List<CategorySummarized>> getAllUnits(
+            @RequestBody CategorySearch categorySearch,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return categoryService.findAllCategories(categorySearch, page, size);
+    }
+
 }
