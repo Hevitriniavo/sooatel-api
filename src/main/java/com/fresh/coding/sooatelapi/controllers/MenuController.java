@@ -5,6 +5,7 @@ import com.fresh.coding.sooatelapi.dtos.menus.SaveMenu;
 import com.fresh.coding.sooatelapi.services.menus.MenuService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,12 @@ public class MenuController {
     @PostMapping
     public MenuSummarized save(@Valid @RequestBody SaveMenu toSave) {
         return menuService.save(toSave);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMenu(@PathVariable Long id) {
+        menuService.deleteById(id);
     }
 
     @GetMapping("/all")

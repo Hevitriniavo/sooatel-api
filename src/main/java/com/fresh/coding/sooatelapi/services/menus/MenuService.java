@@ -9,4 +9,6 @@ public interface MenuService {
     MenuSummarized save(SaveMenu toSave);
 
     List<MenuSummarized> findALlMenus();
+
+    void deleteById(Long id);
 }

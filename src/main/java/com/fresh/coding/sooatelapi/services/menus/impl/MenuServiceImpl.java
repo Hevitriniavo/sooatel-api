@@ -3,6 +3,7 @@ package com.fresh.coding.sooatelapi.services.menus.impl;
 import com.fresh.coding.sooatelapi.dtos.menus.MenuSummarized;
 import com.fresh.coding.sooatelapi.dtos.menus.SaveMenu;
 import com.fresh.coding.sooatelapi.entities.Menu;
+import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.services.menus.MenuService;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,16 @@ public class MenuServiceImpl implements MenuService {
                 .stream()
                 .map(this::toMenuSummarized).collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteById(Long id) {
+        var menuRepository = factory.getMenuRepository();
+        var deletedRows = menuRepository.deleteMenuById(id);
+        if (deletedRows == 0) {
+            throw new HttpNotFoundException("Menu not found");
+        }
+    }
+
 
     private MenuSummarized toMenuSummarized(Menu menu) {
         return new MenuSummarized(
