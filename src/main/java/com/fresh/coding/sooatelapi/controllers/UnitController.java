@@ -45,7 +45,7 @@ public class UnitController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Paginate<List<UnitSummarized>> getAllUnits(
-            @RequestBody UnitSearch unitSearch,
+            @ModelAttribute UnitSearch unitSearch,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return unitService.getAllUnits(unitSearch, page, size);

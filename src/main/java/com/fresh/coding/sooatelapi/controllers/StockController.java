@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -34,7 +33,7 @@ public class StockController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Paginate<List<StockSummarized>> getAllIngredients(
-            @RequestBody StockSearch stockSearch,
+            @ModelAttribute StockSearch stockSearch,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {

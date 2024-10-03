@@ -12,6 +12,7 @@ import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.services.ingredients.IngredientService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IngredientServiceImpl implements IngredientService {
@@ -82,10 +84,16 @@ public class IngredientServiceImpl implements IngredientService {
     @Transactional
     public void delete(Long id) {
         var ingredientRepository = factory.getIngredientRepository();
+        var purchaseRepository = factory.getPurchaseRepository();
         var ingredient = ingredientRepository.findById(id)
                 .orElseThrow(() -> new HttpNotFoundException("Ingredient not found"));
 
+
         var stock = ingredient.getStock();
+        var deletedIdCount = purchaseRepository.setIngredientToNullByIngredientId(id);
+        if (deletedIdCount > 0){
+            log.info("{} purchase deleted with id: {}", deletedIdCount, id);
+        }
         if (stock != null) {
             ingredient.removeOperations(stock.getOperations());
             factory.getStockRepository().delete(stock);

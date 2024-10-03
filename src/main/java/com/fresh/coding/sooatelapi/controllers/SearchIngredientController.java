@@ -19,15 +19,13 @@ import java.util.List;
 public class SearchIngredientController {
     private final SearchIngredientService searchIngredientService;
 
-
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Paginate<List<IngredientSummarizedWithUnitName>> getAllIngredients(
-            @RequestBody IngredientSearch ingredientSearch,
+            @ModelAttribute IngredientSearch ingredientSearch,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ){
         return searchIngredientService.findAllIngredient(ingredientSearch, page, size);
     }
-
 }

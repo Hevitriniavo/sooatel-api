@@ -34,5 +34,4 @@ public class MenuController {
     public List<MenuSummarized> getAllMenus() {
         return menuService.findALlMenus();
     }
-
 }

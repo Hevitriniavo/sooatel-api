@@ -20,7 +20,7 @@ public class SearchTableController {
 
     @GetMapping
     public Paginate<List<TableSummarized>> getAllTables(
-            @RequestBody TableSearch tableSearch,
+            @ModelAttribute TableSearch tableSearch,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {

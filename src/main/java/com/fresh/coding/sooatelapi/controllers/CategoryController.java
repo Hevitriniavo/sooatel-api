@@ -4,8 +4,6 @@ import com.fresh.coding.sooatelapi.dtos.categories.CategorySummarized;
 import com.fresh.coding.sooatelapi.dtos.categories.SaveCategory;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.CategorySearch;
-import com.fresh.coding.sooatelapi.dtos.searchs.UnitSearch;
-import com.fresh.coding.sooatelapi.dtos.unit.UnitSummarized;
 import com.fresh.coding.sooatelapi.services.categories.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +35,10 @@ public class CategoryController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Paginate<List<CategorySummarized>> getAllCategories(
-            @RequestBody CategorySearch categorySearch,
+            @ModelAttribute CategorySearch categorySearch,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
+        System.out.println(categorySearch);
         return categoryService.findAllCategories(categorySearch, page, size);
     }
 
