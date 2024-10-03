@@ -93,8 +93,6 @@ public class SearchMenuServiceImpl implements SearchMenuService {
     }
 
 
-
-
     private List<Predicate> buildPredicates(MenuSearch menuSearch, CriteriaBuilder builder, Root<Category> root) {
         var predicates = new ArrayList<Predicate>();
 
