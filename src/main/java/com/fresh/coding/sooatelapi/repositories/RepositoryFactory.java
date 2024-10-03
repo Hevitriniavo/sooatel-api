@@ -55,4 +55,9 @@ public class RepositoryFactory {
     public MenuRepository getMenuRepository() {
         return getRepositoryFor("menuRepository");
     }
+
+    public TableRepository getTableRepository() {
+        return getRepositoryFor("tableRepository");
+    }
+
 }
