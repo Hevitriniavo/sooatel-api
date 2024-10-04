@@ -16,7 +16,7 @@ import lombok.*;
 public class Purchase extends Model {
 
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Ingredient ingredient;
 
     @Column(nullable = false)
