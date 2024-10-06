@@ -1,0 +1,235 @@
+{
+  "menus": [
+    {
+      "id": 1,
+      "name": "Salade César",
+      "description": "Une délicieuse salade avec de la laitue romaine, des croûtons, et une vinaigrette crémeuse.",
+      "price": 12.99,
+      "categoryName": "Entrées"
+    },
+    {
+      "id": 2,
+      "name": "Pizza Margherita",
+      "description": "Pizza traditionnelle avec sauce tomate, mozzarella et basilic frais.",
+        "price": 15.49,
+      "categoryName": "Pizzas"
+    },
+    {
+      "id": 3,
+      "name": "Tiramisu",
+      "description": "Un dessert italien classique à base de mascarpone et de café.",
+      "price": 6.99,
+      "categoryName": "Desserts"
+    },
+    {
+      "id": 4,
+      "name": "Spaghetti Carbonara",
+      "description": "Pâtes spaghetti servies avec une sauce crémeuse aux œufs et au bacon.",
+      "price": 13.99,
+      "categoryName": "Entrées"
+    },
+    {
+      "id": 5,
+      "name": "Lasagne",
+      "description": "Lasagne faite maison avec de la viande hachée et du fromage.",
+      "price": 14.99,
+      "categoryName": "Entrées"
+    },
+    {
+      "id": 6,
+      "name": "Pizza Quattro Stagioni",
+      "description": "Pizza garnie de jambon, champignons, artichauts et olives.",
+      "price": 16.49,
+      "categoryName": "Pizzas"
+    },
+    {
+      "id": 7,
+      "name": "Crème Brûlée",
+      "description": "Un dessert à base de crème et de caramel croquant.",
+      "price": 7.49,
+      "categoryName": "Desserts"
+    },
+    {
+      "id": 8,
+      "name": "Raviolis aux épinards",
+      "description": "Raviolis frais farcis aux épinards et ricotta.",
+      "price": 13.49,
+      "categoryName": "Entrées"
+    },
+    {
+      "id": 9,
+      "name": "Pizza Hawaïenne",
+      "description": "Pizza garnie de jambon et d'ananas.",
+      "price": 15.99,
+      "categoryName": "Pizzas"
+    },
+    {
+      "id": 10,
+      "name": "Panna Cotta",
+      "description": "Un dessert crémeux à base de crème et de vanille.",
+      "price": 6.49,
+      "categoryName": "Desserts"
+    },
+    {
+      "id": 11,
+      "name": "Soupe à l'oignon",
+      "description": "Soupe chaude avec oignons caramélisés et croûtons au fromage.",
+      "price": 9.99,
+      "categoryName": "Entrées"
+    },
+    {
+      "id": 12,
+      "name": "Focaccia",
+      "description": "Pain plat italien assaisonné d'huile d'olive et d'herbes.",
+      "price": 5.99,
+      "categoryName": "Entrées"
+    },
+    {
+      "id": 13,
+      "name": "Gnocchis au pesto",
+      "description": "Gnocchis faits maison servis avec une sauce au pesto.",
+      "price": 13.99,
+      "categoryName": "Entrées"
+    },
+    {
+      "id": 14,
+      "name": "Pizza Pepperoni",
+      "description": "Pizza classique garnie de pepperoni et de mozzarella.",
+      "price": 16.99,
+      "categoryName": "Pizzas"
+    },
+    {
+      "id": 15,
+      "name": "Mousse au chocolat",
+      "description": "Mousse légère et aérée au chocolat noir.",
+      "price": 7.99,
+      "categoryName": "Desserts"
+    },
+    {
+      "id": 16,
+      "name": "Risotto aux champignons",
+      "description": "Risotto crémeux préparé avec des champignons frais.",
+      "price": 14.49,
+      "categoryName": "Entrées"
+    },
+    {
+      "id": 17,
+      "name": "Pizza Végétarienne",
+      "description": "Pizza garnie de légumes frais de saison.",
+      "price": 15.49,
+      "categoryName": "Pizzas"
+    },
+    {
+      "id": 18,
+      "name": "Tarte Tatin",
+      "description": "Tarte aux pommes caramélisées servie chaude.",
+      "price": 8.49,
+      "categoryName": "Desserts"
+    },
+    {
+      "id": 19,
+      "name": "Calzone",
+      "description": "Pâte à pizza repliée sur une garniture savoureuse.",
+      "price": 17.49,
+      "categoryName": "Pizzas"
+    },
+    {
+      "id": 20,
+      "name": "Pudding au pain",
+      "description": "Un dessert traditionnel à base de pain, de lait et d'épices.",
+        "price": 5.99,
+      "categoryName": "Desserts"
+    },{
+      "id": 1,
+      "name": "Eau minérale",
+      "description": "Eau pure et rafraîchissante, parfaite pour accompagner vos repas.",
+      "price": 2.50,
+      "categoryName": "Eaux"
+    },
+    {
+      "id": 2,
+      "name": "Soda Cola",
+      "description": "Boisson gazeuse classique au goût de cola.",
+      "price": 3.00,
+      "categoryName": "Sodas"
+    },
+    {
+      "id": 3,
+      "name": "Jus d'orange",
+      "description": "Jus frais pressé d'oranges succulentes.",
+      "price": 4.00,
+      "categoryName": "Jus"
+    },
+    {
+      "id": 4,
+      "name": "Café expresso",
+      "description": "Un café noir intense, parfait pour commencer la journée.",
+      "price": 2.80,
+      "categoryName": "Cafés"
+    },
+    {
+      "id": 5,
+      "name": "Thé glacé",
+      "description": "Thé rafraîchissant, servi froid avec une touche de citron.",
+      "price": 3.50,
+      "categoryName": "Thés"
+    },
+    {
+      "id": 6,
+      "name": "Limonade",
+      "description": "Boisson pétillante au goût de citron, sucrée et rafraîchissante.",
+      "price": 3.00,
+      "categoryName": "Sodas"
+    },
+    {
+      "id": 7,
+      "name": "Smoothie aux fruits",
+      "description": "Mélange crémeux de fruits frais et de yaourt.",
+      "price": 5.00,
+      "categoryName": "Smoothies"
+    },
+    {
+      "id": 8,
+      "name": "Bière blonde",
+      "description": "Bière légère et rafraîchissante, parfaite pour se détendre.",
+      "price": 4.50,
+      "categoryName": "Bières"
+    },
+    {
+      "id": 9,
+      "name": "Vin rouge",
+      "description": "Vin rouge corsé, idéal pour accompagner les viandes.",
+      "price": 7.00,
+      "categoryName": "Vins"
+    },
+    {
+      "id": 10,
+      "name": "Cocktail Mojito",
+      "description": "Cocktail rafraîchissant à base de rhum, menthe, et citron.",
+      "price": 8.00,
+      "categoryName": "Cocktails"
+    },
+    {
+      "id": 1,
+      "name": "Poulet rôti",
+      "description": "Poulet mariné aux herbes, rôti à la perfection.",
+      "price": 15.99,
+      "categoryName": "Viandes"
+    },
+    {
+      "id": 2,
+      "name": "Lasagnes",
+      "description": "Lasagnes faites maison avec de la viande hachée et une sauce béchamel.",
+      "price": 12.50,
+      "categoryName": "Pâtes"
+    },
+    {
+      "id": 3,
+      "name": "Saumon grillé",
+      "description": "Filet de saumon grillé servi avec des légumes de saison.",
+      "price": 18.00,
+      "categoryName": "Poissons"
+    }
+  ]
+}
+

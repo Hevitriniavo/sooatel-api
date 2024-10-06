@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.entities;
 
+import com.fresh.coding.sooatelapi.enums.MenuStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,6 +32,9 @@ public class Menu extends Model {
     @OneToMany(mappedBy = "menu")
     private List<MenuIngredient> menuIngredients = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(20) default 'ACTIVE'")
+    private MenuStatus status = MenuStatus.ACTIVE;
 
     @OneToMany(mappedBy = "menu")
     @Builder.Default

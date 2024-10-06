@@ -1,0 +1,54 @@
+{
+  "menuCategories": [
+    {
+      "id": 1,
+      "name": "Entrées",
+      "description": "Délicieuses entrées pour commencer votre repas."
+    },
+    {
+      "id": 2,
+      "name": "Plats Principaux",
+      "description": "Savoureux plats principaux pour satisfaire votre appétit."
+    },
+    {
+      "id": 3,
+      "name": "Desserts",
+      "description": "Desserts sucrés pour finir votre repas en beauté."
+    },
+    {
+      "id": 4,
+      "name": "Boissons",
+      "description": "Une sélection de boissons rafraîchissantes."
+    },
+    {
+      "id": 5,
+      "name": "Salades",
+      "description": "Salades fraîches et saines."
+    },
+    {
+      "id": 6,
+      "name": "Pizzas",
+      "description": "Pizzas artisanales avec des ingrédients frais."
+    },
+    {
+      "id": 7,
+      "name": "Pâtes",
+      "description": "Délicieuses pâtes préparées avec des sauces maison."
+    },
+    {
+      "id": 8,
+      "name": "Végétarien",
+      "description": "Options végétariennes savoureuses."
+    },
+    {
+      "id": 9,
+      "name": "Plats de Saison",
+      "description": "Plats spéciaux préparés avec des ingrédients de saison."
+    },
+    {
+      "id": 10,
+      "name": "Spécialités",
+      "description": "Les spécialités du chef à ne pas manquer."
+    }
+  ]
+}

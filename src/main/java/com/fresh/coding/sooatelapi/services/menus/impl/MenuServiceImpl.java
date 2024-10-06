@@ -3,6 +3,7 @@ package com.fresh.coding.sooatelapi.services.menus.impl;
 import com.fresh.coding.sooatelapi.dtos.menus.MenuSummarized;
 import com.fresh.coding.sooatelapi.dtos.menus.SaveMenu;
 import com.fresh.coding.sooatelapi.entities.Menu;
+import com.fresh.coding.sooatelapi.enums.MenuStatus;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.services.menus.MenuService;
@@ -33,6 +34,7 @@ public class MenuServiceImpl implements MenuService {
         menu.setName(toSave.getName());
         menu.setDescription(toSave.getDescription());
         menu.setPrice(toSave.getPrice());
+        menu.setStatus(toSave.getStatus());
         menu.setCategory(category);
 
         var savedMenu = menuRepository.save(menu);
@@ -57,6 +59,19 @@ public class MenuServiceImpl implements MenuService {
         }
     }
 
+    @Override
+    public MenuSummarized updateMenuStatus(Long id, MenuStatus newStatus) {
+        var menuRepository = factory.getMenuRepository();
+        var optionalMenu = menuRepository.findById(id);
+        if (optionalMenu.isPresent()) {
+            var menu = optionalMenu.get();
+            menu.setStatus(newStatus);
+            var saved = menuRepository.save(menu);
+            return toMenuSummarized(saved);
+        } else {
+            throw new HttpNotFoundException("Menu not found");
+        }
+    }
 
     private MenuSummarized toMenuSummarized(Menu menu) {
         return new MenuSummarized(
@@ -66,7 +81,8 @@ public class MenuServiceImpl implements MenuService {
                 menu.getPrice(),
                 menu.getCategory() != null ? menu.getCategory().getId() : null,
                 menu.getCreatedAt(),
-                menu.getUpdatedAt()
+                menu.getUpdatedAt(),
+                menu.getStatus()
         );
     }
 }

@@ -39,11 +39,13 @@ public class SearchMenuServiceImpl implements SearchMenuService {
         query.select(root).distinct(true);
 
         var typedQuery = em.createQuery(query);
-        typedQuery.setFirstResult(page * size);
         typedQuery.setMaxResults(size);
+        typedQuery.setFirstResult(page * size);
 
-        var categories = typedQuery.getResultList();
+
         long totalItems = getTotalCount(menuSearch);
+        var categories = typedQuery.getResultList();
+
         int totalPages = (int) Math.ceil((double) totalItems / size);
 
         var hasPrevious = page > 0;
@@ -74,7 +76,8 @@ public class SearchMenuServiceImpl implements SearchMenuService {
                         menu.getPrice(),
                         menu.getCategory() != null ? menu.getCategory().getId() : null,
                         menu.getCreatedAt(),
-                        menu.getUpdatedAt()
+                        menu.getUpdatedAt(),
+                        menu.getStatus()
                 )).collect(Collectors.toList())
         )).collect(Collectors.toList());
     }
@@ -82,8 +85,6 @@ public class SearchMenuServiceImpl implements SearchMenuService {
         var builder = em.getCriteriaBuilder();
         var query = builder.createQuery(Long.class);
         var root = query.from(Category.class);
-
-        root.join("menus", JoinType.LEFT);
 
         var predicates = buildPredicates(menuSearch, builder, root);
 
@@ -96,10 +97,10 @@ public class SearchMenuServiceImpl implements SearchMenuService {
     private List<Predicate> buildPredicates(MenuSearch menuSearch, CriteriaBuilder builder, Root<Category> root) {
         var predicates = new ArrayList<Predicate>();
 
-        if (menuSearch.getCategoryName() != null && !menuSearch.getCategoryName().isBlank()) {
-            predicates.add(builder.like(
-                    builder.lower(root.get("name")),
-                    "%" + menuSearch.getCategoryName().toLowerCase() + "%"
+        if (menuSearch.getCategoryId() != null ) {
+            predicates.add(builder.equal(
+                    root.get("id"),
+                    menuSearch.getCategoryId()
             ));
         }
 
@@ -111,6 +112,13 @@ public class SearchMenuServiceImpl implements SearchMenuService {
             ));
         }
 
+
+        if (menuSearch.getStatus() != null) {
+            Join<Category, Menu> menuJoin = root.join("menus", JoinType.LEFT);
+            predicates.add(builder.equal(
+                    menuJoin.get("status"), menuSearch.getStatus()
+            ));
+        }
         if (menuSearch.getPriceMin() != null) {
             Join<Category, Menu> menuJoin = root.join("menus", JoinType.LEFT);
             predicates.add(builder.greaterThanOrEqualTo(menuJoin.get("price"), menuSearch.getPriceMin()));

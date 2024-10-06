@@ -22,7 +22,7 @@ public class StockController {
     private final StockAndCreatePurchase stockAndCreatePurchase;
 
     @PostMapping("/add")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addStockAndCreatePurchase(
             @Valid @RequestBody
             StockPurchaseDto stockPurchaseDto

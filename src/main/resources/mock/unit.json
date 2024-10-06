@@ -1,0 +1,68 @@
+{
+  "ingredientUnits": [
+    {
+      "name": "gramme",
+      "abbreviation": "g"
+    },
+    {
+      "name": "kilogramme",
+      "abbreviation": "kg"
+    },
+    {
+      "name": "litre",
+      "abbreviation": "L"
+    },
+    {
+      "name": "milliliter",
+      "abbreviation": "ml"
+    },
+    {
+      "name": "teaspoon",
+      "abbreviation": "tsp"
+    },
+    {
+      "name": "tablespoon",
+      "abbreviation": "tbsp"
+    },
+    {
+      "name": "piece",
+      "abbreviation": "pcs"
+    },
+    {
+      "name": "cup",
+      "abbreviation": "cup"
+    },
+    {
+      "name": "ounce",
+      "abbreviation": "oz"
+    },
+    {
+      "name": "pound",
+      "abbreviation": "lb"
+    },
+    {
+      "name": "pinch",
+      "abbreviation": "pinch"
+    },
+    {
+      "name": "quart",
+      "abbreviation": "qt"
+    },
+    {
+      "name": "gallon",
+      "abbreviation": "gal"
+    },
+    {
+      "name": "fluid ounce",
+      "abbreviation": "fl oz"
+    },
+    {
+      "name": "dash",
+      "abbreviation": "dash"
+    },
+    {
+      "name": "dozen",
+      "abbreviation": "doz"
+    }
+  ]
+}
