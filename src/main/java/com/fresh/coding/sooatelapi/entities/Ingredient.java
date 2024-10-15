@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class Ingredient extends Model {
 
     @Column(nullable = false, unique = true)
@@ -26,9 +27,11 @@ public class Ingredient extends Model {
 
     @Builder.Default
     @OneToMany(mappedBy = "ingredient")
+    @ToString.Exclude
     private List<MenuIngredient> menuIngredients = new ArrayList<>();
 
     @Builder.Default
+    @ToString.Exclude
     @OneToMany(mappedBy = "ingredient")
     private List<Purchase> purchases = new ArrayList<>();
 

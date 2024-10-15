@@ -18,6 +18,6 @@ public class Category extends Model {
     private String name;
 
     @Builder.Default
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Menu> menus = new ArrayList<>();
 }

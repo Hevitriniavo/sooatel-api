@@ -2,12 +2,14 @@ package com.fresh.coding.sooatelapi.dtos.ingredients;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@ToString
 public final class IngredientSummarizedWithUnitName extends IngredientBase implements Serializable {
     private Long id;
     private Long unitId;

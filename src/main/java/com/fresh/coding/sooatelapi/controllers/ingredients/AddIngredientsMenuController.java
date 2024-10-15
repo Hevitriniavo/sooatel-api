@@ -1,4 +1,4 @@
-package com.fresh.coding.sooatelapi.controllers;
+package com.fresh.coding.sooatelapi.controllers.ingredients;
 
 import com.fresh.coding.sooatelapi.dtos.menu.ingredients.MenuIngredientDto;
 import com.fresh.coding.sooatelapi.services.menus.AddIngredientsToMenuService;

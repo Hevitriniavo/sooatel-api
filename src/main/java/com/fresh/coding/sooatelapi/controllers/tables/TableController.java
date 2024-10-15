@@ -1,4 +1,4 @@
-package com.fresh.coding.sooatelapi.controllers;
+package com.fresh.coding.sooatelapi.controllers.tables;
 
 import com.fresh.coding.sooatelapi.dtos.tables.SaveTable;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;

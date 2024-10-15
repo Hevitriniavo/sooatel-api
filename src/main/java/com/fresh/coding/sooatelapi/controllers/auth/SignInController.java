@@ -1,4 +1,4 @@
-package com.fresh.coding.sooatelapi.controllers;
+package com.fresh.coding.sooatelapi.controllers.auth;
 
 import com.fresh.coding.sooatelapi.dtos.token.AuthToken;
 import com.fresh.coding.sooatelapi.dtos.users.SignInUser;

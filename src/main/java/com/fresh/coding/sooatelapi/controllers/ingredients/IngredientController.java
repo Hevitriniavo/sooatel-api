@@ -1,4 +1,4 @@
-package com.fresh.coding.sooatelapi.controllers;
+package com.fresh.coding.sooatelapi.controllers.ingredients;
 
 import com.fresh.coding.sooatelapi.dtos.ingredients.CreateIngredient;
 import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarized;

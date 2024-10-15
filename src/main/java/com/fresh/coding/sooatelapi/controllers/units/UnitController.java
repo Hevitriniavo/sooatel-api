@@ -1,4 +1,4 @@
-package com.fresh.coding.sooatelapi.controllers;
+package com.fresh.coding.sooatelapi.controllers.units;
 
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.UnitSearch;

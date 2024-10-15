@@ -1,4 +1,4 @@
-package com.fresh.coding.sooatelapi.controllers;
+package com.fresh.coding.sooatelapi.controllers.categories;
 
 import com.fresh.coding.sooatelapi.dtos.categories.CategorySummarized;
 import com.fresh.coding.sooatelapi.dtos.categories.SaveCategory;

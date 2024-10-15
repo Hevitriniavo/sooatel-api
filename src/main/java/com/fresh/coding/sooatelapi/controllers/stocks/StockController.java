@@ -1,4 +1,4 @@
-package com.fresh.coding.sooatelapi.controllers;
+package com.fresh.coding.sooatelapi.controllers.stocks;
 
 import com.fresh.coding.sooatelapi.dtos.StockPurchaseDto;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;

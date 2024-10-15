@@ -1,4 +1,4 @@
-package com.fresh.coding.sooatelapi.controllers;
+package com.fresh.coding.sooatelapi.controllers.menus;
 
 import com.fresh.coding.sooatelapi.dtos.menus.MenusWithCategorySummarized;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;

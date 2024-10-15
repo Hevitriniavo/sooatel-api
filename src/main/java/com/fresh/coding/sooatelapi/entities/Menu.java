@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class Menu extends Model {
 
     @Column(nullable = false)
@@ -30,13 +31,15 @@ public class Menu extends Model {
 
     @Builder.Default
     @OneToMany(mappedBy = "menu")
+    @ToString.Exclude
     private List<MenuIngredient> menuIngredients = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(20) default 'ACTIVE'")
-    private MenuStatus status = MenuStatus.ACTIVE;
+    @Column(nullable = false)
+    private MenuStatus status;
 
     @OneToMany(mappedBy = "menu")
     @Builder.Default
+    @ToString.Exclude
     private List<MenuOrder> menuOrders = new ArrayList<>();
 }
