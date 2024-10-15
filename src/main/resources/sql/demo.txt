@@ -1,0 +1,13 @@
+
+create menu:
+
+  {
+     menuId,
+     ingredients: [
+      {
+         ingredientId:xxx,
+         quantity
+      }
+
+     ]
+  }

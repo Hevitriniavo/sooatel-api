@@ -48,6 +48,7 @@ public class RepositoryFactory {
     public OperationRepository getOperationRepository() {
         return getRepositoryFor("operationRepository");
     }
+
     public CategoryRepository getCategoryRepository() {
         return getRepositoryFor("categoryRepository");
     }
@@ -58,6 +59,10 @@ public class RepositoryFactory {
 
     public TableRepository getTableRepository() {
         return getRepositoryFor("tableRepository");
+    }
+
+    public MenuIngredientRepository getMenuIngredientRepository() {
+        return getRepositoryFor("menuIngredientRepository");
     }
 
 }
