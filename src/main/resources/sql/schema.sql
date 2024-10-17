@@ -199,3 +199,31 @@ CREATE TABLE employee_order_services (
     completion_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     description TEXT
 );
+
+select
+    i1_0.name,
+    sum(s1_0.quantity)
+from
+    stock s1_0
+        join
+    ingredient i1_0
+    on i1_0.id=s1_0.ingredient_id
+        left join
+    operation o1_0
+    on s1_0.id=o1_0.stock_id
+where
+    o1_0.date<=CURRENT_TIMESTAMP
+group by
+    1
+
+SELECT
+    i1_0.name,
+    SUM(s1_0.quantity)
+FROM
+    stock s1_0
+        JOIN ingredient i1_0 ON i1_0.id = s1_0.ingredient_id
+        LEFT JOIN operation o1_0 ON s1_0.id = o1_0.stock_id
+WHERE
+ o1_0.date <= CURRENT_TIMESTAMP - INTERVAL '1' DAY
+GROUP BY
+    i1_0.name;
