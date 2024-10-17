@@ -41,6 +41,7 @@ CREATE TABLE categories (
 CREATE TABLE menus (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    status VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
     category_id INT REFERENCES categories(id) ON DELETE SET NULL
@@ -62,8 +63,8 @@ CREATE TABLE stocks (
 CREATE TABLE operations (
     id SERIAL PRIMARY KEY,
     stock_id INT REFERENCES stocks(id) ON DELETE SET NULL,
-    operation_type VARCHAR(50) NOT NULL,
-    operation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type VARCHAR(50) NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     description TEXT
 );
 
