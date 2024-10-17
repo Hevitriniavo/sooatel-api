@@ -10,6 +10,7 @@ import com.fresh.coding.sooatelapi.dtos.statistc.TotalStock;
 import com.fresh.coding.sooatelapi.entities.Ingredient;
 import com.fresh.coding.sooatelapi.entities.Operation;
 import com.fresh.coding.sooatelapi.entities.Stock;
+import com.fresh.coding.sooatelapi.enums.OperationType;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.services.operations.OperationService;
 import com.fresh.coding.sooatelapi.services.specifications.OperationSpec;
@@ -71,23 +72,31 @@ public class OperationServiceImpl implements OperationService {
             query.setDate(LocalDateTime.now());
         }
 
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tuple> cq = cb.createTupleQuery();
-        Root<Stock> stockRoot = cq.from(Stock.class);
-        Join<Stock, Ingredient> ingredientJoin = stockRoot.join("ingredient");
-        Join<Stock, Operation> operationJoin = stockRoot.join("operations", JoinType.LEFT);
+        var cb = entityManager.getCriteriaBuilder();
+        var cq = cb.createTupleQuery();
+        var stockRoot = cq.from(Stock.class);
+        var ingredientJoin = stockRoot.join("ingredient");
+        var operationJoin = stockRoot.join("operations", JoinType.LEFT);
 
         cq.multiselect(
                 ingredientJoin.get("name").alias("ingredientName"),
-                cb.sum(stockRoot.get("quantity")).alias("totalQuantity")
+                cb.sum(
+                        cb.<Double>selectCase()
+                                .when(cb.equal(operationJoin.get("type"), OperationType.SORTIE), cb.prod(stockRoot.get("quantity"), -1.0))
+                                .otherwise(stockRoot.get("quantity"))
+                ).alias("totalQuantity")
         );
 
-        List<Predicate> predicates = new ArrayList<>();
+        var predicates = new ArrayList<Predicate>();
         predicates.add(cb.lessThanOrEqualTo(operationJoin.get("date"), query.getDate()));
+
+        if (query.getIngredientId() != null) {
+            predicates.add(cb.equal(ingredientJoin.get("id"), query.getIngredientId()));
+        }
 
         cq.where(predicates.toArray(new Predicate[0]));
 
-        List<Predicate> havingPredicates = new ArrayList<>();
+        var havingPredicates = new ArrayList<Predicate>();
         if (query.getMinTotalQuantity() != null) {
             havingPredicates.add(cb.ge(cb.sum(stockRoot.get("quantity")), query.getMinTotalQuantity()));
         }
@@ -101,11 +110,11 @@ public class OperationServiceImpl implements OperationService {
 
         cq.groupBy(ingredientJoin.get("name"));
 
-        List<Tuple> results = entityManager.createQuery(cq).getResultList();
+        var results = entityManager.createQuery(cq).getResultList();
 
-        List<TotalStock> totalStocks = new ArrayList<>();
-        for (Tuple result : results) {
-            TotalStock totalStock = new TotalStock();
+        var totalStocks = new ArrayList<TotalStock>();
+        for (var result : results) {
+            var totalStock = new TotalStock();
             totalStock.setIngredientName(result.get("ingredientName", String.class));
             totalStock.setTotalQuantity(result.get("totalQuantity", Double.class));
             totalStocks.add(totalStock);
@@ -113,7 +122,6 @@ public class OperationServiceImpl implements OperationService {
 
         return totalStocks;
     }
-
 
 
     private OperationSummarized mapToSummarized(Operation operation) {

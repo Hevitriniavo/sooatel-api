@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TotalStockQuery {
     private LocalDateTime date;
+    private Long ingredientId;
     private Double maxTotalQuantity;
     private Double minTotalQuantity;
 }
