@@ -76,12 +76,28 @@ public class OperationServiceImpl implements OperationService {
         Root<Stock> stockRoot = cq.from(Stock.class);
         Join<Stock, Ingredient> ingredientJoin = stockRoot.join("ingredient");
         Join<Stock, Operation> operationJoin = stockRoot.join("operations", JoinType.LEFT);
+
         cq.multiselect(
                 ingredientJoin.get("name").alias("ingredientName"),
                 cb.sum(stockRoot.get("quantity")).alias("totalQuantity")
         );
 
-        cq.where(cb.lessThanOrEqualTo(operationJoin.get("date"), query.getDate()));
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.lessThanOrEqualTo(operationJoin.get("date"), query.getDate()));
+
+        cq.where(predicates.toArray(new Predicate[0]));
+
+        List<Predicate> havingPredicates = new ArrayList<>();
+        if (query.getMinTotalQuantity() != null) {
+            havingPredicates.add(cb.ge(cb.sum(stockRoot.get("quantity")), query.getMinTotalQuantity()));
+        }
+        if (query.getMaxTotalQuantity() != null) {
+            havingPredicates.add(cb.le(cb.sum(stockRoot.get("quantity")), query.getMaxTotalQuantity()));
+        }
+
+        if (!havingPredicates.isEmpty()) {
+            cq.having(havingPredicates.toArray(new Predicate[0]));
+        }
 
         cq.groupBy(ingredientJoin.get("name"));
 
