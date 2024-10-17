@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.dtos.operations;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fresh.coding.sooatelapi.enums.OperationType;
 import lombok.*;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OperationSummarized {
     private Long id;
 

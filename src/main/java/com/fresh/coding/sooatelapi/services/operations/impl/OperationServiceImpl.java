@@ -1,6 +1,7 @@
 package com.fresh.coding.sooatelapi.services.operations.impl;
 
 import com.fresh.coding.sooatelapi.dtos.operations.OperationSummarized;
+import com.fresh.coding.sooatelapi.dtos.operations.OperationWithStock;
 import com.fresh.coding.sooatelapi.dtos.pagination.PageInfo;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.OperationSearch;
@@ -39,6 +40,21 @@ public class OperationServiceImpl implements OperationService {
 
         return new Paginate<>(summarizedPage.getContent(), pageInfo);
     }
+
+    @Override
+    public OperationWithStock findOperationDetailByStockId(Long stockId) {
+        var res = new OperationWithStock();
+        var operations = repositoryFactory.getOperationRepository().findOperationsByStockId(stockId);
+        res.setStockId(operations.getFirst().getStock().getId());
+        res.setIngredientId(operations.getFirst().getStock().getIngredient().getId());
+        res.setIngredientName(operations.getFirst().getStock().getIngredient().getName());
+        var resOperations = res.getOperations();
+        operations.forEach(operation -> resOperations.add(
+                mapToSummarized(operation)
+        ));
+     return res;
+    }
+
 
     private OperationSummarized mapToSummarized(Operation operation) {
         return OperationSummarized.builder()
