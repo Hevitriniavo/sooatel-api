@@ -6,7 +6,6 @@ import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.OperationSearch;
 import com.fresh.coding.sooatelapi.dtos.searchs.TotalStockQuery;
 import com.fresh.coding.sooatelapi.dtos.statistc.TotalStock;
-import com.fresh.coding.sooatelapi.entities.Operation;
 import com.fresh.coding.sooatelapi.services.operations.OperationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;

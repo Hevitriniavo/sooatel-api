@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
 public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     @Modifying
     @Transactional
-    @Query("UPDATE Ingredient i SET i.unit = null WHERE i.unit.id = :unitId")
+    @Query("DELETE FROM Ingredient i  WHERE i.unit.id = :unitId")
     int setUnitToNullByUnitId(@Param("unitId") Long unitId);
 }

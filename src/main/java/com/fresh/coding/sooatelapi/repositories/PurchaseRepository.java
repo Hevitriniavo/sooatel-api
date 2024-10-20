@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     @Modifying
     @Transactional
-    @Query("UPDATE Purchase p SET p.ingredient = null WHERE p.ingredient.id = :ingredientId")
+    @Query("DELETE FROM Purchase p  WHERE p.ingredient.id = :ingredientId")
     int setIngredientToNullByIngredientId(@Param("ingredientId") Long ingredientId);
 }
