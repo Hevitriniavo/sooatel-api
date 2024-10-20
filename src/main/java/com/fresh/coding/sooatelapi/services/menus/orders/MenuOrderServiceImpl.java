@@ -1,7 +1,7 @@
 package com.fresh.coding.sooatelapi.services.menus.orders;
 
+import com.fresh.coding.sooatelapi.dtos.menu.orders.CreateMenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderDTO;
-import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderSummarized;
 import com.fresh.coding.sooatelapi.entities.*;
 import com.fresh.coding.sooatelapi.enums.OperationType;
 import com.fresh.coding.sooatelapi.enums.OrderStatus;
@@ -24,9 +24,9 @@ public class MenuOrderServiceImpl implements MenuOrderService {
 
     @Override
     @Transactional
-    public MenuOrderSummarized createMenuOrder(MenuOrderDTO menuOrderDTO) {
-        var roomId = menuOrderDTO.getRoomId();
-        var tableId = menuOrderDTO.getTableId();
+    public MenuOrderDTO createMenuOrder(CreateMenuOrderDTO createMenuOrderDTO) {
+        var roomId = createMenuOrderDTO.getRoomId();
+        var tableId = createMenuOrderDTO.getTableId();
 
         if (roomId == null && tableId == null) {
             throw new IllegalArgumentException("Either roomId or tableId must be provided.");
@@ -45,8 +45,8 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         var stockRepository = repositoryFactory.getStockRepository();
         var operationRepository = repositoryFactory.getOperationRepository();
 
-        var customer = menuOrderDTO.getCustomerId() != null
-                ? customerRepository.findById(menuOrderDTO.getCustomerId())
+        var customer = createMenuOrderDTO.getCustomerId() != null
+                ? customerRepository.findById(createMenuOrderDTO.getCustomerId())
                 .orElseThrow(() -> new HttpNotFoundException("Customer not found"))
                 : null;
 
@@ -64,7 +64,7 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         List<MenuOrder> savedMenuOrders = new ArrayList<>();
         List<String> missingIngredients = new ArrayList<>();
 
-        for (var item : menuOrderDTO.getMenuItems()) {
+        for (var item : createMenuOrderDTO.getMenuItems()) {
             var menu = menuRepository.findById(item.getMenuId())
                     .orElseThrow(() -> new HttpNotFoundException("Menu not found"));
 
@@ -78,7 +78,7 @@ public class MenuOrderServiceImpl implements MenuOrderService {
             throw new IllegalArgumentException("Missing ingredients: " + String.join(", ", missingIngredients));
         }
 
-        for (var item : menuOrderDTO.getMenuItems()) {
+        for (var item : createMenuOrderDTO.getMenuItems()) {
             var menu = menuRepository.findById(item.getMenuId())
                     .orElseThrow(() -> new HttpNotFoundException("Menu not found"));
 
@@ -119,13 +119,13 @@ public class MenuOrderServiceImpl implements MenuOrderService {
             }
         }
 
-        return MenuOrderSummarized.builder()
-                .customerId(menuOrderDTO.getCustomerId())
+        return MenuOrderDTO.builder()
+                .customerId(createMenuOrderDTO.getCustomerId())
                 .orderDate(now)
                 .roomId(roomId)
                 .tableId(tableId)
                 .menuItems(savedMenuOrders.stream()
-                        .map(order -> new MenuOrderSummarized.MenuItemSummarizedDTO(
+                        .map(order -> new MenuOrderDTO.MenuItemSummarizedDTO(
                                 order.getId(),
                                 order.getQuantity(),
                                 order.getCost(),
@@ -136,6 +136,15 @@ public class MenuOrderServiceImpl implements MenuOrderService {
     }
 
 
+    @Override
+    @Transactional
+    public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
+        MenuOrder menuOrder = menuOrderRepository.findById(orderId)
+                .orElseThrow(() -> new HttpNotFoundException("Order not found"));
+        menuOrder.setOrderStatus(newStatus);
+        menuOrderRepository.save(menuOrder);
+    }
 
     private List<String> checkStock(Menu menu, double quantityOrdered) {
         List<String> shortages = new ArrayList<>();

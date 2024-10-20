@@ -1,14 +1,10 @@
 package com.fresh.coding.sooatelapi.dtos.menu.orders;
 
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fresh.coding.sooatelapi.enums.OrderStatus;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -20,24 +16,28 @@ public class MenuOrderDTO {
 
     private Long customerId;
 
-    private List<MenuItemDTO> menuItems;
-
     private Long roomId;
 
     private Long tableId;
+
+    private LocalDateTime orderDate;
+
+    private List<MenuItemSummarizedDTO> menuItems;
+
 
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class MenuItemDTO {
+    public static class MenuItemSummarizedDTO {
 
-        @NotNull(message = "Menu ID is required")
         private Long menuId;
 
-        @NotNull(message = "Quantity is required")
-        @Min(value = 1, message = "Quantity must be at least 1")
         private Double quantity;
+
+        private Double totalPrice;
+
+        private OrderStatus status;
     }
 
 }

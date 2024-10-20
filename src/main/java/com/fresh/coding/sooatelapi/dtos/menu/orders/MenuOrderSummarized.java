@@ -1,43 +1,24 @@
 package com.fresh.coding.sooatelapi.dtos.menu.orders;
 
-
+import com.fresh.coding.sooatelapi.dtos.customers.CustomerDTO;
+import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
+import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.enums.OrderStatus;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-@Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Getter
 public class MenuOrderSummarized {
-
-    private Long customerId;
-
-    private Long roomId;
-
-    private Long tableId;
-
+    private Long id;
+    private CustomerDTO customer;
+    private RoomDTO room;
+    private TableSummarized table;
     private LocalDateTime orderDate;
-
-    private List<MenuItemSummarizedDTO> menuItems;
-
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class MenuItemSummarizedDTO {
-
-        private Long menuId;
-
-        private Double quantity;
-
-        private Double totalPrice;
-
-        private OrderStatus status;
-    }
-
+    private Double quantity;
+    private Double cost;
+    private OrderStatus orderStatus;
+    private LocalDateTime updatedAt;
 }
