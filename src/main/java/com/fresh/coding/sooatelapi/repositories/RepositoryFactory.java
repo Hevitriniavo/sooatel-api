@@ -29,6 +29,11 @@ public class RepositoryFactory {
         return getRepositoryFor("menuOrderRepository");
     }
 
+    public ReservationRepository getReservationRepository() {
+        return getRepositoryFor("reservationRepository");
+    }
+
+
     public RoomRepository getRoomRepository() {
         return getRepositoryFor("roomRepository");
     }
