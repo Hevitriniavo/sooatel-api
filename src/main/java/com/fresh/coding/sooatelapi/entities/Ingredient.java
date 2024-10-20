@@ -22,23 +22,16 @@ public class Ingredient extends Model {
     @JoinColumn
     private Unit unit;
 
-    @OneToOne(mappedBy = "ingredient")
+    @OneToOne(mappedBy = "ingredient", orphanRemoval = true)
     private Stock stock;
 
     @Builder.Default
-    @OneToMany(mappedBy = "ingredient")
+    @OneToMany(mappedBy = "ingredient", orphanRemoval = true)
     @ToString.Exclude
     private List<MenuIngredient> menuIngredients = new ArrayList<>();
 
     @Builder.Default
     @ToString.Exclude
-    @OneToMany(mappedBy = "ingredient")
+    @OneToMany(mappedBy = "ingredient", orphanRemoval = true)
     private List<Purchase> purchases = new ArrayList<>();
-
-
-    public void removeOperations(List<Operation> operations) {
-        for (Operation operation : operations) {
-            operation.setStock(null);
-        }
-    }
 }

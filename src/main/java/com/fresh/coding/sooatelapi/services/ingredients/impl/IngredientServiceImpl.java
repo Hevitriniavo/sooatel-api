@@ -84,20 +84,9 @@ public class IngredientServiceImpl implements IngredientService {
     @Transactional
     public void delete(Long id) {
         var ingredientRepository = factory.getIngredientRepository();
-        var purchaseRepository = factory.getPurchaseRepository();
         var ingredient = ingredientRepository.findById(id)
                 .orElseThrow(() -> new HttpNotFoundException("Ingredient not found"));
 
-
-        var stock = ingredient.getStock();
-        var deletedIdCount = purchaseRepository.setIngredientToNullByIngredientId(id);
-        if (deletedIdCount > 0){
-            log.info("{} purchase deleted with id: {}", deletedIdCount, id);
-        }
-        if (stock != null) {
-            ingredient.removeOperations(stock.getOperations());
-            factory.getStockRepository().delete(stock);
-        }
         ingredientRepository.delete(ingredient);
     }
 

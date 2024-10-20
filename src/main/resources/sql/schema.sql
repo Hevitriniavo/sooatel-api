@@ -115,7 +115,8 @@ CREATE TABLE menu_orders (
     table_id INT REFERENCES tables(id) ON DELETE SET NULL,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     quantity DOUBLE PRECISION NOT NULL,
-    cost DECIMAL(10, 2) NOT NULL
+    cost DECIMAL(10, 2) NOT NULL,
+    VARCHAR(20) NOT NULL DEFAULT 'pending',
     CONSTRAINT chk_room_or_table CHECK (
         (room_id IS NOT NULL AND table_id IS NULL) OR
         (room_id IS NULL AND table_id IS NOT NULL)

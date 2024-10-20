@@ -24,7 +24,7 @@ public class Unit extends Model {
     private String abbreviation;
 
     @Builder.Default
-    @OneToMany(mappedBy = "unit")
+    @OneToMany(mappedBy = "unit", orphanRemoval = true)
     @ToString.Exclude
     private List<Ingredient> ingredients = new ArrayList<>();
 

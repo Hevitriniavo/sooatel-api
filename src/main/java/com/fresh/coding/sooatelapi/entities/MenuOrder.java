@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.entities;
 
+import com.fresh.coding.sooatelapi.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,6 +40,9 @@ public class MenuOrder extends Model {
 
     @Column(nullable = false)
     private Double cost;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "menuOrder")
     @Builder.Default
