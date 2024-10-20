@@ -25,6 +25,11 @@ public class RepositoryFactory {
         return getRepositoryFor("userRepository");
     }
 
+    public PaymentRepository getPaymentRepository() {
+        return getRepositoryFor("paymentRepository");
+    }
+
+
     public MenuOrderRepository getMenuOrderRepository() {
         return getRepositoryFor("menuOrderRepository");
     }

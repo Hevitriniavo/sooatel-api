@@ -122,7 +122,7 @@ CREATE TABLE menu_orders (
         (room_id IS NULL AND table_id IS NOT NULL)
     )
 );
-
+---- far any
 CREATE TABLE reservations (
     id SERIAL PRIMARY KEY,
     customer_id INT REFERENCES customers(id) ON DELETE SET NULL,
