@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.services.rooms;
 
+import com.fresh.coding.sooatelapi.dtos.rooms.FloorWithRoomDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.SaveRoomDTO;
 import com.fresh.coding.sooatelapi.entities.Room;
@@ -85,6 +86,29 @@ public class RoomServiceImpl implements RoomService {
         room.setUpdatedAt(LocalDateTime.now());
         roomRepository.save(room);
         return mapToDTO(room);
+    }
+
+    @Override
+    public FloorWithRoomDTO findFloorWithRooms(Long floorId) {
+        var floorRepository = repositoryFactory.getFloorRepository();
+        var floor = floorRepository.findById(floorId)
+                .orElseThrow(() -> new HttpNotFoundException("Floor not found"));
+
+        var roomRepository = repositoryFactory.getRoomRepository();
+        var rooms = roomRepository.findByFloorId(floorId);
+
+        List<RoomDTO> roomDTOs = rooms.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+
+        return new FloorWithRoomDTO(
+                floor.getId(),
+                floor.getFloorNumber(),
+                floor.getDescription(),
+                floor.getCreatedAt(),
+                floor.getUpdatedAt(),
+                roomDTOs
+        );
     }
 
 

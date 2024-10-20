@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.services.rooms;
 
+import com.fresh.coding.sooatelapi.dtos.rooms.FloorWithRoomDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.SaveRoomDTO;
 import com.fresh.coding.sooatelapi.enums.RoomStatus;
@@ -12,6 +13,6 @@ public interface RoomService {
     List<RoomDTO> getAllRooms();
     RoomDTO updateRoom(Long id, SaveRoomDTO saveRoomDTO);
     void deleteRoom(Long id);
-
     RoomDTO updateRoomStatus(Long id, RoomStatus status);
+    FloorWithRoomDTO findFloorWithRooms(Long floorId);
 }

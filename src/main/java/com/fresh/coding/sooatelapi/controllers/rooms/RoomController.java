@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.controllers.rooms;
 
+import com.fresh.coding.sooatelapi.dtos.rooms.FloorWithRoomDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.SaveRoomDTO;
 import com.fresh.coding.sooatelapi.enums.RoomStatus;
@@ -33,6 +34,13 @@ public class RoomController {
     @ResponseStatus(HttpStatus.OK)
     public RoomDTO updateRoomStatus(@PathVariable Long id, @RequestBody RoomStatus status) {
         return roomService.updateRoomStatus(id, status);
+    }
+
+
+    @GetMapping("/floor/{floorId}")
+    @ResponseStatus(HttpStatus.OK)
+    public FloorWithRoomDTO getFloorWithRooms(@PathVariable Long floorId) {
+        return roomService.findFloorWithRooms(floorId);
     }
 
     @GetMapping("/status")
