@@ -6,13 +6,19 @@ import com.fresh.coding.sooatelapi.dtos.reservations.SaveReservationDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.entities.Reservation;
+import com.fresh.coding.sooatelapi.entities.RestTable;
+import com.fresh.coding.sooatelapi.entities.Room;
+import com.fresh.coding.sooatelapi.enums.ReservationStatus;
 import com.fresh.coding.sooatelapi.exceptions.HttpBadRequestException;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +28,60 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public ReservationDTO saveReservation(SaveReservationDTO saveReservationDTO) {
+        validateReservationInput(saveReservationDTO);
+        var reservation = createReservation(saveReservationDTO);
+        var savedReservation = repositoryFactory.getReservationRepository().save(reservation);
+        return mapToDTO(savedReservation);
+    }
+
+    @Override
+    public void deleteReservation(Long id) {
+        var reservationRepository = repositoryFactory.getReservationRepository();
+        if (!reservationRepository.existsById(id)) {
+            throw new HttpNotFoundException("Reservation not found");
+        }
+        reservationRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public ReservationDTO updateReservation(Long id, SaveReservationDTO saveReservationDTO) {
+        validateReservationInput(saveReservationDTO);
+        var reservation = repositoryFactory.getReservationRepository().findById(id)
+                .orElseThrow(() -> new HttpNotFoundException("Reservation not found"));
+
+        updateReservationFields(reservation, saveReservationDTO);
+        var updatedReservation = repositoryFactory.getReservationRepository().save(reservation);
+        return mapToDTO(updatedReservation);
+    }
+
+    @Override
+    @Transactional
+    public ReservationDTO updateReservationStatus(Long id, ReservationStatus status) {
+        var reservation = repositoryFactory.getReservationRepository().findById(id)
+                .orElseThrow(() -> new HttpNotFoundException("Reservation not found"));
+
+        reservation.setStatus(status);
+
+        var updatedReservation = repositoryFactory.getReservationRepository().save(reservation);
+        return mapToDTO(updatedReservation);
+    }
+
+    @Override
+    public List<ReservationDTO> findAllReservations() {
+        return repositoryFactory.getReservationRepository().findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private void validateReservationInput(SaveReservationDTO saveReservationDTO) {
         if ((saveReservationDTO.getRoomId() == null && saveReservationDTO.getTableId() == null) ||
                 (saveReservationDTO.getRoomId() != null && saveReservationDTO.getTableId() != null)) {
             throw new HttpBadRequestException("Either roomId or tableId must be provided, but not both.");
         }
+    }
 
+    private Reservation createReservation(SaveReservationDTO saveReservationDTO) {
         var customer = repositoryFactory.getCustomerRepository().findById(saveReservationDTO.getCustomerId())
                 .orElseThrow(() -> new HttpNotFoundException("Customer not found"));
 
@@ -38,19 +93,47 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setStatus(saveReservationDTO.getStatus());
 
         if (saveReservationDTO.getRoomId() != null) {
-            var room = repositoryFactory.getRoomRepository().findById(saveReservationDTO.getRoomId())
-                    .orElseThrow(() -> new HttpNotFoundException("Room not found"));
-            reservation.setRoom(room);
+            reservation.setRoom(findRoomById(saveReservationDTO.getRoomId()));
         }
 
         if (saveReservationDTO.getTableId() != null) {
-            var table = repositoryFactory.getTableRepository().findById(saveReservationDTO.getTableId())
-                    .orElseThrow(() -> new HttpNotFoundException("Table not found"));
-            reservation.setTable(table);
+            reservation.setTable(findTableById(saveReservationDTO.getTableId()));
         }
 
-        var savedReservation = repositoryFactory.getReservationRepository().save(reservation);
-        return mapToDTO(savedReservation);
+        return reservation;
+    }
+
+    private Room findRoomById(Long roomId) {
+        return repositoryFactory.getRoomRepository().findById(roomId)
+                .orElseThrow(() -> new HttpNotFoundException("Room not found"));
+    }
+
+    private RestTable findTableById(Long tableId) {
+        return repositoryFactory.getTableRepository().findById(tableId)
+                .orElseThrow(() -> new HttpNotFoundException("Table not found"));
+    }
+
+    private void updateReservationFields(Reservation reservation, SaveReservationDTO saveReservationDTO) {
+        var customer = repositoryFactory.getCustomerRepository().findById(saveReservationDTO.getCustomerId())
+                .orElseThrow(() -> new HttpNotFoundException("Customer not found"));
+
+        reservation.setCustomer(customer);
+        reservation.setDescription(saveReservationDTO.getDescription());
+        reservation.setReservationStart(saveReservationDTO.getReservationStart());
+        reservation.setReservationEnd(saveReservationDTO.getReservationEnd());
+        reservation.setStatus(saveReservationDTO.getStatus());
+
+        if (saveReservationDTO.getRoomId() != null) {
+            reservation.setRoom(findRoomById(saveReservationDTO.getRoomId()));
+        } else {
+            reservation.setRoom(null);
+        }
+
+        if (saveReservationDTO.getTableId() != null) {
+            reservation.setTable(findTableById(saveReservationDTO.getTableId()));
+        } else {
+            reservation.setTable(null);
+        }
     }
 
     private ReservationDTO mapToDTO(Reservation reservation) {
@@ -77,7 +160,7 @@ public class ReservationServiceImpl implements ReservationService {
                     reservation.getTable().getStatus(),
                     reservation.getTable().getCreatedAt(),
                     reservation.getTable().getUpdatedAt()
-            ) ;
+            );
             dto.setTable(tableSummarized);
         }
 
