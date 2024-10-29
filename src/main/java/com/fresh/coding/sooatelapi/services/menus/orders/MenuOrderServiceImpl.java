@@ -148,6 +148,27 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         menuOrderRepository.save(menuOrder);
     }
 
+    @Override
+    @Transactional
+    public void deleteMenuIngredientById(Long menuIngredientId) {
+        var menuIngredientRepository = repositoryFactory.getMenuIngredientRepository();
+
+        if (!menuIngredientRepository.existsById(menuIngredientId)) {
+            throw new HttpNotFoundException("MenuIngredient not found with ID: " + menuIngredientId);
+        }
+
+        menuIngredientRepository.deleteById(menuIngredientId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMenuIngredientByMenuIdAndIngredientId(Long menuId, Long ingredientId) {
+        var menuIngredientRepository = repositoryFactory.getMenuIngredientRepository();
+        MenuIngredient menuIngredient = menuIngredientRepository.findByMenuIdAndIngredientId(menuId, ingredientId)
+                .orElseThrow(() -> new HttpNotFoundException("Menu ingredient not found"));
+        menuIngredientRepository.delete(menuIngredient);
+    }
+
     private List<String> checkStock(Menu menu, double quantityOrdered) {
         List<String> shortages = new ArrayList<>();
 

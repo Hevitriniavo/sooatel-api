@@ -64,6 +64,7 @@ public class StockAndCreatePurchaseImpl implements StockAndCreatePurchase {
         var operation = Operation.builder()
                 .stock(stock)
                 .type(OperationType.ENTRY)
+                .quantity(stockPurchaseDto.getQuantity())
                 .date(LocalDateTime.now())
                 .description("Achat de " + stockPurchaseDto.getQuantity() + " de " + ingredient.getName() + " le " + LocalDateTime.now())
                 .build();
