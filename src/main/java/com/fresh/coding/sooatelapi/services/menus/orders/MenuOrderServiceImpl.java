@@ -85,6 +85,7 @@ public class MenuOrderServiceImpl implements MenuOrderService {
             var menuOrder = MenuOrder.builder()
                     .customer(customer)
                     .orderDate(now)
+                    .menu(menu)
                     .quantity(item.getQuantity())
                     .cost(item.getQuantity() * menu.getPrice())
                     .orderStatus(OrderStatus.PENDING)

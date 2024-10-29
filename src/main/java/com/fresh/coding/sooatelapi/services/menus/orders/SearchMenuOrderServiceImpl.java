@@ -10,6 +10,7 @@ import com.fresh.coding.sooatelapi.dtos.searchs.MenuOrderSearch;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.entities.MenuOrder;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +31,6 @@ public class SearchMenuOrderServiceImpl implements SearchMenuOrderService {
         var cb = entityManager.getCriteriaBuilder();
         var cq = cb.createQuery(MenuOrder.class);
         var root = cq.from(MenuOrder.class);
-
         if (searchCriteria.getOrderDate() != null) {
             LocalDate orderDate = searchCriteria.getOrderDate();
             LocalDateTime startDateTime = orderDate.atStartOfDay();
@@ -82,7 +82,7 @@ public class SearchMenuOrderServiceImpl implements SearchMenuOrderService {
     private MenuOrderSummarized mapToDTO(MenuOrder menuOrder) {
         var dto = new MenuOrderSummarized();
 
-        BeanUtils.copyProperties(menuOrder, dto, "customer", "room", "table");
+        BeanUtils.copyProperties(menuOrder, dto, "customer", "room", "table", "menu");
 
         if (menuOrder.getCustomer() != null) {
             var customerDTO = new CustomerDTO();
