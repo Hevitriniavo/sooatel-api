@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -44,7 +42,4 @@ public class MenuOrder extends Model {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "menuOrder")
-    @Builder.Default
-    private List<EmployeeOrderService> orderServices = new ArrayList<>();
 }

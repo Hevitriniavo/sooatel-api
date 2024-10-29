@@ -2,6 +2,7 @@ package com.fresh.coding.sooatelapi.services.menus.orders;
 
 import com.fresh.coding.sooatelapi.dtos.customers.CustomerDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderSummarized;
+import com.fresh.coding.sooatelapi.dtos.menus.MenuSummarized;
 import com.fresh.coding.sooatelapi.dtos.pagination.PageInfo;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
@@ -94,6 +95,26 @@ public class SearchMenuOrderServiceImpl implements SearchMenuOrderService {
             BeanUtils.copyProperties(menuOrder.getRoom(), roomDTO);
             dto.setRoom(roomDTO);
         }
+
+        if (menuOrder.getMenu() != null) {
+            var menu = menuOrder.getMenu();
+
+            var menuDTO = new MenuSummarized(
+                    menu.getId(),
+                    menu.getName(),
+                    menu.getDescription(),
+                    menu.getPrice(),
+                    menu.getCategory().getId(),
+                    menu.getCreatedAt(),
+                    menu.getUpdatedAt(),
+                    menu.getStatus()
+            );
+
+            dto.setMenu(menuDTO);
+        }
+
+
+
 
         if (menuOrder.getTable() != null) {
             var tableDTO = new TableSummarized(

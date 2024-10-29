@@ -32,6 +32,6 @@ public class Ingredient extends Model {
 
     @Builder.Default
     @ToString.Exclude
-    @OneToMany(mappedBy = "ingredient", orphanRemoval = true)
+    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Purchase> purchases = new ArrayList<>();
 }

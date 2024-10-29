@@ -45,6 +45,13 @@ public class CustomerController {
         return customerService.findAllCustomers(page, size);
     }
 
+    @GetMapping("all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<CustomerDTO> getAllCustomers() {
+        return customerService.findAllCustomers();
+    }
+
+
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -96,17 +96,17 @@ public class OperationServiceImpl implements OperationService {
 
         cq.where(predicates.toArray(new Predicate[0]));
 
-//        var havingPredicates = new ArrayList<Predicate>();
-//        if (query.getMinTotalQuantity() != null) {
-//            havingPredicates.add(cb.ge(cb.sum(stockRoot.get("quantity")), query.getMinTotalQuantity()));
-//        }
-//        if (query.getMaxTotalQuantity() != null) {
-//            havingPredicates.add(cb.le(cb.sum(stockRoot.get("quantity")), query.getMaxTotalQuantity()));
-//        }
-//
-//        if (!havingPredicates.isEmpty()) {
-//            cq.having(havingPredicates.toArray(new Predicate[0]));
-//        }
+        var havingPredicates = new ArrayList<Predicate>();
+        if (query.getMinTotalQuantity() != null) {
+            havingPredicates.add(cb.ge(cb.sum(stockRoot.get("quantity")), query.getMinTotalQuantity()));
+        }
+        if (query.getMaxTotalQuantity() != null) {
+            havingPredicates.add(cb.le(cb.sum(stockRoot.get("quantity")), query.getMaxTotalQuantity()));
+        }
+
+        if (!havingPredicates.isEmpty()) {
+            cq.having(havingPredicates.toArray(new Predicate[0]));
+        }
 
         cq.groupBy(ingredientJoin.get("name"));
 

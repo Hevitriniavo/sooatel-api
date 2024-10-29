@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface CustomerService {
     Paginate<List<CustomerDTO>> findAllCustomers(int page, int size);
+    List<CustomerDTO> findAllCustomers();
     CustomerDTO findCustomerById(Long id);
     CustomerDTO createCustomer(CustomerCreateDTO customerCreateDTO);
     CustomerDTO updateCustomer(Long id, CustomerCreateDTO customerCreateDTO);

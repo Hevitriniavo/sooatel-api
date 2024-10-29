@@ -42,6 +42,14 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public List<CustomerDTO> findAllCustomers() {
+        var customerRepository = repositoryFactory.getCustomerRepository();
+        return customerRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public CustomerDTO findCustomerById(Long id) {
         var customerRepository = repositoryFactory.getCustomerRepository();
         var customer = customerRepository.findById(id)

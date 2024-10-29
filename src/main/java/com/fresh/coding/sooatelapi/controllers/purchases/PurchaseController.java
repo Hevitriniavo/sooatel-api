@@ -1,10 +1,8 @@
 package com.fresh.coding.sooatelapi.controllers.purchases;
 
 
-import com.fresh.coding.sooatelapi.dtos.categories.CategorySummarized;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.purchases.PurchaseDTO;
-import com.fresh.coding.sooatelapi.dtos.searchs.CategorySearch;
 import com.fresh.coding.sooatelapi.dtos.searchs.PurchaseSearch;
 import com.fresh.coding.sooatelapi.services.purchases.PurchaseService;
 import lombok.RequiredArgsConstructor;
