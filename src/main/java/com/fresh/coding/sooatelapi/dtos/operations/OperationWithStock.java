@@ -16,5 +16,6 @@ public class OperationWithStock {
     private Long stockId;
     private Long ingredientId;
     private String ingredientName;
+    private Double quantity;
     private List<OperationSummarized> operations = new ArrayList<>();
 }

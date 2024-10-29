@@ -113,7 +113,8 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                             .stock(stock)
                             .type(OperationType.SORTIE)
                             .date(now)
-                            .description("Stock updated for order: " + menuOrder.getId())
+                            .quantity(item.getQuantity())
+                            .description("Mise à jour du stock suite à la commande #" + menuOrder.getId())
                             .build();
                     operationRepository.save(operation);
                 }

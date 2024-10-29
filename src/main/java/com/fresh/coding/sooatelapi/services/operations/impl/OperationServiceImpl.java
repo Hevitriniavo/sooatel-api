@@ -83,9 +83,9 @@ public class OperationServiceImpl implements OperationService {
                 cb.sum(
                         cb.<Double>selectCase()
                                 .when(cb.equal(operationJoin.get("type"), OperationType.SORTIE), cb.prod(stockRoot.get("quantity"), -1.0))
-                                .otherwise(stockRoot.get("quantity"))
+                                .otherwise(operationJoin.get("quantity"))
                 ).alias("totalQuantity")
-        );
+        ).distinct(true);
 
         var predicates = new ArrayList<Predicate>();
         predicates.add(cb.lessThanOrEqualTo(operationJoin.get("date"), query.getDate()));
@@ -128,6 +128,7 @@ public class OperationServiceImpl implements OperationService {
         return OperationSummarized.builder()
                 .id(operation.getId())
                 .type(operation.getType())
+                .quantity(operation.getQuantity())
                 .stockId(operation.getStock() != null ? operation.getStock().getId(): null)
                 .date(operation.getDate())
                 .description(operation.getDescription())

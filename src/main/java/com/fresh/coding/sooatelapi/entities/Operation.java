@@ -29,6 +29,9 @@ public class Operation {
     @Column(nullable = false)
     private LocalDateTime date;
 
+    @Column(nullable = false)
+    private Double quantity;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 }

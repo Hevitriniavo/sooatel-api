@@ -111,8 +111,9 @@ public class IngredientServiceImpl implements IngredientService {
         return Operation.builder()
                 .stock(stock)
                 .type(OperationType.INITIAL)
+                .quantity(00.0)
                 .date(LocalDateTime.now())
-                .description("Stock initial pour l'ID de l'ingrédient " + stock.getIngredient().getId())
+                .description("État initial du stock pour l'ingrédient : " + stock.getIngredient().getName() + " (ID : " + stock.getIngredient().getId() + ")")
                 .build();
     }
 

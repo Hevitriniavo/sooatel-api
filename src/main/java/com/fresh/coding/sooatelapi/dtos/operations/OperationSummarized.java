@@ -21,5 +21,7 @@ public class OperationSummarized {
 
     private LocalDateTime date;
 
+    private Double quantity;
+
     private String description;
 }
