@@ -82,7 +82,7 @@ public class OperationServiceImpl implements OperationService {
                 ingredientJoin.get("name").alias("ingredientName"),
                 cb.sum(
                         cb.<Double>selectCase()
-                                .when(cb.equal(operationJoin.get("type"), OperationType.SORTIE), cb.prod(stockRoot.get("quantity"), -1.0))
+                                .when(cb.equal(.get("type"), OperationType.SORTIE), cb.prod(operationJoin.get("quantity"), -1.0))
                                 .otherwise(operationJoin.get("quantity"))
                 ).alias("totalQuantity")
         ).distinct(true);
