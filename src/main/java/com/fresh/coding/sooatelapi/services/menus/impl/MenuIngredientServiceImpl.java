@@ -1,19 +1,27 @@
 package com.fresh.coding.sooatelapi.services.menus.impl;
 
 import com.fresh.coding.sooatelapi.dtos.menu.ingredients.MenuWithIngredientsDTO;
+import com.fresh.coding.sooatelapi.entities.MenuIngredient;
 import com.fresh.coding.sooatelapi.enums.MenuStatus;
+import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
+import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.services.menus.MenuIngredientService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class MenuIngredientServiceImpl implements MenuIngredientService {
+
+    private final RepositoryFactory repositoryFactory;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -64,5 +72,26 @@ public class MenuIngredientServiceImpl implements MenuIngredientService {
         dto.setIngredients(ingredients);
 
         return dto;
+    }
+
+    @Override
+    @Transactional
+    public void deleteMenuIngredientById(Long menuIngredientId) {
+        var menuIngredientRepository = repositoryFactory.getMenuIngredientRepository();
+
+        if (!menuIngredientRepository.existsById(menuIngredientId)) {
+            throw new HttpNotFoundException("MenuIngredient not found with ID: " + menuIngredientId);
+        }
+
+        menuIngredientRepository.deleteById(menuIngredientId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMenuIngredientByMenuIdAndIngredientId(Long menuId, Long ingredientId) {
+        var menuIngredientRepository = repositoryFactory.getMenuIngredientRepository();
+        MenuIngredient menuIngredient = menuIngredientRepository.findByMenuIdAndIngredientId(menuId, ingredientId)
+                .orElseThrow(() -> new HttpNotFoundException("Menu ingredient not found"));
+        menuIngredientRepository.delete(menuIngredient);
     }
 }

@@ -8,7 +8,4 @@ public interface MenuOrderService {
     MenuOrderDTO createMenuOrder(CreateMenuOrderDTO createMenuOrderDTO);
     void updateOrderStatus(Long orderId, OrderStatus newStatus);
 
-    void deleteMenuIngredientById(Long menuIngredientId);
-
-    void deleteMenuIngredientByMenuIdAndIngredientId(Long menuId, Long ingredientId);
 }

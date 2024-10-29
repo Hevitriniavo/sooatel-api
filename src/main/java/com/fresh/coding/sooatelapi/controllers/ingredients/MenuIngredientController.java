@@ -3,11 +3,9 @@ package com.fresh.coding.sooatelapi.controllers.ingredients;
 import com.fresh.coding.sooatelapi.dtos.menu.ingredients.MenuWithIngredientsDTO;
 import com.fresh.coding.sooatelapi.services.menus.MenuIngredientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -21,5 +19,20 @@ public class MenuIngredientController {
     @GetMapping("/menu/{menuId}")
     public MenuWithIngredientsDTO findByMenuId(@PathVariable Long menuId) {
         return menuIngredientService.findIngredientsByMenuId(menuId);
+    }
+
+
+    @DeleteMapping("/ingredients/{menuIngredientId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMenuIngredient(@PathVariable Long menuIngredientId) {
+        menuIngredientService.deleteMenuIngredientById(menuIngredientId);
+    }
+
+    @DeleteMapping("/menu/{menuId}/ingredient/{ingredientId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMenuIngredientByMenuAndIngredient(
+            @PathVariable Long menuId,
+            @PathVariable Long ingredientId) {
+        menuIngredientService.deleteMenuIngredientByMenuIdAndIngredientId(menuId, ingredientId);
     }
 }

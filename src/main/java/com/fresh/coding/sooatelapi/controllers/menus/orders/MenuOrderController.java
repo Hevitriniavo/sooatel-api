@@ -36,18 +36,4 @@ public class MenuOrderController {
         menuOrderService.updateOrderStatus(orderId, newStatus);
     }
 
-    @DeleteMapping("/ingredients/{menuIngredientId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMenuIngredient(@PathVariable Long menuIngredientId) {
-        menuOrderService.deleteMenuIngredientById(menuIngredientId);
-    }
-
-    @DeleteMapping("/menu/{menuId}/ingredient/{ingredientId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMenuIngredientByMenuAndIngredient(
-            @PathVariable Long menuId,
-            @PathVariable Long ingredientId) {
-        menuOrderService.deleteMenuIngredientByMenuIdAndIngredientId(menuId, ingredientId);
-    }
-
 }
