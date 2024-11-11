@@ -8,13 +8,16 @@ import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.services.menus.MenuService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MenuServiceImpl implements MenuService {
     private final RepositoryFactory factory;
 
@@ -50,14 +53,24 @@ public class MenuServiceImpl implements MenuService {
                 .map(this::toMenuSummarized).collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public void deleteById(Long id) {
         var menuRepository = factory.getMenuRepository();
-        var deletedRows = menuRepository.deleteMenuById(id);
-        if (deletedRows == 0) {
+        var deletedMenuOrderRows = menuRepository.deleteMenuMenuOrderById(id);
+        var deletedIngredientRows = menuRepository.deleteMenuIngredientById(id);
+        var deletedMenuRows = menuRepository.deleteMenuById(id);
+
+        if (deletedMenuRows == 0) {
+            log.error("Menu with id {} not found", id);
             throw new HttpNotFoundException("Menu not found");
         }
+
+        if (deletedMenuOrderRows == 0 && deletedIngredientRows == 0) {
+            log.warn("No related orders or ingredients found to delete for menu ID: {}", id);
+        }
     }
+
 
     @Override
     public MenuSummarized updateMenuStatus(Long id, MenuStatus newStatus) {

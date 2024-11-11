@@ -14,4 +14,16 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Modifying
     @Query("DELETE FROM Menu m WHERE m.id = :id")
     int deleteMenuById(@Param("id") Long id);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM MenuIngredient mi WHERE mi.menu.id = :id")
+    int deleteMenuIngredientById(@Param("id") Long id);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM MenuOrder mi WHERE mi.menu.id = :id")
+    int deleteMenuMenuOrderById(@Param("id") Long id);
+
+
 }
