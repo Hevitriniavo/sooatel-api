@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,7 @@ public class OperationServiceImpl implements OperationService {
     @Override
     public List<TotalStock> getTotalStocks(TotalStockQuery query) {
         if (query.getDate() == null) {
-            query.setDate(LocalDateTime.now());
+            query.setDate(LocalDate.now());
         }
 
         var cb = entityManager.getCriteriaBuilder();
@@ -88,7 +89,7 @@ public class OperationServiceImpl implements OperationService {
         ).distinct(true);
 
         var predicates = new ArrayList<Predicate>();
-        predicates.add(cb.lessThanOrEqualTo(operationJoin.get("date"), query.getDate()));
+        predicates.add(cb.lessThanOrEqualTo(operationJoin.get("date"), query.getDateAsLocalDateTime()));
 
         if (query.getIngredientId() != null) {
             predicates.add(cb.equal(ingredientJoin.get("id"), query.getIngredientId()));
@@ -98,10 +99,10 @@ public class OperationServiceImpl implements OperationService {
 
         var havingPredicates = new ArrayList<Predicate>();
         if (query.getMinTotalQuantity() != null) {
-            havingPredicates.add(cb.ge(cb.sum(stockRoot.get("quantity")), query.getMinTotalQuantity()));
+            havingPredicates.add(cb.greaterThanOrEqualTo(cb.sum(stockRoot.get("quantity")), query.getMinTotalQuantity()));
         }
         if (query.getMaxTotalQuantity() != null) {
-            havingPredicates.add(cb.le(cb.sum(stockRoot.get("quantity")), query.getMaxTotalQuantity()));
+            havingPredicates.add(cb.lessThanOrEqualTo(cb.sum(stockRoot.get("quantity")), query.getMaxTotalQuantity()));
         }
 
         if (!havingPredicates.isEmpty()) {
