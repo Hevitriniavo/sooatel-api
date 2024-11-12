@@ -115,6 +115,9 @@ public class RoomServiceImpl implements RoomService {
     private RoomDTO mapToDTO(Room room) {
         var roomDTO = new RoomDTO();
         BeanUtils.copyProperties(room, roomDTO);
+        if (room.getFloor() != null){
+            roomDTO.setFloorId(room.getFloor().getId());
+        }
         return roomDTO;
     }
 }

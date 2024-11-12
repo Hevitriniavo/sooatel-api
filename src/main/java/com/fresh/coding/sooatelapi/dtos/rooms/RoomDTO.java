@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 public class RoomDTO {
     private Long id;
+    private Long floorId;
     private Integer roomNumber;
     private Integer capacity;
     private RoomStatus status;
