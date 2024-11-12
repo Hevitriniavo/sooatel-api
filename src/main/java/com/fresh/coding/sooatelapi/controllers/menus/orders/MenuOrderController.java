@@ -21,6 +21,7 @@ public class MenuOrderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MenuOrderDTO createMenuOrder(@Valid @RequestBody CreateMenuOrderDTO createMenuOrderDTO) {
+        System.out.println(createMenuOrderDTO);
         return menuOrderService.createMenuOrder(createMenuOrderDTO);
     }
 

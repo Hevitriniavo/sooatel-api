@@ -90,8 +90,6 @@ public class MenuIngredientServiceImpl implements MenuIngredientService {
     @Transactional
     public void deleteMenuIngredientByMenuIdAndIngredientId(Long menuId, Long ingredientId) {
         var menuIngredientRepository = repositoryFactory.getMenuIngredientRepository();
-        MenuIngredient menuIngredient = menuIngredientRepository.findByMenuIdAndIngredientId(menuId, ingredientId)
-                .orElseThrow(() -> new HttpNotFoundException("Menu ingredient not found"));
-        menuIngredientRepository.delete(menuIngredient);
+        menuIngredientRepository.deleteAllByMenuIdAndIngredientId(menuId, ingredientId);
     }
 }
