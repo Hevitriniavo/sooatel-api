@@ -13,6 +13,7 @@ public final class IngredientSummarized extends IngredientBase implements Serial
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+
     public IngredientSummarized(
             Long id,
             String name,

@@ -2,6 +2,7 @@ package com.fresh.coding.sooatelapi.services.ingredients.impl;
 
 import com.fresh.coding.sooatelapi.dtos.ingredients.CreateIngredient;
 import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarized;
+import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarizedWithUnitName;
 import com.fresh.coding.sooatelapi.dtos.ingredients.UpdateIngredient;
 import com.fresh.coding.sooatelapi.entities.Ingredient;
 import com.fresh.coding.sooatelapi.entities.Operation;
@@ -71,12 +72,12 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public List<IngredientSummarized> findAllIngredients() {
+    public List<IngredientSummarizedWithUnitName> findAllIngredients() {
         var ingredientRepository = factory.getIngredientRepository();
         var ingredients = ingredientRepository.findAll();
 
         return ingredients.stream()
-                .map(this::toIngredientSummarized)
+                .map(this::toIngredientSummarizedWithUnitName)
                 .collect(Collectors.toList());
     }
 
@@ -100,6 +101,16 @@ public class IngredientServiceImpl implements IngredientService {
         );
     }
 
+    private IngredientSummarizedWithUnitName toIngredientSummarizedWithUnitName(Ingredient ingredient) {
+        return new IngredientSummarizedWithUnitName(
+                ingredient.getId(),
+                ingredient.getName(),
+                ingredient.getCreatedAt(),
+                ingredient.getUpdatedAt(),
+                ingredient.getUnit() != null ? ingredient.getUnit().getId() : null,
+                ingredient.getUnit() != null ? ingredient.getUnit().getName() : null
+        );
+    }
     private Stock createStockForIngredient(Ingredient ingredient) {
         var stock = new Stock();
         stock.setIngredient(ingredient);

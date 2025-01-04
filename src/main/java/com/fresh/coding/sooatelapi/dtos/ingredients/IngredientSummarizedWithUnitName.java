@@ -12,17 +12,17 @@ import java.time.LocalDateTime;
 @ToString
 public final class IngredientSummarizedWithUnitName extends IngredientBase implements Serializable {
     private Long id;
-    private Long unitId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long unitId;
     private String unitName;
 
     public IngredientSummarizedWithUnitName (
             Long id,
-            Long unitId,
             String name,
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
+            Long unitId,
             String unitName
     ) {
         super(name);

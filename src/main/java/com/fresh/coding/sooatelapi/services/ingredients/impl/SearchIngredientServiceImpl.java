@@ -51,7 +51,14 @@ public class SearchIngredientServiceImpl implements SearchIngredientService {
 
     private List<IngredientSummarizedWithUnitName> toSummarized(List<Ingredient> products) {
         return products.stream().map(product -> new IngredientSummarizedWithUnitName(
-                product.getId(), product.getUnit() != null ? product.getUnit().getId() : null, product.getName(), product.getCreatedAt(), product.getUpdatedAt(), product.getUnit() != null ? product.getUnit().getName() : null)).collect(Collectors.toList());
+                product.getId(),
+                product.getName(),
+                product.getCreatedAt(),
+                product.getUpdatedAt(),
+                product.getUnit() != null ? product.getUnit().getId() : null,
+                product.getUnit() != null ? product.getUnit().getName() : null
+                )
+        ).collect(Collectors.toList());
     }
 
     private long getTotalCount(IngredientSearch ingredientSearch) {
