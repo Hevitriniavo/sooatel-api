@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -19,4 +20,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Modifying
     @Query("DELETE FROM Room r WHERE r.floor.id = :id")
     void deleteRoomByFloorId(Long id);
+
+    Optional<Room> findByRoomNumber(Integer roomNumber);
 }

@@ -20,9 +20,9 @@ public class CreateMenuOrderDTO {
     @ToString.Include
     private List<MenuItemDTO> menuItems;
 
-    private Long roomId;
+    private Integer roomNumber;
 
-    private Long tableId;
+    private Integer tableNumber;
 
     @Getter
     @Setter

@@ -18,6 +18,9 @@ public class MenuOrderDTO {
 
     private Long roomId;
 
+    private Integer tableNumber;
+    private Integer roomNumber;
+
     private Long tableId;
 
     private LocalDateTime orderDate;
