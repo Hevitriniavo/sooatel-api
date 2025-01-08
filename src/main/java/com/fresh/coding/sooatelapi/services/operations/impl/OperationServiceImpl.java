@@ -23,7 +23,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,50 +73,62 @@ public class OperationServiceImpl implements OperationService {
         }
 
         var cb = entityManager.getCriteriaBuilder();
-        var cq = cb.createTupleQuery();
+        var cq = cb.createQuery(Tuple.class);
+
         var stockRoot = cq.from(Stock.class);
+
         var ingredientJoin = stockRoot.join("ingredient");
         var operationJoin = stockRoot.join("operations", JoinType.LEFT);
+        var unitJoin = ingredientJoin.join("unit", JoinType.LEFT);
 
         cq.multiselect(
                 ingredientJoin.get("name").alias("ingredientName"),
+                unitJoin.get("abbreviation").alias("unitAbbreviation"),
+
                 cb.sum(
                         cb.<Double>selectCase()
                                 .when(cb.equal(operationJoin.get("type"), OperationType.SORTIE), cb.prod(operationJoin.get("quantity"), -1.0))
                                 .otherwise(operationJoin.get("quantity"))
                 ).alias("totalQuantity")
-        ).distinct(true);
+        );
 
         var predicates = new ArrayList<Predicate>();
         predicates.add(cb.lessThanOrEqualTo(operationJoin.get("date"), query.getDateAsLocalDateTime()));
-
         if (query.getIngredientId() != null) {
             predicates.add(cb.equal(ingredientJoin.get("id"), query.getIngredientId()));
         }
-
         cq.where(predicates.toArray(new Predicate[0]));
 
         var havingPredicates = new ArrayList<Predicate>();
+        Expression<Double> sumExpression = cb.sum(
+                cb.<Double>selectCase()
+                        .when(cb.equal(operationJoin.get("type"), OperationType.SORTIE), cb.prod(operationJoin.get("quantity"), -1.0))
+                        .otherwise(operationJoin.get("quantity"))
+        );
+
         if (query.getMinTotalQuantity() != null) {
-            havingPredicates.add(cb.greaterThanOrEqualTo(cb.sum(stockRoot.get("quantity")), query.getMinTotalQuantity()));
+            havingPredicates.add(cb.ge(sumExpression, query.getMinTotalQuantity()));
         }
+
         if (query.getMaxTotalQuantity() != null) {
-            havingPredicates.add(cb.lessThanOrEqualTo(cb.sum(stockRoot.get("quantity")), query.getMaxTotalQuantity()));
+            havingPredicates.add(cb.le(sumExpression, query.getMaxTotalQuantity()));
         }
 
         if (!havingPredicates.isEmpty()) {
             cq.having(havingPredicates.toArray(new Predicate[0]));
         }
 
-        cq.groupBy(ingredientJoin.get("name"));
+        cq.groupBy(ingredientJoin.get("name"), unitJoin.get("abbreviation"));
 
-        var results = entityManager.createQuery(cq).getResultList();
 
-        var totalStocks = new ArrayList<TotalStock>();
-        for (var result : results) {
-            var totalStock = new TotalStock();
+        List<Tuple> results = entityManager.createQuery(cq).getResultList();
+
+        List<TotalStock> totalStocks = new ArrayList<>();
+        for (Tuple result : results) {
+            TotalStock totalStock = new TotalStock();
             totalStock.setIngredientName(result.get("ingredientName", String.class));
             totalStock.setTotalQuantity(result.get("totalQuantity", Double.class));
+            totalStock.setUnitAbbreviation(result.get("unitAbbreviation", String.class));
             totalStocks.add(totalStock);
         }
 

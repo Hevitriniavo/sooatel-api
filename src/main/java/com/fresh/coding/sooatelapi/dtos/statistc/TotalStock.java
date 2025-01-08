@@ -12,4 +12,5 @@ import lombok.Setter;
 public class TotalStock {
     private String ingredientName;
     private Double totalQuantity;
+    private String unitAbbreviation;
 }
