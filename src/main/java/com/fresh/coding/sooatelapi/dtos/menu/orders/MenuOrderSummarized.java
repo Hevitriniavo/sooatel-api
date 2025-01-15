@@ -23,4 +23,5 @@ public class MenuOrderSummarized {
     private OrderStatus orderStatus;
     private MenuSummarized menu;
     private LocalDateTime updatedAt;
+    private Long paymentId;
 }

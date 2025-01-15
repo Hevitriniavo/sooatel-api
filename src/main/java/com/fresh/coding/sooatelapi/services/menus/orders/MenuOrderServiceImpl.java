@@ -245,6 +245,7 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
         List<MenuOrder> orders = menuOrderRepository.findAllByTableNumber(tableNumber);
 
+
         return orders.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
@@ -295,6 +296,10 @@ public class MenuOrderServiceImpl implements MenuOrderService {
             RoomDTO roomDTO = new RoomDTO();
             BeanUtils.copyProperties(menuOrder.getRoom(), roomDTO);
             dto.setRoom(roomDTO);
+        }
+
+        if (menuOrder.getPayment() != null) {
+            dto.setPaymentId(dto.getPaymentId());
         }
 
         if (menuOrder.getMenu() != null) {
