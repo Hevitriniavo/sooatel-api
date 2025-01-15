@@ -37,7 +37,7 @@ public class Room extends Model {
     @Builder.Default
     private List<MenuOrder> menuOrders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "room")
-    @Builder.Default
-    private List<Reservation> reservations = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn
+    private Reservation reservation;
 }

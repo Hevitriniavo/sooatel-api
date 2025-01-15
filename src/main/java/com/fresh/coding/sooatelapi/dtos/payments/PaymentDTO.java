@@ -2,35 +2,34 @@ package com.fresh.coding.sooatelapi.dtos.payments;
 
 import com.fresh.coding.sooatelapi.enums.PaymentMethod;
 import com.fresh.coding.sooatelapi.enums.PaymentStatus;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PaymentDTO {
 
-    private Long id;
-
-    @NotNull(message = "Reservation ID cannot be null")
     private Long reservationId;
 
-    private LocalDateTime paymentDate;
+    private List<Integer> tableNumbers;
 
-    @NotNull(message = "Amount is required")
+    private List<Integer> roomNumbers;
+
+    @PositiveOrZero(message = "Amount must be a positive value or zero")
     private Double amount;
 
-    @NotNull(message = "Payment method is required")
     private PaymentMethod paymentMethod;
 
-    @NotNull(message = "Payment status is required")
     private PaymentStatus status;
 
+    @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;
 }

@@ -51,6 +51,7 @@ CREATE TABLE tables (
     id SERIAL PRIMARY KEY,
     number INT NOT NULL,
     capacity INT NOT NULL,
+    reservation_id INT REFERENCES reservations(id) ON DELETE SET NULL,
     status VARCHAR(50) NOT NULL
 );
 
@@ -103,6 +104,7 @@ CREATE TABLE rooms (
     room_number INT NOT NULL UNIQUE,
     capacity INT NOT NULL,
     status VARCHAR(50) NOT NULL,
+    reservation_id INT REFERENCES reservations(id) ON DELETE SET NULL,
     price DECIMAL(10, 2) NOT NULL,
     floor_id INT REFERENCES floors(id) ON DELETE SET NULL
 );
@@ -126,8 +128,6 @@ CREATE TABLE menu_orders (
 CREATE TABLE reservations (
     id SERIAL PRIMARY KEY,
     customer_id INT REFERENCES customers(id) ON DELETE SET NULL,
-    room_id INT REFERENCES rooms(id) ON DELETE SET NULL,
-    table_id INT REFERENCES tables(id) ON DELETE SET NULL,
     reservation_start TIMESTAMP NOT NULL,
     reservation_end TIMESTAMP NOT NULL,
     status VARCHAR(50) NOT NULL,
@@ -147,6 +147,9 @@ CREATE TABLE payments (
     status VARCHAR(50) NOT NULL,
     description TEXT
 );
+
+ALTER TABLE menu_orders
+    ADD COLUMN payment_id INT REFERENCES payments(id) ON DELETE SET NULL;
 
 CREATE TABLE departments (
      id SERIAL PRIMARY KEY,

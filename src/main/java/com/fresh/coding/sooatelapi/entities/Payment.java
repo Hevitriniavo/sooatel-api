@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,8 +18,12 @@ import java.time.LocalDateTime;
 public class Payment extends Model {
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Reservation reservation;
+
+    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<MenuOrder> menuOrders = new ArrayList<>();
 
     @Column(nullable = false)
     private LocalDateTime paymentDate;

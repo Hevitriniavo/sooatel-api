@@ -31,7 +31,7 @@ public class RestTable extends Model {
     @Builder.Default
     private List<MenuOrder> menuOrders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "table")
-    @Builder.Default
-    private List<Reservation> reservations = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn
+    private Reservation reservation;
 }

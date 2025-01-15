@@ -20,13 +20,13 @@ public class Reservation extends Model {
     @JoinColumn
     private Customer customer;
 
-    @ManyToOne
-    @JoinColumn
-    private Room room;
+    @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST})
+    @Builder.Default
+    private List<Room> rooms = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn
-    private RestTable table;
+    @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST})
+    @Builder.Default
+    private List<RestTable> tables = new ArrayList<>();
 
     @Column
     private LocalDateTime reservationStart;

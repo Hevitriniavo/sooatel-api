@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface SearchMenuOrderService {
     Paginate<List<MenuOrderSummarized>> searchMenuOrders(MenuOrderSearch searchCriteria, Pageable pageable);
+
+    List<MenuOrderSummarized> findAll();
 }

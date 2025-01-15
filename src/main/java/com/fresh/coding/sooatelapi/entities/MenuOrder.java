@@ -42,4 +42,7 @@ public class MenuOrder extends Model {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
+    @ManyToOne
+    @JoinColumn
+    private Payment payment;
 }

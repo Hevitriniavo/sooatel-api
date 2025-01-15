@@ -23,11 +23,7 @@ public class ReservationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReservationDTO saveReservation(@RequestBody @Valid SaveReservationDTO saveReservationDTO) {
-        if (saveReservationDTO.getId() != null) {
-            return reservationService.updateReservation(saveReservationDTO.getId(), saveReservationDTO);
-        } else {
-            return reservationService.saveReservation(saveReservationDTO);
-        }
+        return reservationService.saveReservation(saveReservationDTO);
     }
 
     @ResponseStatus(HttpStatus.OK)

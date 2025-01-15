@@ -28,4 +28,12 @@ public class SearchMenuOrderController {
         Pageable pageable = PageRequest.of(page, size);
         return searchMenuOrderService.searchMenuOrders(searchCriteria, pageable);
     }
+
+    @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<MenuOrderSummarized> all() {
+        return searchMenuOrderService.findAll();
+    }
+
+
 }

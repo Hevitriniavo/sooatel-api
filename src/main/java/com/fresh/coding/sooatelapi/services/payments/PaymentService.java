@@ -8,9 +8,9 @@ import com.fresh.coding.sooatelapi.enums.PaymentStatus;
 import java.util.List;
 
 public interface PaymentService {
-    PaymentSummarized savePayment(PaymentDTO paymentDTO);
-
     List<PaymentSummarized> findAllPayments();
+
+    PaymentSummarized savePayment(PaymentDTO paymentDTO);
 
     PaymentSummarized updatePaymentStatus(Long id, PaymentStatus status);
 

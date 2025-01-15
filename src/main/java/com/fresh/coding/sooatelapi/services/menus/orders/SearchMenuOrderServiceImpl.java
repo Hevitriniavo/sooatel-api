@@ -10,7 +10,6 @@ import com.fresh.coding.sooatelapi.dtos.searchs.MenuOrderSearch;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.entities.MenuOrder;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Pageable;
@@ -76,6 +75,18 @@ public class SearchMenuOrderServiceImpl implements SearchMenuOrderService {
                 pageable.getPageNumber(),
                 (int) totalItems
         ));
+    }
+
+    @Override
+    public List<MenuOrderSummarized> findAll() {
+        var cb = entityManager.getCriteriaBuilder();
+        var cq = cb.createQuery(MenuOrder.class);
+        var root = cq.from(MenuOrder.class);
+        cq.select(root);
+        var menuOrders = entityManager.createQuery(cq).getResultList();
+        return menuOrders.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
 
