@@ -20,6 +20,7 @@ public interface TableRepository extends JpaRepository<RestTable, Long> {
 
     Optional<RestTable> findByNumber(Integer aLong);
 
-    @Query("SELECT t FROM RestTable t LEFT JOIN FETCH t.menuOrders WHERE t.menuOrders IS NOT EMPTY")
+    @Query("SELECT t FROM RestTable t LEFT JOIN FETCH t.menuOrders m WHERE t.menuOrders IS NOT EMPTY AND m.payment IS NULL")
     List<RestTable> findTableWithMenuOrders();
+
 }
