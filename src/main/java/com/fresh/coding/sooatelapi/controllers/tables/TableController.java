@@ -31,6 +31,11 @@ public class TableController {
         return tableService.findAllTables();
     }
 
+    @GetMapping("/tables-with-menu-orders")
+    public List<TableSummarized> getRoomsWithMenuOrders() {
+        return tableService.getTablesWithMenuOrders();
+    }
+
     @GetMapping("/status")
     public List<TableStatus> getTableStatuses() {
         return Arrays.asList(TableStatus.values());

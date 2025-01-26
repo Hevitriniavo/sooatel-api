@@ -41,4 +41,5 @@ public class Payment extends Model {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+
 }

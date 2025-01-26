@@ -111,6 +111,15 @@ public class RoomServiceImpl implements RoomService {
         );
     }
 
+    public List<RoomDTO> getRoomsWithMenuOrders() {
+        var roomRepository = repositoryFactory.getRoomRepository();
+        List<Room> rooms = roomRepository.findRoomsWithMenuOrders();
+        return rooms.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+
 
     private RoomDTO mapToDTO(Room room) {
         var roomDTO = new RoomDTO();

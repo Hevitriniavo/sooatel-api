@@ -48,6 +48,8 @@ class PaymentServiceImpl implements PaymentService {
                     .findById(paymentDTO.getReservationId())
                     .orElseThrow(() -> new HttpNotFoundException("Reservation not found"));
             payment.setReservation(reservation);
+            double totalReservationAmount = reservation.calculateTotalReservationAmount();
+            payment.setAmount(payment.getAmount() + totalReservationAmount);
         }
 
         if (paymentDTO.getTableNumbers() != null && !paymentDTO.getTableNumbers().isEmpty()) {
@@ -59,6 +61,9 @@ class PaymentServiceImpl implements PaymentService {
             List<MenuOrder> menuOrders = updateMenuOrdersForRooms(paymentDTO.getRoomNumbers(), payment);
             payment.setMenuOrders(menuOrders);
         }
+
+        double totalAmount = calculateTotalPrice(payment);
+        payment.setAmount(payment.getAmount() + totalAmount);
 
         var paymentRepository = repositoryFactory.getPaymentRepository();
         payment = paymentRepository.save(payment);
@@ -131,10 +136,18 @@ class PaymentServiceImpl implements PaymentService {
     private Payment mapToEntity(PaymentDTO paymentDTO) {
         return Payment.builder()
                 .paymentDate(LocalDateTime.now())
-                .amount(paymentDTO.getAmount())
+                .amount(0.0)
                 .paymentMethod(paymentDTO.getPaymentMethod())
                 .status(paymentDTO.getStatus())
                 .description(paymentDTO.getDescription())
                 .build();
     }
+
+    private double calculateTotalPrice(Payment payment) {
+        return payment.getMenuOrders().stream()
+                .mapToDouble(MenuOrder::getCost)
+                .sum();
+    }
+
+
 }

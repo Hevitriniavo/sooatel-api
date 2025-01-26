@@ -16,4 +16,6 @@ public interface TableService {
     UpdateTableStatus updateTableStatus(@NotNull Long id, @NotNull TableStatus status);
 
     void deleteById(Long id);
+
+    List<TableSummarized> getTablesWithMenuOrders();
 }

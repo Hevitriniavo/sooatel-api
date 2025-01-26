@@ -4,6 +4,7 @@ import com.fresh.coding.sooatelapi.dtos.tables.SaveTable;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.dtos.tables.UpdateTableStatus;
 import com.fresh.coding.sooatelapi.entities.RestTable;
+import com.fresh.coding.sooatelapi.entities.Room;
 import com.fresh.coding.sooatelapi.enums.TableStatus;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
@@ -77,6 +78,15 @@ public class TableServiceImpl implements TableService {
         if (deletedTablesCount > 0) {
             log.info("{} table deleted with id: {}", deletedTablesCount, id);
         }
+    }
+
+    @Override
+    public List<TableSummarized> getTablesWithMenuOrders() {
+        var tableRepository = factory.getTableRepository();
+        List<RestTable> tables = tableRepository.findTableWithMenuOrders();
+        return tables.stream()
+                .map(this::toTableSummarized)
+                .collect(Collectors.toList());
     }
 
     public TableSummarized toTableSummarized(RestTable table) {

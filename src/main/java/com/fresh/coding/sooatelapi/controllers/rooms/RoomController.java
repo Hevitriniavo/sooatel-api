@@ -54,6 +54,11 @@ public class RoomController {
         return roomService.getAllRooms();
     }
 
+    @GetMapping("/rooms-with-menu-orders")
+    public List<RoomDTO> getRoomsWithMenuOrders() {
+        return roomService.getRoomsWithMenuOrders();
+    }
+
     @PutMapping("/{id}")
     public RoomDTO updateRoom(@PathVariable Long id, @Valid @RequestBody SaveRoomDTO saveRoomDTO) {
         return roomService.updateRoom(id, saveRoomDTO);

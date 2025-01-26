@@ -22,6 +22,9 @@ public class PasswordServiceImpl implements PasswordService {
         var user = userRepo.findByEmailOrUsername(changePasswordDto.getEmail(), changePasswordDto.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + changePasswordDto.getEmail()));
 
+        if (!passwordEncoder.matches(changePasswordDto.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect.");
+        }
 
         if (!changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmPassword())) {
             throw new IllegalArgumentException("New password and confirmation do not match.");

@@ -45,4 +45,11 @@ public class Reservation extends Model {
     @Builder.Default
     private List<Payment> payments = new ArrayList<>();
 
+
+    public double calculateTotalReservationAmount() {
+        return payments.stream()
+                .mapToDouble(Payment::getAmount)
+                .sum();
+    }
+
 }

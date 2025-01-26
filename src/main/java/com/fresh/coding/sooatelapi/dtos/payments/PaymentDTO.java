@@ -2,7 +2,6 @@ package com.fresh.coding.sooatelapi.dtos.payments;
 
 import com.fresh.coding.sooatelapi.enums.PaymentMethod;
 import com.fresh.coding.sooatelapi.enums.PaymentStatus;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,9 +21,6 @@ public class PaymentDTO {
     private List<Integer> tableNumbers;
 
     private List<Integer> roomNumbers;
-
-    @PositiveOrZero(message = "Amount must be a positive value or zero")
-    private Double amount;
 
     private PaymentMethod paymentMethod;
 

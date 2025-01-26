@@ -21,5 +21,10 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Query("DELETE FROM Room r WHERE r.floor.id = :id")
     void deleteRoomByFloorId(Long id);
 
+
+    @Query("SELECT r FROM Room r LEFT JOIN FETCH r.menuOrders WHERE r.menuOrders IS NOT EMPTY")
+    List<Room> findRoomsWithMenuOrders();
+
+
     Optional<Room> findByRoomNumber(Integer roomNumber);
 }

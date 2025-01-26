@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,4 +19,7 @@ public interface TableRepository extends JpaRepository<RestTable, Long> {
     int deleteTableById(@Param("restTableId") Long id);
 
     Optional<RestTable> findByNumber(Integer aLong);
+
+    @Query("SELECT t FROM RestTable t LEFT JOIN FETCH t.menuOrders WHERE t.menuOrders IS NOT EMPTY")
+    List<RestTable> findTableWithMenuOrders();
 }

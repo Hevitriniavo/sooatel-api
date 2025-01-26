@@ -15,4 +15,5 @@ public interface RoomService {
     void deleteRoom(Long id);
     RoomDTO updateRoomStatus(Long id, RoomStatus status);
     FloorWithRoomDTO findFloorWithRooms(Long floorId);
+    List<RoomDTO> getRoomsWithMenuOrders();
 }
