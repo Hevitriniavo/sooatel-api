@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email: " + username));
 
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
+                user.getEmail()!= null ? user.getEmail() : user.getUsername(),
                 user.getPassword(),
                 user.getAuthorities()
         );

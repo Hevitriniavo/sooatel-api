@@ -17,26 +17,30 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode(callSuper = false)
-@Getter
 @Setter
 @Builder
 public class User extends Model implements UserDetails {
+
 
     @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
+    @Getter
     private String password;
 
     @Column(nullable = false, unique = true)
+    @Getter
     private String email;
 
     @Column(columnDefinition = "TEXT")
+    @Getter
     private String token;
 
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     @Builder.Default
+    @Getter
     private List<Role> roles = new ArrayList<>();
 
 
@@ -46,6 +50,13 @@ public class User extends Model implements UserDetails {
                 .stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
                 .collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    public String getUsername() {
+        return email != null ? email : username;
     }
 
     @Override
