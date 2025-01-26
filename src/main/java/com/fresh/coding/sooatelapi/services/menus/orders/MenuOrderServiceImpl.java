@@ -40,6 +40,16 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         var tableNumber = createMenuOrderDTO.getTableNumber();
         var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
 
+
+        if (roomNumber == null && tableNumber == null) {
+            throw new IllegalArgumentException("Either roomNumber or tableNumber must be provided.");
+        }
+
+        if (roomNumber != null && tableNumber != null) {
+            throw new IllegalArgumentException("Cannot have both roomNumber and tableNumber at the same time.");
+        }
+
+
         var now = LocalDateTime.now();
         var menuRepository = repositoryFactory.getMenuRepository();
         var roomRepository = repositoryFactory.getRoomRepository();
