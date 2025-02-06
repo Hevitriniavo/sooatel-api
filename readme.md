@@ -135,6 +135,7 @@ CREATE TABLE reservations (
     customer_id INT REFERENCES customers(id) ON DELETE SET NULL,
     room_id INT REFERENCES rooms(id) ON DELETE SET NULL,
     table_id INT REFERENCES tables(id) ON DELETE SET NULL,
+    payment_id INT REFERENCES payments(id) ON DELETE SET NULL,
     reservation_start TIMESTAMP NOT NULL,
     reservation_end TIMESTAMP NOT NULL,
     status VARCHAR(50) NOT NULL,
@@ -152,59 +153,6 @@ CREATE TABLE payments (
     amount DECIMAL(10, 2) NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
     status VARCHAR(50) NOT NULL,
-    description TEXT
-);
-
-CREATE TABLE departments (
-     id SERIAL PRIMARY KEY,
-     name VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE employees (
-   id SERIAL PRIMARY KEY,
-   first_name VARCHAR(100) NOT NULL,
-   last_name VARCHAR(100) NOT NULL,
-   email VARCHAR(100) UNIQUE NOT NULL,
-   phone_number VARCHAR(20),
-   hire_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   department_id INT REFERENCES departments(id) ON DELETE SET NULL,
-   position VARCHAR(100),
-   status VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE salaries (
-      id SERIAL PRIMARY KEY,
-      employee_id INT REFERENCES employees(id) ON DELETE CASCADE,
-      amount DECIMAL(10, 2) NOT NULL,
-      salary_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      description TEXT
-);
-
-CREATE TABLE employee_payments (
-   id SERIAL PRIMARY KEY,
-   employee_id INT REFERENCES employees(id) ON DELETE CASCADE,
-   salary_id INT REFERENCES salaries(id) ON DELETE CASCADE,
-   payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   payment_method VARCHAR(50) NOT NULL,
-   status VARCHAR(50) NOT NULL,
-   amount_paid DECIMAL(10, 2) NOT NULL,
-   description TEXT
-);
-
-CREATE TABLE employee_attendance (
-     id SERIAL PRIMARY KEY,
-     employee_id INT REFERENCES employees(id) ON DELETE CASCADE,
-     clock_in TIMESTAMP NOT NULL,
-     clock_out TIMESTAMP,
-     status VARCHAR(50) NOT NULL,
-     description TEXT
-);
-
-CREATE TABLE employee_order_services (
-    id SERIAL PRIMARY KEY,
-    employee_id INT REFERENCES employees(id) ON DELETE CASCADE,
-    menu_order_id INT REFERENCES menu_orders(id) ON DELETE CASCADE,
-    completion_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     description TEXT
 );
 
