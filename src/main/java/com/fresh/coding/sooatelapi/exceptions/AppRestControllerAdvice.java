@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.exceptions;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -101,6 +102,16 @@ public class AppRestControllerAdvice {
                 errors,
                 LocalDate.now(),
                 HttpStatus.BAD_REQUEST.value()
+        );
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public AppError<String> handleMessagingException(MessagingException ex) {
+        return new AppError<>(
+                ex.getMessage(),
+                LocalDate.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value()
         );
     }
 

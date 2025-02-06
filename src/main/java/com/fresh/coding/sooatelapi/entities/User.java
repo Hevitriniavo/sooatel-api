@@ -59,6 +59,11 @@ public class User extends Model implements UserDetails {
         return email != null ? email : username;
     }
 
+    @Transient
+    public String getName() {
+        return username;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

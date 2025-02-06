@@ -90,5 +90,8 @@ public class RepositoryFactory {
     public MenuIngredientRepository getMenuIngredientRepository() {
         return getRepositoryFor("menuIngredientRepository");
     }
+    public OtpCodeRepository getOtpCodeRepository() {
+        return getRepositoryFor("otpCodeRepository");
+    }
 
 }
