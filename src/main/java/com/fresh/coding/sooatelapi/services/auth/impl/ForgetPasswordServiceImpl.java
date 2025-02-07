@@ -49,12 +49,11 @@ public class ForgetPasswordServiceImpl implements ForgetPasswordService {
         var otpCodeEntity = otpCodeRepo.findByUserEmail(otpRequestDto.getEmail())
                 .orElseThrow(() -> new HttpBadRequestException("OTP not found for this email"));
 
-        if (otpCodeEntity.getOtpCode().equals(otpRequestDto.getOtpCode()) && otpCodeEntity.isExpired()) {
+        if (otpCodeEntity.getOtpCode().equals(otpRequestDto.getOtpCode()) && !otpCodeEntity.isExpired()) {
             otpCodeEntity.setIsVerified(true);
             otpCodeRepo.save(otpCodeEntity);
             return;
         }
-        otpCodeRepo.deleteAllByUserId(otpCodeEntity.getUser().getId());
         throw new HttpBadRequestException("Invalid or expired OTP");
     }
 

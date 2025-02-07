@@ -35,8 +35,9 @@ public class OtpCode {
     @Column(nullable = false)
     private Boolean isVerified = false;
 
+    @Transient
     public boolean isExpired() {
-        return LocalDateTime.now().withSecond(0).withNano(0).isAfter(expiresAt.withSecond(0).withNano(0));
+        return LocalDateTime.now().isAfter(this.expiresAt);
     }
 
 }
