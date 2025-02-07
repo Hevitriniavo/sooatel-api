@@ -5,6 +5,7 @@ import com.fresh.coding.sooatelapi.dtos.menu.orders.CreateMenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderSummarized;
 import com.fresh.coding.sooatelapi.dtos.menus.MenuSummarized;
+import com.fresh.coding.sooatelapi.dtos.payments.PaymentSummarized;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.entities.*;
@@ -213,11 +214,13 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                         Map<String, Object> map = new HashMap<>();
                         map.put("type", "room");
                         map.put("number", order.getRoom().getRoomNumber());
+                        map.put("payment", order.getPayment() != null ? toPayment(order.getPayment())  : null);
                         return map;
                     } else if (order.getTable() != null) {
                         Map<String, Object> map = new HashMap<>();
                         map.put("type", "table");
                         map.put("number", order.getTable().getNumber());
+                        map.put("payment", order.getPayment() != null ? toPayment(order.getPayment()) : null);
                         return map;
                     }
                     return new HashMap<String, Object>();
@@ -239,6 +242,18 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                 .collect(Collectors.toList());
     }
 
+    private PaymentSummarized toPayment(Payment payment) {
+        return new PaymentSummarized(
+                payment.getId(),
+                payment.getReservation() != null ? payment.getReservation().getId() : null,
+                payment.getPaymentDate(),
+                payment.getUpdatedAt(),
+                payment.getAmount(),
+                payment.getPaymentMethod(),
+                payment.getStatus(),
+                payment.getDescription()
+        );
+    }
 
     @Override
     public List<MenuOrderSummarized> findAllOrdersByTable(Integer tableNumber) {

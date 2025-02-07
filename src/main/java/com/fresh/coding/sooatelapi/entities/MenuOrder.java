@@ -42,7 +42,7 @@ public class MenuOrder extends Model {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private Payment payment;
 }

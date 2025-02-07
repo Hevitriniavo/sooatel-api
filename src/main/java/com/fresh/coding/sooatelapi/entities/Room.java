@@ -37,7 +37,7 @@ public class Room extends Model {
     @Builder.Default
     private List<MenuOrder> menuOrders = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private Reservation reservation;
 }

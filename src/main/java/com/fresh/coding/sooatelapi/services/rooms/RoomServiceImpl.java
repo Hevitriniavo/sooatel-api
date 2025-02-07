@@ -71,10 +71,21 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void deleteRoom(Long id) {
+        var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
         var roomRepository = repositoryFactory.getRoomRepository();
+        var reservationRepository = repositoryFactory.getReservationRepository();
         var room = roomRepository.findById(id)
                 .orElseThrow(() -> new HttpNotFoundException("Room not found"));
-        roomRepository.delete(room);
+
+       reservationRepository.unsetRoomReservationById(room.getId());
+
+        if (room.getMenuOrders() != null && !room.getMenuOrders().isEmpty()) {
+            for (var menuOrder : room.getMenuOrders()) {
+                menuOrder.setRoom(null);
+                menuOrderRepository.save(menuOrder);
+            }
+        }
+        roomRepository.deleteById(id);
     }
 
     @Override

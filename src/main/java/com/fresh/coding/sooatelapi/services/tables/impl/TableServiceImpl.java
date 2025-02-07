@@ -4,7 +4,6 @@ import com.fresh.coding.sooatelapi.dtos.tables.SaveTable;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.dtos.tables.UpdateTableStatus;
 import com.fresh.coding.sooatelapi.entities.RestTable;
-import com.fresh.coding.sooatelapi.entities.Room;
 import com.fresh.coding.sooatelapi.enums.TableStatus;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
@@ -69,9 +68,19 @@ public class TableServiceImpl implements TableService {
     @Override
     public void deleteById(Long id) {
         var tableRepository = factory.getTableRepository();
+        var menuOrderRepository = factory.getMenuOrderRepository();
+        var reservationRepository = factory.getReservationRepository();
 
-        if (!tableRepository.existsById(id)) {
-            throw new HttpNotFoundException("Table not found with id: " + id);
+        var table = tableRepository.findById(id)
+                .orElseThrow(() -> new HttpNotFoundException("Table not found with id: " + id));
+
+        reservationRepository.unsetTableReservationById(table.getId());
+
+        if (table.getMenuOrders() != null && !table.getMenuOrders().isEmpty()) {
+            for (var menuOrder : table.getMenuOrders()) {
+                menuOrder.setTable(null);
+                menuOrderRepository.save(menuOrder);
+            }
         }
 
         int deletedTablesCount = tableRepository.deleteTableById(id);

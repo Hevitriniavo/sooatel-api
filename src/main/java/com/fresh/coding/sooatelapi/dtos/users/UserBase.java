@@ -8,7 +8,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-sealed abstract class UserBase permits CreateUser, UpdateUser, SignInUser {
+sealed abstract class UserBase permits CreateUser, SignInUser, UpdateUser, UserSummarized {
 
     @NotBlank(message = "Email and Password cannot be blank")
     private String email;
