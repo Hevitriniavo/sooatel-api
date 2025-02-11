@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 public class RestTable extends Model {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Integer number;
 
     @Column(nullable = false)
