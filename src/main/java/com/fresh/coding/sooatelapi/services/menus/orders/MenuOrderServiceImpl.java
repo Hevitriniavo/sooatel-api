@@ -210,20 +210,17 @@ public class MenuOrderServiceImpl implements MenuOrderService {
 
         return orders.stream()
                 .collect(Collectors.groupingBy(order -> {
+                    Map<String, Object> map = new HashMap<>();
                     if (order.getRoom() != null) {
-                        Map<String, Object> map = new HashMap<>();
                         map.put("type", "room");
                         map.put("number", order.getRoom().getRoomNumber());
-                        map.put("payment", order.getPayment() != null ? toPayment(order.getPayment())  : null);
-                        return map;
                     } else if (order.getTable() != null) {
-                        Map<String, Object> map = new HashMap<>();
                         map.put("type", "table");
                         map.put("number", order.getTable().getNumber());
-                        map.put("payment", order.getPayment() != null ? toPayment(order.getPayment()) : null);
-                        return map;
                     }
-                    return new HashMap<String, Object>();
+                    map.put("orderStatus", order.getOrderStatus());
+                    map.put("payment", order.getPayment() != null ? toPayment(order.getPayment()) : null);
+                    return map;
                 }))
                 .entrySet()
                 .stream()

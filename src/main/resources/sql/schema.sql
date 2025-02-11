@@ -81,7 +81,8 @@ CREATE TABLE purchases (
   ingredient_id INT REFERENCES ingredients(id) ON DELETE CASCADE,
   quantity DOUBLE PRECISION NOT NULL,
   cost DECIMAL(10, 2) NOT NULL,
-  description TEXT
+  description TEXT,
+  createdAt TIMESTAMP
 );
 
 CREATE TABLE customers (
@@ -204,30 +205,34 @@ CREATE TABLE employee_order_services (
     description TEXT
 );
 
-select
-    i1_0.name,
-    sum(s1_0.quantity)
-from
-    stock s1_0
-        join
-    ingredient i1_0
-    on i1_0.id=s1_0.ingredient_id
-        left join
-    operation o1_0
-    on s1_0.id=o1_0.stock_id
-where
-    o1_0.date<=CURRENT_TIMESTAMP
-group by
-    1
-
+WITH IngredientUsage AS (
+    SELECT
+        mo.id AS order_id,
+        mo.order_date,
+        mi.ingredient_id,
+        mi.quantity * mo.quantity AS total_used
+    FROM menu_order mo
+             JOIN menu_ingredient mi ON mo.menu_id = mi.menu_id
+),
+     FIFO_Cost AS (
+         SELECT
+             iu.order_id,
+             iu.order_date,
+             p.ingredient_id,
+             p.cost AS unit_cost,
+             LEAST(iu.total_used, p.quantity) AS used_quantity,
+             (LEAST(iu.total_used, p.quantity) * p.cost) AS total_cost
+         FROM IngredientUsage iu
+                  JOIN purchase p ON iu.ingredient_id = p.ingredient_id
+         WHERE p.created_at <= iu.order_date
+         ORDER BY p.created_at ASC
+     )
 SELECT
-    i1_0.name,
-    SUM(s1_0.quantity)
-FROM
-    stock s1_0
-        JOIN ingredient i1_0 ON i1_0.id = s1_0.ingredient_id
-        LEFT JOIN operation o1_0 ON s1_0.id = o1_0.stock_id
-WHERE
- o1_0.date <= CURRENT_TIMESTAMP - INTERVAL '1' DAY
-GROUP BY
-    i1_0.name;
+    DATE(mo.order_date) AS date,
+    SUM(mo.cost) AS daily_revenue,
+    SUM(fc.total_cost) AS daily_ingredient_cost,
+    (SUM(mo.cost) - SUM(fc.total_cost)) AS daily_net_profit
+FROM menu_order mo
+    LEFT JOIN FIFO_Cost fc ON mo.id = fc.order_id
+GROUP BY DATE(mo.order_date)
+ORDER BY DATE(mo.order_date) DESC;
