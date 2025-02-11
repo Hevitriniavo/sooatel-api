@@ -3,6 +3,7 @@ package com.fresh.coding.sooatelapi.services.menus.orders;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.CreateMenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderSummarized;
+import com.fresh.coding.sooatelapi.dtos.menus.UpdateOrderStatusDTO;
 import com.fresh.coding.sooatelapi.enums.OrderStatus;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 public interface MenuOrderService {
     MenuOrderDTO createMenuOrder(CreateMenuOrderDTO createMenuOrderDTO);
-    void updateOrderStatus(Long orderId, OrderStatus newStatus);
+    void updateOrderStatus(UpdateOrderStatusDTO orderStatusDTO);
 
     void deleteOrderById(Long orderId);
 

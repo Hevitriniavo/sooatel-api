@@ -5,6 +5,7 @@ import com.fresh.coding.sooatelapi.dtos.menu.orders.CreateMenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderSummarized;
 import com.fresh.coding.sooatelapi.dtos.menus.MenuSummarized;
+import com.fresh.coding.sooatelapi.dtos.menus.UpdateOrderStatusDTO;
 import com.fresh.coding.sooatelapi.dtos.payments.PaymentSummarized;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
@@ -163,12 +164,15 @@ public class MenuOrderServiceImpl implements MenuOrderService {
 
     @Override
     @Transactional
-    public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
+    public void updateOrderStatus(UpdateOrderStatusDTO orderStatusDTO) {
         var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
-        MenuOrder menuOrder = menuOrderRepository.findById(orderId)
-                .orElseThrow(() -> new HttpNotFoundException("Order not found"));
-        menuOrder.setOrderStatus(newStatus);
-        menuOrderRepository.save(menuOrder);
+        for (Long orderId : orderStatusDTO.getOrderIds()) {
+            MenuOrder menuOrder = menuOrderRepository.findById(orderId)
+                    .orElseThrow(() -> new HttpNotFoundException("Order not found"));
+            menuOrder.setOrderStatus(orderStatusDTO.getOrderStatus());
+            menuOrderRepository.save(menuOrder);
+        }
+
     }
 
     @Override
@@ -219,7 +223,6 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                         map.put("number", order.getTable().getNumber());
                     }
                     map.put("orderStatus", order.getOrderStatus());
-                    map.put("orderId", order.getId());
                     map.put("payment", order.getPayment() != null ? toPayment(order.getPayment()) : null);
                     return map;
                 }))
@@ -233,6 +236,13 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                             .map(order -> order.getMenu().getName())
                             .distinct()
                             .collect(Collectors.toList());
+
+                    List<Long> orderIds = groupedOrders.stream()
+                            .map(Model::getId)
+                            .distinct()
+                            .collect(Collectors.toList());
+
+                    key.put("orderIds", orderIds);
 
                     key.put("menus", menus);
                     return key;

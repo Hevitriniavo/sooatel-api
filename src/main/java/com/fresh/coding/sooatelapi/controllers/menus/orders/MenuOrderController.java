@@ -3,6 +3,7 @@ package com.fresh.coding.sooatelapi.controllers.menus.orders;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.CreateMenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderSummarized;
+import com.fresh.coding.sooatelapi.dtos.menus.UpdateOrderStatusDTO;
 import com.fresh.coding.sooatelapi.enums.OrderStatus;
 import com.fresh.coding.sooatelapi.services.menus.orders.MenuOrderService;
 import jakarta.validation.Valid;
@@ -33,10 +34,10 @@ public class MenuOrderController {
     }
 
 
-    @PatchMapping("/{orderId}/status")
+    @PatchMapping("/orderIds/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateOrderStatus(@PathVariable Long orderId, @RequestBody OrderStatus newStatus) {
-        menuOrderService.updateOrderStatus(orderId, newStatus);
+    public void updateOrderStatus(@RequestBody UpdateOrderStatusDTO updateOrderStatusDTO) {
+        menuOrderService.updateOrderStatus(updateOrderStatusDTO);
     }
 
     @DeleteMapping("/{orderId}")
