@@ -219,6 +219,7 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                         map.put("number", order.getTable().getNumber());
                     }
                     map.put("orderStatus", order.getOrderStatus());
+                    map.put("orderId", order.getId());
                     map.put("payment", order.getPayment() != null ? toPayment(order.getPayment()) : null);
                     return map;
                 }))
