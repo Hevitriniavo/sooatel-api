@@ -1,8 +1,6 @@
 package com.fresh.coding.sooatelapi.enums;
 
-import java.io.Serializable;
-
-public enum PaymentStatus implements Serializable {
+public enum PaymentStatus {
     UNPAID,
     PAID
 }

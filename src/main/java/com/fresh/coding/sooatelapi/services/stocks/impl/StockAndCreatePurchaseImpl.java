@@ -52,10 +52,10 @@ public class StockAndCreatePurchaseImpl implements StockAndCreatePurchase {
         var operationRepository = factory.getOperationRepository();
 
         var ingredient = ingredientRepository.findById(stockPurchaseDto.getIngredientId())
-                .orElseThrow(() -> new HttpNotFoundException("Ingredient not found"));
+                .orElseThrow(() -> new HttpNotFoundException("Ingrédient non trouvé"));
 
         var stock = stockRepository.findByIngredient(ingredient)
-                .orElseThrow(() -> new HttpNotFoundException("Stock not found"));
+                .orElseThrow(() -> new HttpNotFoundException("Stock non trouvé"));
 
         stock.setIngredient(ingredient);
         stock.setQuantity(stock.getQuantity() + stockPurchaseDto.getQuantity());

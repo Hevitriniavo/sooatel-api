@@ -1,8 +1,6 @@
 package com.fresh.coding.sooatelapi.enums;
 
-import java.io.Serializable;
-
-public enum RoomStatus implements Serializable {
+public enum RoomStatus {
     AVAILABLE,
     NOT_AVAILABLE
 }

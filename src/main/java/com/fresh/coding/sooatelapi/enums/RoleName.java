@@ -1,8 +1,6 @@
 package com.fresh.coding.sooatelapi.enums;
 
-import java.io.Serializable;
-
-public enum RoleName  implements Serializable {
+public enum RoleName {
     ADMIN,
     USER
 }

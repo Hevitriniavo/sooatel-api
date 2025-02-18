@@ -1,7 +1,5 @@
 package com.fresh.coding.sooatelapi.enums;
 
-import java.io.Serializable;
-
-public enum OperationType implements Serializable {
+public enum OperationType {
     SORTIE, ENTRY, INITIAL
 }

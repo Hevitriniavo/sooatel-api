@@ -6,12 +6,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class StockPurchaseDto {
+@ToString
+public class StockPurchaseDto implements Serializable {
 
     @NotNull(message = "Ingredient ID cannot be null")
     private Long ingredientId;

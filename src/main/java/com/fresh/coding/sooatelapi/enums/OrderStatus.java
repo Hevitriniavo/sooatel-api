@@ -1,8 +1,6 @@
 package com.fresh.coding.sooatelapi.enums;
 
-import java.io.Serializable;
-
-public enum OrderStatus implements Serializable {
+public enum OrderStatus {
     NOT_DELIVERED,
     DELIVERED
 }

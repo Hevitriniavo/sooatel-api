@@ -1,7 +1,5 @@
 package com.fresh.coding.sooatelapi.enums;
 
-import java.io.Serializable;
-
-public enum TransactionType  implements Serializable {
+public enum TransactionType {
     IN, OUT
 }

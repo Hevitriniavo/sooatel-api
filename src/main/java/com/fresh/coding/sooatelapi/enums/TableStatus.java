@@ -1,8 +1,6 @@
 package com.fresh.coding.sooatelapi.enums;
 
-import java.io.Serializable;
-
-public enum TableStatus  implements Serializable {
+public enum TableStatus {
     AVAILABLE,
     NOT_AVAILABLE
 }

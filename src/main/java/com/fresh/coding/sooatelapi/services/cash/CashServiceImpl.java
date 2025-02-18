@@ -38,7 +38,7 @@ public class CashServiceImpl implements CashService {
 
         if (type.equals(TransactionType.OUT)) {
             if (balance < cashDTO.getAmount()) {
-                throw new HttpBadRequestException("Insufficient funds for this withdrawal.");
+                throw new HttpBadRequestException("Fonds insuffisants dans la caisse pour ce retrait.");
             }
             cash.setBalance(balance - cashDTO.getAmount());
         } else if (type.equals(TransactionType.IN)) {

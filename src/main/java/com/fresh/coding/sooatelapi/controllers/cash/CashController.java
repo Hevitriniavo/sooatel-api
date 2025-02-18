@@ -2,12 +2,15 @@ package com.fresh.coding.sooatelapi.controllers.cash;
 
 import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
+import com.fresh.coding.sooatelapi.enums.TransactionType;
 import com.fresh.coding.sooatelapi.services.cash.CashService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Validated
@@ -26,6 +29,11 @@ public class CashController {
     @GetMapping("/balance")
     public Cash getCurrentCashBalance() {
         return cashService.getCurrentCashBalance();
+    }
+
+    @GetMapping("/status")
+    public List<TransactionType> get() {
+        return List.of(TransactionType.values());
     }
 
 }
