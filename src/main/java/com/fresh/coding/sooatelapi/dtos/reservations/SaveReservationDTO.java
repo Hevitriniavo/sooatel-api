@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.dtos.reservations;
 
+import com.fresh.coding.sooatelapi.dtos.customers.CustomerCreateDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 public class SaveReservationDTO {
     private LocalDateTime reservationStart;
     private LocalDateTime reservationEnd;
-    private Long customerId;
+    private CustomerCreateDTO customer;
     private List<Long> roomIds;
     private List<Long> tableIds;
     private String status;

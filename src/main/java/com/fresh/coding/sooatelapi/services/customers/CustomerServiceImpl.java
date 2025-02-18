@@ -70,11 +70,7 @@ public class CustomerServiceImpl implements CustomerService {
         var customerRepository = repositoryFactory.getCustomerRepository();
         var customer = customerRepository.findById(id)
                 .orElseThrow(() -> new HttpNotFoundException("Customer not found"));
-        customer.setFirstName(customerCreateDTO.getFirstName());
-        customer.setLastName(customerCreateDTO.getLastName());
         customer.setPhoneNumber(customerCreateDTO.getPhoneNumber());
-        customer.setEmail(customerCreateDTO.getEmail());
-        customer.setAddress(customerCreateDTO.getAddress());
 
         var updatedCustomer = customerRepository.save(customer);
         return mapToDTO(updatedCustomer);
@@ -92,21 +88,15 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerDTO mapToDTO(Customer customer) {
         return new CustomerDTO(
                 customer.getId(),
-                customer.getFirstName(),
-                customer.getLastName(),
-                customer.getPhoneNumber(),
-                customer.getEmail(),
-                customer.getAddress()
+                customer.getName(),
+                customer.getPhoneNumber()
         );
     }
 
     private Customer mapToEntity(CustomerCreateDTO customerCreateDTO) {
         return Customer.builder()
-                .firstName(customerCreateDTO.getFirstName())
-                .lastName(customerCreateDTO.getLastName())
+                .name(customerCreateDTO.getName())
                 .phoneNumber(customerCreateDTO.getPhoneNumber())
-                .email(customerCreateDTO.getEmail())
-                .address(customerCreateDTO.getAddress())
                 .build();
     }
 }

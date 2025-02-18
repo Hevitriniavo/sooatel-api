@@ -17,17 +17,10 @@ import java.util.List;
 public class Customer extends Model {
 
     @Column(nullable = false)
-    private String firstName;
+    private String name;
 
     @Column(nullable = false)
-    private String lastName;
-
     private String phoneNumber;
-
-    private String email;
-
-    @Column(columnDefinition = "TEXT")
-    private String address;
 
     @OneToMany(mappedBy = "customer")
     @Builder.Default

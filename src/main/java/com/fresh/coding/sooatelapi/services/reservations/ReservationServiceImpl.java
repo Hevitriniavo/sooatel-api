@@ -3,6 +3,7 @@ package com.fresh.coding.sooatelapi.services.reservations;
 import com.fresh.coding.sooatelapi.dtos.customers.CustomerDTO;
 import com.fresh.coding.sooatelapi.dtos.reservations.ReservationDTO;
 import com.fresh.coding.sooatelapi.dtos.reservations.SaveReservationDTO;
+import com.fresh.coding.sooatelapi.entities.Customer;
 import com.fresh.coding.sooatelapi.entities.Reservation;
 import com.fresh.coding.sooatelapi.entities.RestTable;
 import com.fresh.coding.sooatelapi.entities.Room;
@@ -89,8 +90,12 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public ReservationDTO saveReservation(SaveReservationDTO saveReservationDTO) {
-        var customer = repositoryFactory.getCustomerRepository().findById(saveReservationDTO.getCustomerId())
-                .orElseThrow(() -> new HttpNotFoundException("Customer not found"));
+        var customerRepo = repositoryFactory.getCustomerRepository();
+        var customer = customerRepo.findById(saveReservationDTO.getCustomer().getCustomerId())
+                .orElseGet(() -> customerRepo.save(Customer.builder()
+                                .name(saveReservationDTO.getCustomer().getName())
+                                .phoneNumber(saveReservationDTO.getCustomer().getPhoneNumber())
+                        .build()));
         List<Room> rooms = repositoryFactory.getRoomRepository().findAllById(saveReservationDTO.getRoomIds());
         List<RestTable> tables = repositoryFactory.getTableRepository().findAllById(saveReservationDTO.getTableIds());
 
@@ -128,9 +133,17 @@ public class ReservationServiceImpl implements ReservationService {
 
 
     private void updateReservationFields(Reservation reservation, SaveReservationDTO saveReservationDTO) {
-        var customer = repositoryFactory.getCustomerRepository().findById(saveReservationDTO.getCustomerId())
-                .orElseThrow(() -> new HttpNotFoundException("Customer not found"));
-
+        var customerRepo = repositoryFactory.getCustomerRepository();
+        var customer = customerRepo.findById(saveReservationDTO.getCustomer().getCustomerId())
+                .orElseGet(() -> {
+                    var dto = saveReservationDTO.getCustomer();
+                    var toSave =  Customer.builder()
+                            .name(dto.getName())
+                            .phoneNumber(dto.getPhoneNumber())
+                            .build();
+                    toSave.setId(dto.getCustomerId());
+                    return customerRepo.save(toSave);
+                });
         reservation.setCustomer(customer);
         reservation.setDescription(saveReservationDTO.getDescription());
         reservation.setReservationStart(saveReservationDTO.getReservationStart());
