@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 @Setter
 @Builder
-public class User extends Model implements UserDetails {
+public class User extends Model implements UserDetails , Serializable {
 
 
     @Column(nullable = false, unique = true)

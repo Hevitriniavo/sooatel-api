@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PurchaseDTO {
+public class PurchaseDTO  implements Serializable {
     private Long purchaseId;
     private String ingredientName;
     private String ingredientId;

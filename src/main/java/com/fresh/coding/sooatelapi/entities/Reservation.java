@@ -4,6 +4,7 @@ import com.fresh.coding.sooatelapi.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Reservation extends Model {
+public class Reservation extends Model  implements Serializable {
 
     @ManyToOne
     @JoinColumn

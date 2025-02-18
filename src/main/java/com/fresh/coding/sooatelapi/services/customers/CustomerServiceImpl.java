@@ -71,6 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
         var customer = customerRepository.findById(id)
                 .orElseThrow(() -> new HttpNotFoundException("Customer not found"));
         customer.setPhoneNumber(customerCreateDTO.getPhoneNumber());
+        customer.setName(customerCreateDTO.getName());
 
         var updatedCustomer = customerRepository.save(customer);
         return mapToDTO(updatedCustomer);

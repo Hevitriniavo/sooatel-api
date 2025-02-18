@@ -13,7 +13,7 @@ sealed class IngredientBase permits
         CreateIngredient,
         IngredientSummarized,
         IngredientSummarizedWithUnitName,
-        UpdateIngredient {
+        UpdateIngredient  {
 
     @NotBlank(message = "The name must not be blank")
     private String name;

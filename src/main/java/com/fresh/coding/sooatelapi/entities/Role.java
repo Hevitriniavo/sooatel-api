@@ -5,6 +5,7 @@ import com.fresh.coding.sooatelapi.enums.RoleName;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class Role extends Model {
+public class Role extends Model implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

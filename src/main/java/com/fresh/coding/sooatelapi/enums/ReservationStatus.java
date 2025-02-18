@@ -1,6 +1,8 @@
 package com.fresh.coding.sooatelapi.enums;
 
-public enum ReservationStatus {
+import java.io.Serializable;
+
+public enum ReservationStatus implements Serializable {
     PENDING,
     CONFIRMED,
     CANCELED

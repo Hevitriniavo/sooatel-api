@@ -4,6 +4,7 @@ import com.fresh.coding.sooatelapi.enums.MenuStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Menu extends Model {
+public class Menu extends Model implements Serializable {
 
     @Column(nullable = false)
     private String name;

@@ -2,6 +2,7 @@ package com.fresh.coding.sooatelapi.dtos.rooms;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FloorWithRoomDTO {
+public class FloorWithRoomDTO  implements Serializable {
     private Long id;
     private Integer floorNumber;
     private String description;

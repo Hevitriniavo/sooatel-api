@@ -9,12 +9,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SaveRoomDTO {
+public class SaveRoomDTO implements Serializable  {
     @NotNull(message = "Room number is required")
     private Integer roomNumber;
 

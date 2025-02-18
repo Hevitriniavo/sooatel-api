@@ -7,10 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PasswordChangeDto {
+public class PasswordChangeDto implements Serializable {
 
     @NotNull(message = "Email is required")
     @Email(message = "Email must be valid")

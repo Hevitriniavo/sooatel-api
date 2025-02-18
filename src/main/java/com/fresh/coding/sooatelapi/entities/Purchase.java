@@ -6,6 +6,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 
+import java.io.Serializable;
+
 
 @Entity
 @Getter
@@ -13,7 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Purchase extends Model {
+public class Purchase extends Model  implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn

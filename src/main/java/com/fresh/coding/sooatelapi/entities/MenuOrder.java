@@ -4,6 +4,7 @@ import com.fresh.coding.sooatelapi.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MenuOrder extends Model {
+public class MenuOrder extends Model implements Serializable {
 
     @ManyToOne
     @JoinColumn

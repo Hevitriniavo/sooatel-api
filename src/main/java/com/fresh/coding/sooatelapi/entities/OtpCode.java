@@ -3,6 +3,7 @@ package com.fresh.coding.sooatelapi.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Builder
-public class OtpCode {
+public class OtpCode  implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

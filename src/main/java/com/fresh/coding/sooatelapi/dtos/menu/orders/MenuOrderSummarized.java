@@ -8,11 +8,12 @@ import com.fresh.coding.sooatelapi.enums.OrderStatus;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
-public class MenuOrderSummarized {
+public class MenuOrderSummarized  implements Serializable {
     private Long id;
     private CustomerDTO customer;
     private RoomDTO room;

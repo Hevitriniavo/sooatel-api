@@ -87,11 +87,8 @@ CREATE TABLE purchases (
 
 CREATE TABLE customers (
     id SERIAL PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
-    phone_number VARCHAR(20),
-    email VARCHAR(255),
-    address TEXT
+    name VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(20)
 );
 
 CREATE TABLE floors (
@@ -125,7 +122,7 @@ CREATE TABLE menu_orders (
         (room_id IS NULL AND table_id IS NOT NULL)
     )
 );
----- far any
+
 CREATE TABLE reservations (
     id SERIAL PRIMARY KEY,
     customer_id INT REFERENCES customers(id) ON DELETE SET NULL,
@@ -152,87 +149,17 @@ CREATE TABLE payments (
 ALTER TABLE menu_orders
     ADD COLUMN payment_id INT REFERENCES payments(id) ON DELETE SET NULL;
 
-CREATE TABLE departments (
-     id SERIAL PRIMARY KEY,
-     name VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE employees (
-   id SERIAL PRIMARY KEY,
-   first_name VARCHAR(100) NOT NULL,
-   last_name VARCHAR(100) NOT NULL,
-   email VARCHAR(100) UNIQUE NOT NULL,
-   phone_number VARCHAR(20),
-   hire_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   department_id INT REFERENCES departments(id) ON DELETE SET NULL,
-   position VARCHAR(100),
-   status VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE salaries (
-      id SERIAL PRIMARY KEY,
-      employee_id INT REFERENCES employees(id) ON DELETE CASCADE,
-      amount DECIMAL(10, 2) NOT NULL,
-      salary_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      description TEXT
-);
-
-CREATE TABLE employee_payments (
-   id SERIAL PRIMARY KEY,
-   employee_id INT REFERENCES employees(id) ON DELETE CASCADE,
-   salary_id INT REFERENCES salaries(id) ON DELETE CASCADE,
-   payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   payment_method VARCHAR(50) NOT NULL,
-   status VARCHAR(50) NOT NULL,
-   amount_paid DECIMAL(10, 2) NOT NULL,
-   description TEXT
-);
-
-CREATE TABLE employee_attendance (
-     id SERIAL PRIMARY KEY,
-     employee_id INT REFERENCES employees(id) ON DELETE CASCADE,
-     clock_in TIMESTAMP NOT NULL,
-     clock_out TIMESTAMP,
-     status VARCHAR(50) NOT NULL,
-     description TEXT
-);
-
-CREATE TABLE employee_order_services (
+CREATE TABLE cash (
     id SERIAL PRIMARY KEY,
-    employee_id INT REFERENCES employees(id) ON DELETE CASCADE,
-    menu_order_id INT REFERENCES menu_orders(id) ON DELETE CASCADE,
-    completion_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    balance DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE cash_history (
+    id SERIAL PRIMARY KEY,
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    amount DECIMAL(10, 2) NOT NULL,
+    transaction_type VARCHAR(10) CHECK (transaction_type IN ('IN', 'OUT')) NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
     description TEXT
 );
-
-WITH IngredientUsage AS (
-    SELECT
-        mo.id AS order_id,
-        mo.order_date,
-        mi.ingredient_id,
-        mi.quantity * mo.quantity AS total_used
-    FROM menu_order mo
-             JOIN menu_ingredient mi ON mo.menu_id = mi.menu_id
-),
-     FIFO_Cost AS (
-         SELECT
-             iu.order_id,
-             iu.order_date,
-             p.ingredient_id,
-             p.cost AS unit_cost,
-             LEAST(iu.total_used, p.quantity) AS used_quantity,
-             (LEAST(iu.total_used, p.quantity) * p.cost) AS total_cost
-         FROM IngredientUsage iu
-                  JOIN purchase p ON iu.ingredient_id = p.ingredient_id
-         WHERE p.created_at <= iu.order_date
-         ORDER BY p.created_at ASC
-     )
-SELECT
-    DATE(mo.order_date) AS date,
-    SUM(mo.cost) AS daily_revenue,
-    SUM(fc.total_cost) AS daily_ingredient_cost,
-    (SUM(mo.cost) - SUM(fc.total_cost)) AS daily_net_profit
-FROM menu_order mo
-    LEFT JOIN FIFO_Cost fc ON mo.id = fc.order_id
-GROUP BY DATE(mo.order_date)
-ORDER BY DATE(mo.order_date) DESC;

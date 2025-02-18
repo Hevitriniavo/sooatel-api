@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.dtos;
 
+import com.fresh.coding.sooatelapi.enums.PaymentMethod;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,6 +23,8 @@ public class StockPurchaseDto {
     @NotNull(message = "Cost cannot be null")
     @DecimalMin(value = "0.0", inclusive = false, message = "Cost must be greater than 0")
     private Double cost;
+
+    private PaymentMethod method;
 
     @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;

@@ -32,7 +32,8 @@ CREATE TABLE roles_users (
 
 CREATE TABLE units (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL,
+    abbreviation VARCHAR(50) NOT NULL,
 );
 
 CREATE TABLE ingredients (
@@ -49,15 +50,18 @@ CREATE TABLE categories (
 CREATE TABLE menus (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    status VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
     category_id INT REFERENCES categories(id) ON DELETE SET NULL
 );
 
+
 CREATE TABLE tables (
     id SERIAL PRIMARY KEY,
     number INT NOT NULL,
     capacity INT NOT NULL,
+    reservation_id INT REFERENCES reservations(id) ON DELETE SET NULL,
     status VARCHAR(50) NOT NULL
 );
 
@@ -70,8 +74,8 @@ CREATE TABLE stocks (
 CREATE TABLE operations (
     id SERIAL PRIMARY KEY,
     stock_id INT REFERENCES stocks(id) ON DELETE SET NULL,
-    operation_type VARCHAR(50) NOT NULL,
-    operation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type VARCHAR(50) NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     description TEXT
 );
 
@@ -85,19 +89,16 @@ CREATE TABLE menu_ingredients (
 CREATE TABLE purchases (
   id SERIAL PRIMARY KEY,
   ingredient_id INT REFERENCES ingredients(id) ON DELETE CASCADE,
-  purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   quantity DOUBLE PRECISION NOT NULL,
   cost DECIMAL(10, 2) NOT NULL,
-  description TEXT
+  description TEXT,
+  createdAt TIMESTAMP
 );
 
 CREATE TABLE customers (
     id SERIAL PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
-    phone_number VARCHAR(20),
-    email VARCHAR(255),
-    address TEXT
+    name VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(20)
 );
 
 CREATE TABLE floors (
@@ -111,9 +112,11 @@ CREATE TABLE rooms (
     room_number INT NOT NULL UNIQUE,
     capacity INT NOT NULL,
     status VARCHAR(50) NOT NULL,
+    reservation_id INT REFERENCES reservations(id) ON DELETE SET NULL,
     price DECIMAL(10, 2) NOT NULL,
     floor_id INT REFERENCES floors(id) ON DELETE SET NULL
 );
+
 
 CREATE TABLE menu_orders (
     id SERIAL PRIMARY KEY,
@@ -153,6 +156,21 @@ CREATE TABLE payments (
     amount DECIMAL(10, 2) NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
     status VARCHAR(50) NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE cash (
+    id SERIAL PRIMARY KEY,
+    balance DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE cash_history (
+    id SERIAL PRIMARY KEY,
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    amount DECIMAL(10, 2) NOT NULL,
+    transaction_type VARCHAR(10) CHECK (transaction_type IN ('IN', 'OUT')) NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
     description TEXT
 );
 

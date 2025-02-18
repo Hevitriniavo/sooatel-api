@@ -5,7 +5,6 @@ import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.StockSearch;
 import com.fresh.coding.sooatelapi.dtos.stocks.StockSummarized;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StockAndCreatePurchase {

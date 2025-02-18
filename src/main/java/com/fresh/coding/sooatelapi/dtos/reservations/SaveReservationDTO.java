@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SaveReservationDTO {
+public class SaveReservationDTO implements Serializable {
     private LocalDateTime reservationStart;
     private LocalDateTime reservationEnd;
     private CustomerCreateDTO customer;

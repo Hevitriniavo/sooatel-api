@@ -1,6 +1,7 @@
 package com.fresh.coding.sooatelapi.services.stocks.impl;
 
 import com.fresh.coding.sooatelapi.dtos.StockPurchaseDto;
+import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
 import com.fresh.coding.sooatelapi.dtos.pagination.PageInfo;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.StockSearch;
@@ -10,8 +11,11 @@ import com.fresh.coding.sooatelapi.entities.Operation;
 import com.fresh.coding.sooatelapi.entities.Purchase;
 import com.fresh.coding.sooatelapi.entities.Stock;
 import com.fresh.coding.sooatelapi.enums.OperationType;
+import com.fresh.coding.sooatelapi.enums.PaymentMethod;
+import com.fresh.coding.sooatelapi.enums.TransactionType;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
+import com.fresh.coding.sooatelapi.services.cash.CashService;
 import com.fresh.coding.sooatelapi.services.stocks.StockAndCreatePurchase;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -24,15 +28,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 public class StockAndCreatePurchaseImpl implements StockAndCreatePurchase {
     private final RepositoryFactory factory;
+    private final CashService cashService;
+
 
     @PersistenceContext
     private EntityManager em;
 
-    public StockAndCreatePurchaseImpl(RepositoryFactory factory) {
+    public StockAndCreatePurchaseImpl(RepositoryFactory factory, CashService cashService) {
         this.factory = factory;
+        this.cashService = cashService;
     }
 
     @Override
@@ -59,6 +67,16 @@ public class StockAndCreatePurchaseImpl implements StockAndCreatePurchase {
                 .cost(stockPurchaseDto.getCost())
                 .description(stockPurchaseDto.getDescription())
                 .build();
+        var amount = stockPurchaseDto.getCost() != null && stockPurchaseDto.getQuantity() != null
+                ? stockPurchaseDto.getCost() * stockPurchaseDto.getQuantity() : 0.0;
+
+        var cash = CashDTO.builder()
+                .amount(amount)
+                .transactionType(TransactionType.OUT)
+                .modeOfTransaction(stockPurchaseDto.getMethod() != null ? stockPurchaseDto.getMethod() : PaymentMethod.CASH)
+                .description(stockPurchaseDto.getDescription())
+                .build();
+        cashService.processCashTransaction(cash);
         purchaseRepository.save(purchase);
 
         var operation = Operation.builder()

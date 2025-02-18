@@ -7,13 +7,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentSummarized {
+public class PaymentSummarized implements Serializable {
     private Long id;
     private Long reservationId;
     private LocalDateTime paymentDate;

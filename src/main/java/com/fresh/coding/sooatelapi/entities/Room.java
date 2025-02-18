@@ -4,6 +4,7 @@ import com.fresh.coding.sooatelapi.enums.RoomStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Room extends Model {
+public class Room extends Model  implements Serializable {
 
     @Column(nullable = false, unique = true)
     private Integer roomNumber;

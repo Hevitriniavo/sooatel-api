@@ -4,6 +4,7 @@ import com.fresh.coding.sooatelapi.enums.TableStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RestTable extends Model {
+public class RestTable extends Model  implements Serializable {
 
     @Column(nullable = false, unique = true)
     private Integer number;

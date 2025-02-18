@@ -6,9 +6,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
-public final class UpdateUser extends UserBase {
+public final class UpdateUser extends UserBase implements Serializable {
 
     @NotNull(message = "ID cannot be null")
     @Min(value = 1, message = "ID must be greater than or equal to 1")

@@ -3,6 +3,7 @@ package com.fresh.coding.sooatelapi.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @ToString
-public class Ingredient extends Model {
+public class Ingredient extends Model implements Serializable  {
 
     @Column(nullable = false, unique = true)
     private String name;

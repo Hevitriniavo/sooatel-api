@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.services.payments;
 
+import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
 import com.fresh.coding.sooatelapi.dtos.payments.PaymentDTO;
 import com.fresh.coding.sooatelapi.dtos.payments.PaymentSummarized;
 import com.fresh.coding.sooatelapi.entities.MenuOrder;
@@ -7,8 +8,10 @@ import com.fresh.coding.sooatelapi.entities.Payment;
 import com.fresh.coding.sooatelapi.entities.Reservation;
 import com.fresh.coding.sooatelapi.enums.PaymentMethod;
 import com.fresh.coding.sooatelapi.enums.PaymentStatus;
+import com.fresh.coding.sooatelapi.enums.TransactionType;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
+import com.fresh.coding.sooatelapi.services.cash.CashService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 class PaymentServiceImpl implements PaymentService {
     private final RepositoryFactory repositoryFactory;
+    private final CashService cashService;
 
     @Override
     public List<PaymentSummarized> findAllPayments() {
@@ -68,6 +72,16 @@ class PaymentServiceImpl implements PaymentService {
         var paymentRepository = repositoryFactory.getPaymentRepository();
         payment = paymentRepository.save(payment);
 
+        if (paymentDTO.getStatus().equals(PaymentStatus.PAID)){
+            var cash = CashDTO.builder()
+                    .amount(payment.getAmount())
+                    .transactionType(TransactionType.IN)
+                    .modeOfTransaction(payment.getPaymentMethod())
+                    .description(payment.getDescription())
+                    .build();
+            cashService.processCashTransaction(cash);
+        }
+
         return mapToDTO(payment);
     }
 
@@ -99,6 +113,16 @@ class PaymentServiceImpl implements PaymentService {
                 new HttpNotFoundException("Payment not found with ID: " + id));
         payment.setStatus(status);
         paymentRepository.save(payment);
+
+            var cash = CashDTO.builder()
+                    .amount(payment.getAmount())
+                    .transactionType(status.equals(PaymentStatus.PAID) ? TransactionType.IN : TransactionType.OUT)
+                    .modeOfTransaction(payment.getPaymentMethod())
+                    .description(payment.getDescription())
+                    .build();
+
+            cashService.processCashTransaction(cash);
+
         return mapToDTO(payment);
     }
 

@@ -5,6 +5,7 @@ import com.fresh.coding.sooatelapi.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Payment extends Model {
+public class Payment extends Model implements Serializable {
 
     @ManyToOne
     @JoinColumn

@@ -6,6 +6,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Entity
 @Getter
 @Setter
@@ -13,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @ToString
-public class MenuIngredient extends Model {
+public class MenuIngredient extends Model  implements Serializable {
 
     @ManyToOne
     @JoinColumn(nullable = false)

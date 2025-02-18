@@ -4,6 +4,7 @@ import com.fresh.coding.sooatelapi.enums.OperationType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Operation {
+public class Operation  implements Serializable  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

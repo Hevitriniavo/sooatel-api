@@ -1,5 +1,7 @@
 package com.fresh.coding.sooatelapi.enums;
 
-public enum PaymentMethod {
+import java.io.Serializable;
+
+public enum PaymentMethod  implements Serializable {
     CASH, MVOLA, ORANGE_MONEY
 }

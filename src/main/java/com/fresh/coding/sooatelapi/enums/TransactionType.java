@@ -2,7 +2,6 @@ package com.fresh.coding.sooatelapi.enums;
 
 import java.io.Serializable;
 
-public enum RoleName  implements Serializable {
-    ADMIN,
-    USER
+public enum TransactionType  implements Serializable {
+    IN, OUT
 }

@@ -4,6 +4,7 @@ package com.fresh.coding.sooatelapi.dtos.menu.orders;
 import com.fresh.coding.sooatelapi.enums.OrderStatus;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MenuOrderDTO {
+public class MenuOrderDTO implements Serializable {
 
     private Long customerId;
 
