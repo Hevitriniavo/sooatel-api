@@ -5,7 +5,6 @@ import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
 import com.fresh.coding.sooatelapi.dtos.payments.PaymentMethodTotalAmountDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
 import com.fresh.coding.sooatelapi.entities.CashHistory;
-import com.fresh.coding.sooatelapi.enums.PaymentMethod;
 import com.fresh.coding.sooatelapi.enums.TransactionType;
 import com.fresh.coding.sooatelapi.exceptions.HttpBadRequestException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
@@ -62,18 +61,16 @@ public class CashServiceImpl implements CashService {
         return this.findOrCreateCash();
     }
 
-
     @Override
     public List<PaymentMethodTotalAmountDTO> getTotalAmountByPaymentMethod(TransactionType transactionType) {
-        var cashHistoryRepository = this.factory.getCashHistoryRepository();
-        return cashHistoryRepository.getTotalAmountByPaymentMethod(transactionType, List.of(PaymentMethod.values()));
+        return List.of();
     }
 
     @Override
     public ProfitLossDTO getProfitLoss() {
-        var cashHistoryRepository = this.factory.getCashHistoryRepository();
-        return cashHistoryRepository.getProfitLoss();
+        return null;
     }
+
 
     private Cash findOrCreateCash() {
         var cashRepo = this.factory.getCashRepository();
