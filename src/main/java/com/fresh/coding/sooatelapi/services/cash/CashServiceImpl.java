@@ -1,8 +1,11 @@
 package com.fresh.coding.sooatelapi.services.cash;
 
+import com.fresh.coding.sooatelapi.dtos.ProfitLossDTO;
 import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
+import com.fresh.coding.sooatelapi.dtos.payments.PaymentMethodTotalAmountDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
 import com.fresh.coding.sooatelapi.entities.CashHistory;
+import com.fresh.coding.sooatelapi.enums.PaymentMethod;
 import com.fresh.coding.sooatelapi.enums.TransactionType;
 import com.fresh.coding.sooatelapi.exceptions.HttpBadRequestException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +60,19 @@ public class CashServiceImpl implements CashService {
     @Override
     public Cash getCurrentCashBalance() {
         return this.findOrCreateCash();
+    }
+
+
+    @Override
+    public List<PaymentMethodTotalAmountDTO> getTotalAmountByPaymentMethod(TransactionType transactionType) {
+        var cashHistoryRepository = this.factory.getCashHistoryRepository();
+        return cashHistoryRepository.getTotalAmountByPaymentMethod(transactionType, List.of(PaymentMethod.values()));
+    }
+
+    @Override
+    public ProfitLossDTO getProfitLoss() {
+        var cashHistoryRepository = this.factory.getCashHistoryRepository();
+        return cashHistoryRepository.getProfitLoss();
     }
 
     private Cash findOrCreateCash() {

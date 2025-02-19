@@ -163,3 +163,4 @@ CREATE TABLE cash_history (
     payment_method VARCHAR(50) NOT NULL,
     description TEXT
 );
+
