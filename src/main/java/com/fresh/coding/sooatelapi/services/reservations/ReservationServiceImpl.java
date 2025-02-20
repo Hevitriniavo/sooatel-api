@@ -90,6 +90,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public ReservationDTO saveReservation(SaveReservationDTO saveReservationDTO) {
+        if (saveReservationDTO == null || saveReservationDTO.getCustomer() == null) {
+            throw new IllegalArgumentException("La réservation ou les informations du client sont nulles");
+        }
+
         var customerRepo = repositoryFactory.getCustomerRepository();
         var customer = saveReservationDTO.getCustomer().getCustomerId() != null
                 ? customerRepo.findById(saveReservationDTO.getCustomer().getCustomerId())
@@ -145,7 +149,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         var customerRepo = repositoryFactory.getCustomerRepository();
         var customerDTO = saveReservationDTO.getCustomer();
-        
+
         var customer = customerRepo.findById(customerDTO.getCustomerId())
                 .orElseGet(() -> {
                     var toSave = Customer.builder()
