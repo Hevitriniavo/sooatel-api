@@ -72,7 +72,7 @@ public class StockAndCreatePurchaseImpl implements StockAndCreatePurchase {
 
         var cash = CashDTO.builder()
                 .amount(amount)
-                .transactionType(TransactionType.OUT)
+                .transactionType(TransactionType.INGREDIENT_PURCHASE)
                 .modeOfTransaction(stockPurchaseDto.getMethod() != null ? stockPurchaseDto.getMethod() : PaymentMethod.CASH)
                 .description(stockPurchaseDto.getDescription())
                 .build();

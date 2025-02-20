@@ -91,11 +91,17 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationDTO saveReservation(SaveReservationDTO saveReservationDTO) {
         var customerRepo = repositoryFactory.getCustomerRepository();
-        var customer = customerRepo.findById(saveReservationDTO.getCustomer().getCustomerId())
-                .orElseGet(() -> customerRepo.save(Customer.builder()
-                                .name(saveReservationDTO.getCustomer().getName())
-                                .phoneNumber(saveReservationDTO.getCustomer().getPhoneNumber())
-                        .build()));
+        var customer = saveReservationDTO.getCustomer().getCustomerId() != null
+                ? customerRepo.findById(saveReservationDTO.getCustomer().getCustomerId())
+                .orElseGet(() -> Customer.builder()
+                        .name(saveReservationDTO.getCustomer().getName())
+                        .phoneNumber(saveReservationDTO.getCustomer().getPhoneNumber())
+                        .build())
+                : Customer.builder()
+                .name(saveReservationDTO.getCustomer().getName())
+                .phoneNumber(saveReservationDTO.getCustomer().getPhoneNumber())
+                .build();
+
         List<Room> rooms = repositoryFactory.getRoomRepository().findAllById(saveReservationDTO.getRoomIds());
         List<RestTable> tables = repositoryFactory.getTableRepository().findAllById(saveReservationDTO.getTableIds());
 
@@ -133,17 +139,27 @@ public class ReservationServiceImpl implements ReservationService {
 
 
     private void updateReservationFields(Reservation reservation, SaveReservationDTO saveReservationDTO) {
+        if (saveReservationDTO == null || saveReservationDTO.getCustomer() == null) {
+            throw new IllegalArgumentException("La réservation ou les informations du client sont nulles");
+        }
+
         var customerRepo = repositoryFactory.getCustomerRepository();
-        var customer = customerRepo.findById(saveReservationDTO.getCustomer().getCustomerId())
+        var customerDTO = saveReservationDTO.getCustomer();
+        
+        var customer = customerRepo.findById(customerDTO.getCustomerId())
                 .orElseGet(() -> {
-                    var dto = saveReservationDTO.getCustomer();
-                    var toSave =  Customer.builder()
-                            .name(dto.getName())
-                            .phoneNumber(dto.getPhoneNumber())
+                    var toSave = Customer.builder()
+                            .name(customerDTO.getName())
+                            .phoneNumber(customerDTO.getPhoneNumber())
                             .build();
-                    toSave.setId(dto.getCustomerId());
+
+                    if (customerDTO.getCustomerId() != null) {
+                        toSave.setId(customerDTO.getCustomerId());
+                    }
+
                     return customerRepo.save(toSave);
                 });
+
         reservation.setCustomer(customer);
         reservation.setDescription(saveReservationDTO.getDescription());
         reservation.setReservationStart(saveReservationDTO.getReservationStart());

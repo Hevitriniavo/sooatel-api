@@ -1,17 +1,16 @@
 package com.fresh.coding.sooatelapi.dtos.categories.ingredients;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
-public class IngredientGroupSummarized {
+@NoArgsConstructor
+public class IngredientGroupSummarized implements Serializable {
     private Long id;
     private String name;
     private LocalDateTime createdAt;

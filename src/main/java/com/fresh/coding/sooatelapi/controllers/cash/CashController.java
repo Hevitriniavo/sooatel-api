@@ -33,9 +33,11 @@ public class CashController {
         return cashService.getCurrentCashBalance();
     }
 
+
+
     @GetMapping("/cash/status")
     public List<TransactionType> get() {
-        return List.of(TransactionType.values());
+        return List.of(TransactionType.MANUAL_DEPOSIT, TransactionType.MANUAL_WITHDRAWAL);
     }
 
     @GetMapping("/profits")

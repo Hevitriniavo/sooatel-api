@@ -75,7 +75,7 @@ class PaymentServiceImpl implements PaymentService {
         if (paymentDTO.getStatus().equals(PaymentStatus.PAID)){
             var cash = CashDTO.builder()
                     .amount(payment.getAmount())
-                    .transactionType(TransactionType.IN)
+                    .transactionType(TransactionType.MENU_SALE_DEPOSIT)
                     .modeOfTransaction(payment.getPaymentMethod())
                     .description(payment.getDescription())
                     .build();
@@ -116,7 +116,7 @@ class PaymentServiceImpl implements PaymentService {
 
             var cash = CashDTO.builder()
                     .amount(payment.getAmount())
-                    .transactionType(status.equals(PaymentStatus.PAID) ? TransactionType.IN : TransactionType.OUT)
+                    .transactionType(status.equals(PaymentStatus.PAID) ? TransactionType.MENU_SALE_DEPOSIT : TransactionType.INGREDIENT_PURCHASE)
                     .modeOfTransaction(payment.getPaymentMethod())
                     .description(payment.getDescription())
                     .build();

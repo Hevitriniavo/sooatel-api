@@ -38,14 +38,28 @@ public class CashServiceImpl implements CashService {
         var type = cashHistory.getTransactionType();
         var balance = cash.getBalance();
 
+        switch (type) {
+            case MANUAL_DEPOSIT:
+            case MENU_SALE_DEPOSIT:
+                cash.setBalance(balance + cashDTO.getAmount());
+                break;
 
-        if (type.equals(TransactionType.OUT)) {
-            if (balance < cashDTO.getAmount()) {
-                throw new HttpBadRequestException("Fonds insuffisants dans la caisse pour ce retrait.");
-            }
-            cash.setBalance(balance - cashDTO.getAmount());
-        } else if (type.equals(TransactionType.IN)) {
-            cash.setBalance(balance + cashDTO.getAmount());
+            case MANUAL_WITHDRAWAL:
+                if (balance < cashDTO.getAmount()) {
+                    throw new HttpBadRequestException("Fonds insuffisants dans la caisse pour ce retrait.");
+                }
+                cash.setBalance(balance - cashDTO.getAmount());
+                break;
+
+            case INGREDIENT_PURCHASE:
+                if (balance < cashDTO.getAmount()) {
+                    throw new HttpBadRequestException("Fonds insuffisants pour cet achat d'ingrédients.");
+                }
+                cash.setBalance(balance - cashDTO.getAmount());
+                break;
+
+            default:
+                throw new HttpBadRequestException("Type de transaction inconnu.");
         }
 
         cash.setLastUpdated(LocalDateTime.now());
