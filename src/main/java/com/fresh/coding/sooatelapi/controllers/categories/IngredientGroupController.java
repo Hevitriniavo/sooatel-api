@@ -17,6 +17,7 @@ import java.util.List;
 public class IngredientGroupController {
     private final IngredientGroupService ingredientGroupService;
 
+    @GetMapping
     public List<IngredientGroupSummarized> all(){
         return ingredientGroupService.all();
     }
