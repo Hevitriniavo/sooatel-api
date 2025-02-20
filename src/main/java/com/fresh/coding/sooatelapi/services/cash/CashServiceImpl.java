@@ -1,8 +1,7 @@
 package com.fresh.coding.sooatelapi.services.cash;
 
-import com.fresh.coding.sooatelapi.dtos.ProfitLossDTO;
+import com.fresh.coding.sooatelapi.dtos.PaymentMethodProfitDTO;
 import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
-import com.fresh.coding.sooatelapi.dtos.payments.PaymentMethodTotalAmountDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
 import com.fresh.coding.sooatelapi.entities.CashHistory;
 import com.fresh.coding.sooatelapi.enums.TransactionType;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -61,14 +61,13 @@ public class CashServiceImpl implements CashService {
         return this.findOrCreateCash();
     }
 
-    @Override
-    public List<PaymentMethodTotalAmountDTO> getTotalAmountByPaymentMethod(TransactionType transactionType) {
-        return List.of();
-    }
+
 
     @Override
-    public ProfitLossDTO getProfitLoss() {
-        return null;
+    public List<PaymentMethodProfitDTO> getProfitByPaymentMethod(LocalDate date) {
+        var cashHistoryRepository = factory.getCashHistoryRepository();
+        var targetDate = (date != null) ? date : LocalDate.now();
+        return cashHistoryRepository.findProfitByPaymentMethod(targetDate);
     }
 
 

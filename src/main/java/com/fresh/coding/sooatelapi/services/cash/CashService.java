@@ -1,18 +1,14 @@
 package com.fresh.coding.sooatelapi.services.cash;
 
-import com.fresh.coding.sooatelapi.dtos.ProfitLossDTO;
+import com.fresh.coding.sooatelapi.dtos.PaymentMethodProfitDTO;
 import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
-import com.fresh.coding.sooatelapi.dtos.payments.PaymentMethodTotalAmountDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
-import com.fresh.coding.sooatelapi.enums.TransactionType;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface CashService {
     void processCashTransaction(CashDTO cashDTO);
     Cash getCurrentCashBalance();
-
-    List<PaymentMethodTotalAmountDTO>  getTotalAmountByPaymentMethod(TransactionType transactionType);
-
-    ProfitLossDTO getProfitLoss();
+    List<PaymentMethodProfitDTO> getProfitByPaymentMethod(LocalDate date);
 }

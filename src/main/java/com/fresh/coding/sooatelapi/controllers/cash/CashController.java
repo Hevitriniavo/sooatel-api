@@ -1,8 +1,7 @@
 package com.fresh.coding.sooatelapi.controllers.cash;
 
-import com.fresh.coding.sooatelapi.dtos.ProfitLossDTO;
+import com.fresh.coding.sooatelapi.dtos.PaymentMethodProfitDTO;
 import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
-import com.fresh.coding.sooatelapi.dtos.payments.PaymentMethodTotalAmountDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
 import com.fresh.coding.sooatelapi.enums.TransactionType;
 import com.fresh.coding.sooatelapi.services.cash.CashService;
@@ -12,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -38,16 +38,12 @@ public class CashController {
         return List.of(TransactionType.values());
     }
 
-    @GetMapping("/total-amount-by-payment-method")
-    public List<PaymentMethodTotalAmountDTO> getTotalAmountByPaymentMethod (
-            @RequestParam TransactionType transactionType) {
-        return cashService.getTotalAmountByPaymentMethod(transactionType);
+    @GetMapping("/profits")
+    public List<PaymentMethodProfitDTO> getProfits(
+            @RequestParam(required = false) LocalDate date
+    ) {
+        return cashService.getProfitByPaymentMethod(date);
     }
 
-
-    @GetMapping("/profit-loss")
-    public ProfitLossDTO getProfitLoss() {
-        return cashService.getProfitLoss();
-    }
 
 }
