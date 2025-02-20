@@ -2,7 +2,7 @@ package com.fresh.coding.sooatelapi.controllers.ingredients;
 
 import com.fresh.coding.sooatelapi.dtos.ingredients.CreateIngredient;
 import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarized;
-import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarizedWithUnitName;
+import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarizedWithUnitAndGroup;
 import com.fresh.coding.sooatelapi.dtos.ingredients.UpdateIngredient;
 import com.fresh.coding.sooatelapi.services.ingredients.IngredientService;
 import jakarta.validation.Valid;
@@ -34,7 +34,7 @@ public class IngredientController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<IngredientSummarizedWithUnitName> getAllIngredients() {
+    public List<IngredientSummarizedWithUnitAndGroup> getAllIngredients() {
         return ingredientService.findAllIngredients();
     }
 

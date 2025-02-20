@@ -2,7 +2,7 @@ package com.fresh.coding.sooatelapi.services.ingredients.impl;
 
 import com.fresh.coding.sooatelapi.dtos.ingredients.CreateIngredient;
 import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarized;
-import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarizedWithUnitName;
+import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarizedWithUnitAndGroup;
 import com.fresh.coding.sooatelapi.dtos.ingredients.UpdateIngredient;
 import com.fresh.coding.sooatelapi.entities.Ingredient;
 import com.fresh.coding.sooatelapi.entities.Operation;
@@ -32,13 +32,19 @@ public class IngredientServiceImpl implements IngredientService {
     @Override
     public IngredientSummarized create(@NonNull CreateIngredient toCreate) {
         var unitRepository = factory.getUnitRepository();
+        var ingredientGroupRepository = factory.getIngredientGroupRepository();
 
         var unit = unitRepository.findById(toCreate.getUnitId())
-                .orElseThrow(() -> new HttpNotFoundException("Unit not found"));
+                .orElseThrow(() -> new HttpNotFoundException("Unité non trouvée"));
+
+        var group = ingredientGroupRepository.findById(toCreate.getGroupId())
+                .orElseThrow(() -> new HttpNotFoundException("Groupe d'ingrédients non trouvé"));
 
         var ingredient = new Ingredient();
-        BeanUtils.copyProperties(toCreate, ingredient);
+        ingredient.setName(toCreate.getName());
         ingredient.setUnit(unit);
+        ingredient.setGroup(group);
+
         var ingredientRepository = factory.getIngredientRepository();
         var savedIngredient = ingredientRepository.save(ingredient);
 
@@ -56,15 +62,20 @@ public class IngredientServiceImpl implements IngredientService {
     public IngredientSummarized update(@NonNull UpdateIngredient toUpdate) {
         var ingredientRepository = factory.getIngredientRepository();
         var unitRepository = factory.getUnitRepository();
+        var ingredientGroupRepository = factory.getIngredientGroupRepository();
 
         var ingredient = ingredientRepository.findById(toUpdate.getId())
-                .orElseThrow(() -> new HttpNotFoundException("Ingredient not found"));
+                .orElseThrow(() -> new HttpNotFoundException("Ingrédient non trouvé"));
 
         var unit = unitRepository.findById(toUpdate.getUnitId())
-                .orElseThrow(() -> new HttpNotFoundException("Unit not found"));
+                .orElseThrow(() -> new HttpNotFoundException("Unité non trouvée"));
+
+        var group = ingredientGroupRepository.findById(toUpdate.getGroupId())
+                .orElseThrow(() -> new HttpNotFoundException("Groupe d'ingrédients non trouvé"));
 
         ingredient.setName(toUpdate.getName());
         ingredient.setUnit(unit);
+        ingredient.setGroup(group);
 
         var updatedIngredient = ingredientRepository.save(ingredient);
 
@@ -72,7 +83,7 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public List<IngredientSummarizedWithUnitName> findAllIngredients() {
+    public List<IngredientSummarizedWithUnitAndGroup> findAllIngredients() {
         var ingredientRepository = factory.getIngredientRepository();
         var ingredients = ingredientRepository.findAll();
 
@@ -86,11 +97,10 @@ public class IngredientServiceImpl implements IngredientService {
     public void delete(Long id) {
         var ingredientRepository = factory.getIngredientRepository();
         var ingredient = ingredientRepository.findById(id)
-                .orElseThrow(() -> new HttpNotFoundException("Ingredient not found"));
+                .orElseThrow(() -> new HttpNotFoundException("Ingrédient non trouvé"));
 
         ingredientRepository.delete(ingredient);
     }
-
 
     private IngredientSummarized toIngredientSummarized(Ingredient ingredient){
         return new IngredientSummarized(
@@ -101,16 +111,20 @@ public class IngredientServiceImpl implements IngredientService {
         );
     }
 
-    private IngredientSummarizedWithUnitName toIngredientSummarizedWithUnitName(Ingredient ingredient) {
-        return new IngredientSummarizedWithUnitName(
+    private IngredientSummarizedWithUnitAndGroup toIngredientSummarizedWithUnitName(Ingredient ingredient) {
+        var group = ingredient.getGroup();
+        return new IngredientSummarizedWithUnitAndGroup(
                 ingredient.getId(),
                 ingredient.getName(),
                 ingredient.getCreatedAt(),
                 ingredient.getUpdatedAt(),
                 ingredient.getUnit() != null ? ingredient.getUnit().getId() : null,
-                ingredient.getUnit() != null ? ingredient.getUnit().getName() : null
+                ingredient.getUnit() != null ? ingredient.getUnit().getName() : null,
+                group != null ? group.getId() : null,
+                group != null ? group.getName() : null
         );
     }
+
     private Stock createStockForIngredient(Ingredient ingredient) {
         var stock = new Stock();
         stock.setIngredient(ingredient);
@@ -122,10 +136,9 @@ public class IngredientServiceImpl implements IngredientService {
         return Operation.builder()
                 .stock(stock)
                 .type(OperationType.INITIAL)
-                .quantity(00.0)
+                .quantity(0.0)
                 .date(LocalDateTime.now())
                 .description("État initial du stock pour l'ingrédient : " + stock.getIngredient().getName() + " (ID : " + stock.getIngredient().getId() + ")")
                 .build();
     }
-
 }

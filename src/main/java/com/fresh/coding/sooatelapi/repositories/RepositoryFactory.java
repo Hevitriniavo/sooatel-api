@@ -103,4 +103,8 @@ public class RepositoryFactory {
         return getRepositoryFor("cashHistoryRepository");
     }
 
+    public IngredientGroupRepository getIngredientGroupRepository() {
+        return getRepositoryFor("ingredientGroupRepository");
+    }
+
 }

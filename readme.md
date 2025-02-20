@@ -30,6 +30,11 @@ CREATE TABLE roles_users (
    user_id INT REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE ingredient_groups (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE units (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -39,8 +44,10 @@ CREATE TABLE units (
 CREATE TABLE ingredients (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    unit_id INT REFERENCES units(id) ON DELETE CASCADE
+    unit_id INT NOT NULL REFERENCES units(id) ON DELETE CASCADE,
+    group_id INT REFERENCES ingredient_groups(id) ON DELETE SET NULL
 );
+
 
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
@@ -55,7 +62,6 @@ CREATE TABLE menus (
     price DECIMAL(10, 2) NOT NULL,
     category_id INT REFERENCES categories(id) ON DELETE SET NULL
 );
-
 
 CREATE TABLE tables (
     id SERIAL PRIMARY KEY,
@@ -117,7 +123,6 @@ CREATE TABLE rooms (
     floor_id INT REFERENCES floors(id) ON DELETE SET NULL
 );
 
-
 CREATE TABLE menu_orders (
     id SERIAL PRIMARY KEY,
     customer_id INT REFERENCES customers(id) ON DELETE SET NULL ,
@@ -126,7 +131,8 @@ CREATE TABLE menu_orders (
     table_id INT REFERENCES tables(id) ON DELETE SET NULL,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     quantity DOUBLE PRECISION NOT NULL,
-    cost DECIMAL(10, 2) NOT NULL
+    cost DECIMAL(10, 2) NOT NULL,
+    VARCHAR(20) NOT NULL DEFAULT 'pending',
     CONSTRAINT chk_room_or_table CHECK (
         (room_id IS NOT NULL AND table_id IS NULL) OR
         (room_id IS NULL AND table_id IS NOT NULL)
@@ -136,9 +142,6 @@ CREATE TABLE menu_orders (
 CREATE TABLE reservations (
     id SERIAL PRIMARY KEY,
     customer_id INT REFERENCES customers(id) ON DELETE SET NULL,
-    room_id INT REFERENCES rooms(id) ON DELETE SET NULL,
-    table_id INT REFERENCES tables(id) ON DELETE SET NULL,
-    payment_id INT REFERENCES payments(id) ON DELETE SET NULL,
     reservation_start TIMESTAMP NOT NULL,
     reservation_end TIMESTAMP NOT NULL,
     status VARCHAR(50) NOT NULL,
@@ -159,6 +162,9 @@ CREATE TABLE payments (
     description TEXT
 );
 
+ALTER TABLE menu_orders
+    ADD COLUMN payment_id INT REFERENCES payments(id) ON DELETE SET NULL;
+
 CREATE TABLE cash (
     id SERIAL PRIMARY KEY,
     balance DECIMAL(10, 2) NOT NULL DEFAULT 0,
@@ -173,5 +179,6 @@ CREATE TABLE cash_history (
     payment_method VARCHAR(50) NOT NULL,
     description TEXT
 );
+
 
 ````

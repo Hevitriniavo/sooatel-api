@@ -16,8 +16,12 @@ public final class UpdateIngredient extends IngredientBase implements Serializab
     @NotNull(message = "The unitId must not be null")
     private Long unitId;
 
-    public UpdateIngredient(String name, Long unitId) {
+    @NotNull(message = "The groupId must not be null")
+    private Long groupId;
+
+    public UpdateIngredient(String name, Long unitId, Long groupId) {
         super(name);
         this.unitId = unitId;
+        this.groupId = groupId;
     }
 }

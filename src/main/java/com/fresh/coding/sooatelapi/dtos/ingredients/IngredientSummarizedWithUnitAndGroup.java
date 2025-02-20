@@ -10,20 +10,22 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public final class IngredientSummarizedWithUnitName extends IngredientBase implements Serializable {
+public final class IngredientSummarizedWithUnitAndGroup extends IngredientBase implements Serializable {
     private Long id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long unitId;
     private String unitName;
 
-    public IngredientSummarizedWithUnitName (
+    public IngredientSummarizedWithUnitAndGroup(
             Long id,
             String name,
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
             Long unitId,
-            String unitName
+            String unitName,
+            Long groupId,
+            String groupName
     ) {
         super(name);
         this.id = id;

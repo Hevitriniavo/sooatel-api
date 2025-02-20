@@ -1,7 +1,7 @@
 package com.fresh.coding.sooatelapi.controllers.ingredients;
 
 
-import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarizedWithUnitName;
+import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarizedWithUnitAndGroup;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.IngredientSearch;
 import com.fresh.coding.sooatelapi.services.ingredients.SearchIngredientService;
@@ -21,7 +21,7 @@ public class SearchIngredientController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Paginate<List<IngredientSummarizedWithUnitName>> getAllIngredients(
+    public Paginate<List<IngredientSummarizedWithUnitAndGroup>> getAllIngredients(
             @ModelAttribute IngredientSearch ingredientSearch,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

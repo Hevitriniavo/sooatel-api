@@ -21,6 +21,11 @@ CREATE TABLE roles_users (
    user_id INT REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE ingredient_groups (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE units (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -30,8 +35,10 @@ CREATE TABLE units (
 CREATE TABLE ingredients (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    unit_id INT REFERENCES units(id) ON DELETE CASCADE
+    unit_id INT NOT NULL REFERENCES units(id) ON DELETE CASCADE,
+    group_id INT REFERENCES ingredient_groups(id) ON DELETE SET NULL
 );
+
 
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,

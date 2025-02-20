@@ -35,4 +35,9 @@ public class Ingredient extends Model implements Serializable  {
     @ToString.Exclude
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Purchase> purchases = new ArrayList<>();
+
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false)
+    private IngredientGroup group;
 }

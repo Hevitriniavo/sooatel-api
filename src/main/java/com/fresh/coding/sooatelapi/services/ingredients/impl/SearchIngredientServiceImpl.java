@@ -1,6 +1,6 @@
 package com.fresh.coding.sooatelapi.services.ingredients.impl;
 
-import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarizedWithUnitName;
+import com.fresh.coding.sooatelapi.dtos.ingredients.IngredientSummarizedWithUnitAndGroup;
 import com.fresh.coding.sooatelapi.dtos.pagination.PageInfo;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.IngredientSearch;
@@ -23,7 +23,7 @@ public class SearchIngredientServiceImpl implements SearchIngredientService {
     private EntityManager em;
 
     @Override
-    public Paginate<List<IngredientSummarizedWithUnitName>> findAllIngredient(IngredientSearch ingredientSearch, int page, int size) {
+    public Paginate<List<IngredientSummarizedWithUnitAndGroup>> findAllIngredient(IngredientSearch ingredientSearch, int page, int size) {
         var builder = em.getCriteriaBuilder();
         var query = builder.createQuery(Ingredient.class);
         var root = query.from(Ingredient.class);
@@ -49,14 +49,16 @@ public class SearchIngredientServiceImpl implements SearchIngredientService {
         ));
     }
 
-    private List<IngredientSummarizedWithUnitName> toSummarized(List<Ingredient> products) {
-        return products.stream().map(product -> new IngredientSummarizedWithUnitName(
+    private List<IngredientSummarizedWithUnitAndGroup> toSummarized(List<Ingredient> products) {
+        return products.stream().map(product -> new IngredientSummarizedWithUnitAndGroup(
                 product.getId(),
                 product.getName(),
                 product.getCreatedAt(),
                 product.getUpdatedAt(),
                 product.getUnit() != null ? product.getUnit().getId() : null,
-                product.getUnit() != null ? product.getUnit().getName() : null
+                product.getUnit() != null ? product.getUnit().getName() : null,
+                product.getGroup() != null ? product.getGroup().getId() : null,
+                product.getGroup() != null ? product.getGroup().getName() : null
                 )
         ).collect(Collectors.toList());
     }
