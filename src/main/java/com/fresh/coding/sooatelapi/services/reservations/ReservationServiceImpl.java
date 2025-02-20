@@ -97,14 +97,14 @@ public class ReservationServiceImpl implements ReservationService {
         var customerRepo = repositoryFactory.getCustomerRepository();
         var customer = saveReservationDTO.getCustomer().getCustomerId() != null
                 ? customerRepo.findById(saveReservationDTO.getCustomer().getCustomerId())
-                .orElseGet(() -> Customer.builder()
+                .orElseGet(() -> customerRepo.save(Customer.builder()
                         .name(saveReservationDTO.getCustomer().getName())
                         .phoneNumber(saveReservationDTO.getCustomer().getPhoneNumber())
-                        .build())
-                : Customer.builder()
+                        .build()))
+                : customerRepo.save(Customer.builder()
                 .name(saveReservationDTO.getCustomer().getName())
                 .phoneNumber(saveReservationDTO.getCustomer().getPhoneNumber())
-                .build();
+                .build());
 
         List<Room> rooms = repositoryFactory.getRoomRepository().findAllById(saveReservationDTO.getRoomIds());
         List<RestTable> tables = repositoryFactory.getTableRepository().findAllById(saveReservationDTO.getTableIds());
