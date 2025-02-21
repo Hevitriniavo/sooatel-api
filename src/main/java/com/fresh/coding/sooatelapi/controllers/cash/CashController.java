@@ -49,21 +49,21 @@ public class CashController {
         return List.of(TransactionType.MANUAL_DEPOSIT, TransactionType.MANUAL_WITHDRAWAL);
     }
 
-    @GetMapping("/benefice")
+    @GetMapping("/profits")
     public List<TransactionProfitDTO> getBenefice(
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate) {
         return cashService.getBeneficeByModeOfTransactionAndPeriod(startDate, endDate);
     }
 
-    @GetMapping("/menuSaleBenefice")
+    @GetMapping("/menuSaleProfits")
     public List<TransactionProfitDTO> getMenuSaleBenefice(
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate) {
         return cashService.getMenuSaleBeneficeByModeOfTransactionAndPeriod(startDate, endDate);
     }
 
-    @GetMapping("/totalMenuSaleBenefice")
+    @GetMapping("/totalMenuSaleProfit")
     public Double getTotalMenuSaleBenefice(
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate
@@ -71,7 +71,7 @@ public class CashController {
         return cashService.getTotalMenuSaleBenefice(startDate, endDate);
     }
 
-    @GetMapping("/totalBenefice")
+    @GetMapping("/totalProfit")
     public Double getTotalBenefice(
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate) {
