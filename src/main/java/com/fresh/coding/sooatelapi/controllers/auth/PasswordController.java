@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PasswordController {
     private final PasswordService passwordService;
 
-
     @PostMapping("/change")
     public String changePassword(
             @Valid @RequestBody

@@ -17,7 +17,6 @@ import java.util.List;
 public class CustomerController {
     private final CustomerService customerService;
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CustomerDTO createCustomer(@Valid @RequestBody CustomerCreateDTO customerDTO) {

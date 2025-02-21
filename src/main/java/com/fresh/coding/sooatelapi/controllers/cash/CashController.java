@@ -44,10 +44,6 @@ public class CashController {
         return cashService.getHistories();
     }
 
-
-
-
-
     @GetMapping("/cash/status")
     public List<TransactionType> get() {
         return List.of(TransactionType.MANUAL_DEPOSIT, TransactionType.MANUAL_WITHDRAWAL);
