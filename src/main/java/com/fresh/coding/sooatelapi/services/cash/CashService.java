@@ -3,6 +3,7 @@ package com.fresh.coding.sooatelapi.services.cash;
 import com.fresh.coding.sooatelapi.dtos.TransactionProfitDTO;
 import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
+import com.fresh.coding.sooatelapi.entities.CashHistory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,4 +20,8 @@ public interface CashService {
     Double getTotalMenuSaleBenefice(LocalDate startDate, LocalDate endDate);
 
     Double getTotalBeneficeByModeOfTransactionAndPeriod(LocalDate startDate, LocalDate endDate);
+
+    List<CashHistory> getHistories();
+
+    CashHistory getHistory(Long id);
 }

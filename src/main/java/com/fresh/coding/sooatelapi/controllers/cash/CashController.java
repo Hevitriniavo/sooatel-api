@@ -3,6 +3,7 @@ package com.fresh.coding.sooatelapi.controllers.cash;
 import com.fresh.coding.sooatelapi.dtos.TransactionProfitDTO;
 import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
+import com.fresh.coding.sooatelapi.entities.CashHistory;
 import com.fresh.coding.sooatelapi.enums.TransactionType;
 import com.fresh.coding.sooatelapi.services.cash.CashService;
 import jakarta.validation.Valid;
@@ -32,6 +33,18 @@ public class CashController {
     public Cash getCurrentCashBalance() {
         return cashService.getCurrentCashBalance();
     }
+
+    @GetMapping("/histories/{id}")
+    public CashHistory getHistory(@PathVariable Long id) {
+        return cashService.getHistory(id);
+    }
+
+    @GetMapping("/histories")
+    public List<CashHistory> getHistories() {
+        return cashService.getHistories();
+    }
+
+
 
 
 

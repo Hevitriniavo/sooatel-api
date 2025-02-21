@@ -6,6 +6,7 @@ import com.fresh.coding.sooatelapi.entities.Cash;
 import com.fresh.coding.sooatelapi.entities.CashHistory;
 import com.fresh.coding.sooatelapi.enums.PaymentMethod;
 import com.fresh.coding.sooatelapi.exceptions.HttpBadRequestException;
+import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -125,6 +126,18 @@ public class CashServiceImpl implements CashService {
         return totalBenefice != null ? totalBenefice : 0.0;
     }
 
+    @Override
+    public List<CashHistory> getHistories() {
+        var cashHistoryRepo = this.factory.getCashHistoryRepository();
+        return cashHistoryRepo.findAll();
+    }
+
+    @Override
+    public CashHistory getHistory(Long id) {
+        var cashHistoryRepo = this.factory.getCashHistoryRepository();
+        return cashHistoryRepo.findById(id)
+                .orElseThrow(() -> new HttpNotFoundException( "Historique de caisse non trouvé avec l'ID : " + id));
+    }
 
     private Cash findOrCreateCash() {
         var cashRepo = this.factory.getCashRepository();
