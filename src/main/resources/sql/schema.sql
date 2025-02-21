@@ -166,8 +166,42 @@ CREATE TABLE cash_history (
     id SERIAL PRIMARY KEY,
     transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     amount DECIMAL(10, 2) NOT NULL,
-    transaction_type VARCHAR(10) CHECK (transaction_type IN ('IN', 'OUT')) NOT NULL,
+    transaction_type VARCHAR(10) CHECK (transaction_type IN ('MENU_SALE_DEPOSIT', 'MANUAL_DEPOSIT', 'INGREDIENT_PURCHASE', 'MANUAL_WITHDRAWAL')) NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
     description TEXT
 );
 
+
+SELECT
+    mode_of_transaction,
+    SUM(CASE WHEN transaction_type IN ('MANUAL_DEPOSIT', 'MENU_SALE_DEPOSIT') THEN amount ELSE 0 END)
+    - SUM(CASE WHEN transaction_type IN ('INGREDIENT_PURCHASE', 'MANUAL_WITHDRAWAL') THEN amount ELSE 0 END)
+    AS benefice
+FROM cash_history
+WHERE DATE(transaction_date) BETWEEN '2025-02-21' AND '2025-02-21'
+GROUP BY mode_of_transaction;
+
+
+SELECT
+    mode_of_transaction,
+    SUM(CASE WHEN transaction_type = 'MENU_SALE_DEPOSIT' THEN amount ELSE 0 END)
+    - SUM(CASE WHEN transaction_type = 'INGREDIENT_PURCHASE' THEN amount ELSE 0 END)
+    AS benefice
+FROM cash_history
+WHERE DATE(transaction_date) BETWEEN '2025-02-21' AND '2025-02-21'
+GROUP BY mode_of_transaction;
+
+
+SELECT
+    SUM(CASE WHEN transaction_type = 'MENU_SALE_DEPOSIT' THEN amount ELSE 0 END)
+    - SUM(CASE WHEN transaction_type = 'INGREDIENT_PURCHASE' THEN amount ELSE 0 END)
+    AS benefice
+FROM cash_history
+WHERE DATE(transaction_date) BETWEEN '2025-02-21' AND '2025-02-21';
+
+SELECT
+    SUM(CASE WHEN transaction_type IN ('MANUAL_DEPOSIT', 'MENU_SALE_DEPOSIT') THEN amount ELSE 0 END)
+    - SUM(CASE WHEN transaction_type IN ('INGREDIENT_PURCHASE', 'MANUAL_WITHDRAWAL') THEN amount ELSE 0 END)
+    AS benefice
+FROM cash_history
+WHERE DATE(transaction_date) BETWEEN '2025-02-21' AND '2025-02-21';

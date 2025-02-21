@@ -5,7 +5,6 @@ import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
 import com.fresh.coding.sooatelapi.entities.CashHistory;
 import com.fresh.coding.sooatelapi.enums.PaymentMethod;
-import com.fresh.coding.sooatelapi.enums.TransactionType;
 import com.fresh.coding.sooatelapi.exceptions.HttpBadRequestException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,43 +77,52 @@ public class CashServiceImpl implements CashService {
     }
 
     @Override
-    public List<TransactionProfitDTO> getProfitByPaymentMethod(LocalDate date) {
-        var cashHistoryRepository = factory.getCashHistoryRepository();
-        var targetDate = (date != null) ? date : LocalDate.now();
+    public List<TransactionProfitDTO> getBeneficeByModeOfTransactionAndPeriod(LocalDate startDate, LocalDate endDate) {
+        LocalDate beginDate = (startDate != null) ? startDate : LocalDate.now();
+        LocalDate finalEndDate = (endDate != null) ? endDate : LocalDate.now();
+        var cashHistoryRepo = this.factory.getCashHistoryRepository();
+        var profitsInDB = cashHistoryRepo.getBeneficeByModeOfTransactionAndPeriod(beginDate, finalEndDate);
 
-        var cashHistories = cashHistoryRepository.findAllByTransactionDate(targetDate);
-        var profitMap = new HashMap<PaymentMethod, TransactionProfitDTO>();
+        return profitsInDB.stream()
+                .map(row -> new TransactionProfitDTO(
+                        PaymentMethod.valueOf(row[0].toString()),
+                        Double.valueOf(row[1].toString())))
+                .collect(Collectors.toList());
+    }
 
-        for (var ch : cashHistories) {
-            var modeOfTransaction = ch.getModeOfTransaction();
 
-            if (!profitMap.containsKey(modeOfTransaction)) {
-                profitMap.put(modeOfTransaction, new TransactionProfitDTO(modeOfTransaction, 0.0, 0.0, 0.0, 0.0));
-            }
+    @Override
+    public List<TransactionProfitDTO> getMenuSaleBeneficeByModeOfTransactionAndPeriod(LocalDate startDate, LocalDate endDate) {
+        LocalDate beginDate = (startDate != null) ? startDate : LocalDate.now();
+        LocalDate finalEndDate = (endDate != null) ? endDate : LocalDate.now();
+        var cashHistoryRepo = this.factory.getCashHistoryRepository();
+        var profitsInDB = cashHistoryRepo.getBeneficeByModeOfTransactionAndPeriodForMenuSale(beginDate, finalEndDate);
 
-            var profitDTO = profitMap.get(modeOfTransaction);
+        return profitsInDB.stream()
+                .map(row -> new TransactionProfitDTO(
+                        PaymentMethod.valueOf(row[0].toString()),
+                        Double.valueOf(row[1].toString())))
+                .collect(Collectors.toList());
+    }
 
-            if (TransactionType.INGREDIENT_PURCHASE.equals(ch.getTransactionType())) {
-                profitDTO.setIngredientLossWithoutReturns(profitDTO.getIngredientLossWithoutReturns() + ch.getAmount());
-            }
 
-            if (TransactionType.MENU_SALE_DEPOSIT.equals(ch.getTransactionType())) {
-                profitDTO.setMenuSaleProfitNoManualDeposit(profitDTO.getMenuSaleProfitNoManualDeposit() + ch.getAmount());
-            }
+    @Override
+    public Double getTotalMenuSaleBenefice(LocalDate startDate, LocalDate endDate) {
+        LocalDate beginDate = (startDate != null) ? startDate : LocalDate.now();
+        LocalDate finalEndDate = (endDate != null) ? endDate : LocalDate.now();
+        var cashHistoryRepo = this.factory.getCashHistoryRepository();
+        var totalBenefice = cashHistoryRepo.getTotalMenuSaleBenefice(beginDate, finalEndDate);
+        return totalBenefice != null ? totalBenefice : 0.0;
+    }
 
-            if (Arrays.asList(TransactionType.MENU_SALE_DEPOSIT, TransactionType.MANUAL_DEPOSIT).contains(ch.getTransactionType())) {
-                profitDTO.setMenuSaleProfitWithManualDeposit(profitDTO.getMenuSaleProfitWithManualDeposit() + ch.getAmount());
-            }
-        }
 
-        for (var profitDTO : profitMap.values()) {
-            profitDTO.setIngredientLossWithReturns(
-                    profitDTO.getIngredientLossWithoutReturns(),
-                    profitDTO.getIngredientLossWithoutReturns()
-            );
-        }
-
-        return new ArrayList<>(profitMap.values());
+    @Override
+    public Double getTotalBeneficeByModeOfTransactionAndPeriod(LocalDate startDate, LocalDate endDate) {
+        LocalDate beginDate = (startDate != null) ? startDate : LocalDate.now();
+        LocalDate finalEndDate = (endDate != null) ? endDate : LocalDate.now();
+        var cashHistoryRepo = this.factory.getCashHistoryRepository();
+        var totalBenefice = cashHistoryRepo.getTotalBeneficeByModeOfTransactionAndPeriod(beginDate, finalEndDate);
+        return totalBenefice != null ? totalBenefice : 0.0;
     }
 
 

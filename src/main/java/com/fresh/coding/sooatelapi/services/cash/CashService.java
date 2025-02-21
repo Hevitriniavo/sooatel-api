@@ -7,8 +7,16 @@ import com.fresh.coding.sooatelapi.entities.Cash;
 import java.time.LocalDate;
 import java.util.List;
 
+
 public interface CashService {
     void processCashTransaction(CashDTO cashDTO);
     Cash getCurrentCashBalance();
-    List<TransactionProfitDTO> getProfitByPaymentMethod(LocalDate date);
+
+    List<TransactionProfitDTO> getBeneficeByModeOfTransactionAndPeriod(LocalDate startDate, LocalDate endDate);
+
+    List<TransactionProfitDTO> getMenuSaleBeneficeByModeOfTransactionAndPeriod(LocalDate startDate, LocalDate endDate);
+
+    Double getTotalMenuSaleBenefice(LocalDate startDate, LocalDate endDate);
+
+    Double getTotalBeneficeByModeOfTransactionAndPeriod(LocalDate startDate, LocalDate endDate);
 }

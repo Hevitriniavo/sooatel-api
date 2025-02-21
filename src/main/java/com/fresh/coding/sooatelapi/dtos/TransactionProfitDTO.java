@@ -10,13 +10,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransactionProfitDTO implements Serializable {
-    private PaymentMethod paymentMethod;
-    private Double ingredientLossWithoutReturns;
-    private Double ingredientLossWithReturns;
-    private Double menuSaleProfitNoManualDeposit;
-    private Double menuSaleProfitWithManualDeposit;
-
-    public void setIngredientLossWithReturns(Double purchaseAmount, Double returnAmount) {
-        this.ingredientLossWithReturns = purchaseAmount - returnAmount;
-    }
+    private PaymentMethod modeOfTransaction;
+    private Double profitOrLoss;
 }
