@@ -1,6 +1,6 @@
 package com.fresh.coding.sooatelapi.controllers.cash;
 
-import com.fresh.coding.sooatelapi.dtos.PaymentMethodProfitDTO;
+import com.fresh.coding.sooatelapi.dtos.TransactionProfitDTO;
 import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
 import com.fresh.coding.sooatelapi.enums.TransactionType;
@@ -41,7 +41,7 @@ public class CashController {
     }
 
     @GetMapping("/profits")
-    public List<PaymentMethodProfitDTO> getProfits(
+    public List<TransactionProfitDTO> getProfits(
             @RequestParam(required = false) LocalDate date
     ) {
         return cashService.getProfitByPaymentMethod(date);

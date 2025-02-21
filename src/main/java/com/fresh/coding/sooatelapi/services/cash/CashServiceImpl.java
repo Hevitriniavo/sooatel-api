@@ -1,9 +1,10 @@
 package com.fresh.coding.sooatelapi.services.cash;
 
-import com.fresh.coding.sooatelapi.dtos.PaymentMethodProfitDTO;
+import com.fresh.coding.sooatelapi.dtos.TransactionProfitDTO;
 import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
 import com.fresh.coding.sooatelapi.entities.Cash;
 import com.fresh.coding.sooatelapi.entities.CashHistory;
+import com.fresh.coding.sooatelapi.enums.PaymentMethod;
 import com.fresh.coding.sooatelapi.enums.TransactionType;
 import com.fresh.coding.sooatelapi.exceptions.HttpBadRequestException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
@@ -13,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -75,13 +76,44 @@ public class CashServiceImpl implements CashService {
         return this.findOrCreateCash();
     }
 
-
-
     @Override
-    public List<PaymentMethodProfitDTO> getProfitByPaymentMethod(LocalDate date) {
+    public List<TransactionProfitDTO> getProfitByPaymentMethod(LocalDate date) {
         var cashHistoryRepository = factory.getCashHistoryRepository();
         var targetDate = (date != null) ? date : LocalDate.now();
-        return cashHistoryRepository.findProfitByPaymentMethod(targetDate);
+
+        var cashHistories = cashHistoryRepository.findAllByTransactionDate(targetDate);
+        var profitMap = new HashMap<PaymentMethod, TransactionProfitDTO>();
+
+        for (var ch : cashHistories) {
+            var modeOfTransaction = ch.getModeOfTransaction();
+
+            if (!profitMap.containsKey(modeOfTransaction)) {
+                profitMap.put(modeOfTransaction, new TransactionProfitDTO(modeOfTransaction, 0.0, 0.0, 0.0, 0.0));
+            }
+
+            var profitDTO = profitMap.get(modeOfTransaction);
+
+            if (TransactionType.INGREDIENT_PURCHASE.equals(ch.getTransactionType())) {
+                profitDTO.setIngredientLossWithoutReturns(profitDTO.getIngredientLossWithoutReturns() + ch.getAmount());
+            }
+
+            if (TransactionType.MENU_SALE_DEPOSIT.equals(ch.getTransactionType())) {
+                profitDTO.setMenuSaleProfitNoManualDeposit(profitDTO.getMenuSaleProfitNoManualDeposit() + ch.getAmount());
+            }
+
+            if (Arrays.asList(TransactionType.MENU_SALE_DEPOSIT, TransactionType.MANUAL_DEPOSIT).contains(ch.getTransactionType())) {
+                profitDTO.setMenuSaleProfitWithManualDeposit(profitDTO.getMenuSaleProfitWithManualDeposit() + ch.getAmount());
+            }
+        }
+
+        for (var profitDTO : profitMap.values()) {
+            profitDTO.setIngredientLossWithReturns(
+                    profitDTO.getIngredientLossWithoutReturns(),
+                    profitDTO.getIngredientLossWithoutReturns()
+            );
+        }
+
+        return new ArrayList<>(profitMap.values());
     }
 
 

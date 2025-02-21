@@ -1,6 +1,5 @@
 package com.fresh.coding.sooatelapi.repositories;
 
-import com.fresh.coding.sooatelapi.dtos.PaymentMethodProfitDTO;
 import com.fresh.coding.sooatelapi.entities.CashHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,15 +13,9 @@ import java.util.List;
 public interface CashHistoryRepository extends JpaRepository<CashHistory, Long> {
 
     @Query("""
-           SELECT new com.fresh.coding.sooatelapi.dtos.PaymentMethodProfitDTO(
-               ch.modeOfTransaction,
-               SUM(CASE WHEN ch.transactionType = 'IN' THEN ch.amount ELSE 0 END),
-               SUM(CASE WHEN ch.transactionType = 'OUT' THEN ch.amount ELSE 0 END),
-               SUM(CASE WHEN ch.transactionType = 'IN' THEN ch.amount ELSE - ch.amount END)
-           )
-           FROM CashHistory ch
-           WHERE DATE(ch.transactionDate) = :date
-           GROUP BY ch.modeOfTransaction
-           """)
-    List<PaymentMethodProfitDTO> findProfitByPaymentMethod(@Param("date") LocalDate date);
+    SELECT ch FROM CashHistory ch WHERE DATE(ch.transactionDate) = :date
+""")
+    List<CashHistory> findAllByTransactionDate(@Param("date") LocalDate date);
+
+
 }
