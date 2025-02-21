@@ -39,4 +39,7 @@ public class IngredientGroupController {
     public void remove(@PathVariable Long id){
          ingredientGroupService.remove(id);
     }
+
+
+
 }
