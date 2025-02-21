@@ -17,7 +17,7 @@ import java.util.List;
 
 public class IngredientGroup extends Model implements Serializable {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
 
