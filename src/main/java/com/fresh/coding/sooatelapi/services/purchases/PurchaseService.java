@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface PurchaseService {
     Paginate<List<PurchaseDTO>> findAllPurchases(PurchaseSearch purchaseSearch, int page, int size);
+    Double calculateFIFOCost(Long ingredientId);
 }

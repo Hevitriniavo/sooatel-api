@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,9 @@ public  class MostMenu {
     private String name;
     private String description;
     private Double price;
+    @JsonIgnore
     private Long categoryId;
+    @JsonIgnore
     private String categoryName;
     private Double quantityMenuByName;
 }

@@ -5,6 +5,7 @@ import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.purchases.PurchaseDTO;
 import com.fresh.coding.sooatelapi.dtos.searchs.PurchaseSearch;
 import com.fresh.coding.sooatelapi.entities.Purchase;
+import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.services.purchases.PurchaseService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PurchaseServiceImpl implements PurchaseService {
     private final EntityManager entityManager;
+    private final RepositoryFactory factory;
 
 
     @Override
@@ -70,6 +72,12 @@ public class PurchaseServiceImpl implements PurchaseService {
                 (int) totalItems
         );
         return new Paginate<>(purchaseDTOList,pageInfo);
+    }
+
+    @Override
+    public Double calculateFIFOCost(Long ingredientId) {
+        var purchaseRepository = factory.getPurchaseRepository();
+        return purchaseRepository.calculateFIFOCost(ingredientId);
     }
 
     private long getTotalCount(CriteriaBuilder cb, List<Predicate> predicates) {

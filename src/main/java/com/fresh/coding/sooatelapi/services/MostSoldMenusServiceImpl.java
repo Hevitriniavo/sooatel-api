@@ -23,6 +23,7 @@ class MostSoldMenusServiceImpl implements MostSoldMenusService {
         var mostMenus = menuOrderRepo.findMostSoldMenusByDate(date);
         Map<CategoryMostSummarized, List<MostMenu>> groupedByCategory = mostMenus.stream()
                 .collect(Collectors.groupingBy(menu -> new CategoryMostSummarized(menu.getCategoryId(), menu.getCategoryName())));
+
         return groupedByCategory.entrySet().stream()
                 .map(entry -> new MostSoldMenuDTO(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());

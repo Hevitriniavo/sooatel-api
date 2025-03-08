@@ -25,4 +25,9 @@ public class PurchaseController {
             @RequestParam(defaultValue = "10") int size) {
         return purchaseService.findAllPurchases(purchaseSearch, page, size);
     }
+
+    @GetMapping("/{ingredientId}/fifo-cost")
+    public Double getFIFOCost(@PathVariable Long ingredientId) {
+        return purchaseService.calculateFIFOCost(ingredientId);
+    }
 }
