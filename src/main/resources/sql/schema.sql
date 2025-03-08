@@ -205,3 +205,77 @@ SELECT
     AS benefice
 FROM cash_history
 WHERE DATE(transaction_date) BETWEEN '2025-02-21' AND '2025-02-21';
+
+--- prix total des ingrédients vendus
+WITH ordered_purchases AS (
+    SELECT
+        p.ingredient_id,
+        p.quantity,
+        p.cost,
+        p.created_at,
+        SUM(p.quantity) OVER (PARTITION BY p.ingredient_id ORDER BY p.created_at) AS cumulative_quantity
+    FROM purchase p
+),
+     menu_ingredient_usage AS (
+         SELECT
+             mi.ingredient_id,
+             mi.menu_id,
+             SUM(mi.quantity * mo.quantity) AS total_used_quantity
+         FROM menu_ingredient mi
+                  JOIN menu_order mo ON mi.menu_id = mo.menu_id
+         GROUP BY mi.ingredient_id, mi.menu_id
+     ),
+     fifo_cost AS (
+         SELECT
+             op.ingredient_id,
+             op.cost,
+             miu.menu_id,
+             LEAST(op.quantity, GREATEST(miu.total_used_quantity - COALESCE(SUM(op.quantity) OVER (PARTITION BY op.ingredient_id, miu.menu_id ORDER BY op.created_at ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0), 0)) AS used_quantity
+         FROM ordered_purchases op
+                  JOIN menu_ingredient_usage miu ON op.ingredient_id = miu.ingredient_id
+         WHERE op.cumulative_quantity <= miu.total_used_quantity
+            OR (op.cumulative_quantity - op.quantity) < miu.total_used_quantity
+     )
+SELECT
+    fc.menu_id,
+    SUM(fc.cost * fc.used_quantity) AS total_cost
+FROM fifo_cost fc
+GROUP BY fc.menu_id;
+
+--- total prix ingredient encore dans db
+WITH ordered_purchases AS (
+    SELECT
+        p.ingredient_id,
+        p.quantity AS purchase_quantity,
+        p.cost AS purchase_cost,
+        p.created_at,
+        SUM(p.quantity) OVER (PARTITION BY p.ingredient_id ORDER BY p.created_at) AS cumulative_quantity
+    FROM purchase p
+    WHERE p.ingredient_id = :ingredientId
+),
+     menu_ingredient_usage AS (
+         SELECT
+             mi.ingredient_id,
+             SUM(mi.quantity * mo.quantity) AS total_used_quantity
+         FROM menu_ingredient mi
+                  JOIN menu_order mo ON mi.menu_id = mo.menu_id
+         WHERE mi.ingredient_id = :ingredientId
+         GROUP BY mi.ingredient_id
+     ),
+     remaining_ingredients AS (
+         SELECT
+             op.ingredient_id,
+             op.purchase_quantity,
+             op.purchase_cost,
+             op.created_at,
+             op.cumulative_quantity,
+             GREATEST(op.cumulative_quantity - COALESCE(miu.total_used_quantity, 0), 0) AS remaining_quantity
+         FROM ordered_purchases op
+                  LEFT JOIN menu_ingredient_usage miu ON op.ingredient_id = miu.ingredient_id
+     )
+SELECT
+    ri.ingredient_id,
+    SUM(ri.remaining_quantity * ri.purchase_cost) AS total_stock_cost
+FROM remaining_ingredients ri
+WHERE ri.remaining_quantity > 0
+GROUP BY ri.ingredient_id;
