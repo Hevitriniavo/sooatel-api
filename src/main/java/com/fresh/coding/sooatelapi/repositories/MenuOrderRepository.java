@@ -19,7 +19,7 @@ public interface MenuOrderRepository extends JpaRepository<MenuOrder, Long> {
             m.id,
             m.name,
             m.description,
-            m.price,
+            SUM(mo.cost),
             c.id,
             c.name,
             SUM(mo.quantity)
@@ -28,7 +28,7 @@ public interface MenuOrderRepository extends JpaRepository<MenuOrder, Long> {
         JOIN mo.menu m
         JOIN m.category c
         WHERE DATE(mo.orderDate) = :date
-        GROUP BY m.id, m.name, m.description, m.price, c.id, c.name
+        GROUP BY m.id, m.name, m.description, c.id, c.name
         ORDER BY SUM(mo.quantity) DESC
         """)
     List<MostMenu> findMostSoldMenusByDate(@Param("date") LocalDate date);
