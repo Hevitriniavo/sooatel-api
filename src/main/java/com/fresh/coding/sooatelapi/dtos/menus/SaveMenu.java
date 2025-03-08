@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-public final class SaveMenu extends MenuBase implements Serializable {
+public class SaveMenu extends MenuBase implements Serializable {
     private MenuStatus status;
     public SaveMenu(Long id, String name, String description, Double price, Long categoryId, MenuStatus status) {
         super(id, name, description, price, categoryId);

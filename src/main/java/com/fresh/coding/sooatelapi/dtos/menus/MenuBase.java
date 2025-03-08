@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-sealed class MenuBase permits MenuSummarized, SaveMenu {
+ class MenuBase  {
 
     private Long id;
 

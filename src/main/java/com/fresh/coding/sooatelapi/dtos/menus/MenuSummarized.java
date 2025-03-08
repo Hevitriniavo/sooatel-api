@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public final class MenuSummarized extends MenuBase implements Serializable {
+public  class MenuSummarized extends MenuBase implements Serializable {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private MenuStatus status;
