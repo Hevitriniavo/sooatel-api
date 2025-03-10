@@ -118,26 +118,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .status(ReservationStatus.valueOf(saveReservationDTO.getStatus()))
                 .description(saveReservationDTO.getDescription())
                 .build();
-
-
-        rooms.forEach(room -> {
-            if (room.getStatus() == RoomStatus.NOT_AVAILABLE) {
-                throw new HttpBadRequestException("Room " + room.getRoomNumber() + " is already occupied.");
-            }
-            room.setStatus(RoomStatus.NOT_AVAILABLE);
-            room.setReservation(reservation);
-        });
-
-        tables.forEach(table -> {
-            if (table.getStatus() == TableStatus.NOT_AVAILABLE) {
-                throw new HttpBadRequestException("Table " + table.getNumber() + " is already occupied.");
-            }
-            table.setStatus(TableStatus.NOT_AVAILABLE);
-            table.setReservation(reservation);
-        });
-
         var savedReservation = repositoryFactory.getReservationRepository().save(reservation);
-
         return mapToDTO(savedReservation);
     }
 
