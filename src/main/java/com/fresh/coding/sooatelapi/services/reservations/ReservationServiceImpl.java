@@ -3,6 +3,8 @@ package com.fresh.coding.sooatelapi.services.reservations;
 import com.fresh.coding.sooatelapi.dtos.customers.CustomerDTO;
 import com.fresh.coding.sooatelapi.dtos.reservations.ReservationDTO;
 import com.fresh.coding.sooatelapi.dtos.reservations.SaveReservationDTO;
+import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
+import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.entities.Customer;
 import com.fresh.coding.sooatelapi.entities.Reservation;
 import com.fresh.coding.sooatelapi.entities.RestTable;
@@ -118,7 +120,18 @@ public class ReservationServiceImpl implements ReservationService {
                 .status(ReservationStatus.valueOf(saveReservationDTO.getStatus()))
                 .description(saveReservationDTO.getDescription())
                 .build();
+
+
+        rooms.forEach(room -> {
+            room.setReservation(reservation);
+        });
+
+        tables.forEach(table -> {
+            table.setReservation(reservation);
+        });
+
         var savedReservation = repositoryFactory.getReservationRepository().save(reservation);
+
         return mapToDTO(savedReservation);
     }
 
@@ -154,12 +167,37 @@ public class ReservationServiceImpl implements ReservationService {
 
     private ReservationDTO mapToDTO(Reservation reservation) {
         var dto = new ReservationDTO();
-        BeanUtils.copyProperties(reservation, dto, "customer", "room", "table");
+        BeanUtils.copyProperties(reservation, dto, "customer", "rooms", "tables");
 
         if (reservation.getCustomer() != null) {
             CustomerDTO customerDTO = new CustomerDTO();
             BeanUtils.copyProperties(reservation.getCustomer(), customerDTO);
             dto.setCustomer(customerDTO);
+        }
+
+        if (reservation.getRooms() != null) {
+            List<RoomDTO> roomDTOs = reservation.getRooms().stream()
+                    .map(room -> {
+                        RoomDTO roomDTO = new RoomDTO();
+                        BeanUtils.copyProperties(room, roomDTO);
+                        return roomDTO;
+                    })
+                    .collect(Collectors.toList());
+            dto.setRooms(roomDTOs);
+        }
+
+        if (reservation.getTables() != null) {
+            List<TableSummarized> tableDTOs = reservation.getTables().stream()
+                    .map(table -> new TableSummarized(
+                            table.getId(),
+                            table.getNumber(),
+                            table.getCapacity(),
+                            table.getStatus(),
+                            table.getCreatedAt(),
+                            table.getUpdatedAt()
+                    ))
+                    .collect(Collectors.toList());
+            dto.setTables(tableDTOs);
         }
 
         return dto;

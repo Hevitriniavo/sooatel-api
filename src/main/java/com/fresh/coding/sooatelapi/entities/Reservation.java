@@ -21,11 +21,11 @@ public class Reservation extends Model  implements Serializable {
     @JoinColumn
     private Customer customer;
 
-    @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST})
+    @OneToMany(mappedBy = "reservation", cascade = {CascadeType.ALL},  fetch = FetchType.EAGER)
     @Builder.Default
     private List<Room> rooms = new ArrayList<>();
 
-    @OneToMany(mappedBy = "reservation", cascade = {CascadeType.PERSIST})
+    @OneToMany(mappedBy = "reservation", fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @Builder.Default
     private List<RestTable> tables = new ArrayList<>();
 
