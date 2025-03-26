@@ -16,6 +16,8 @@ public final class IngredientSummarizedWithUnitAndGroup extends IngredientBase i
     private LocalDateTime updatedAt;
     private Long unitId;
     private String unitName;
+    private Long groupId;
+    private String groupName;
 
     public IngredientSummarizedWithUnitAndGroup(
             Long id,
@@ -30,6 +32,8 @@ public final class IngredientSummarizedWithUnitAndGroup extends IngredientBase i
         super(name);
         this.id = id;
         this.unitId = unitId;
+        this.groupId = groupId;
+        this.groupName = groupName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.unitName = unitName;

@@ -21,7 +21,7 @@ public class IngredientGroup extends Model implements Serializable {
     private String name;
 
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "group", orphanRemoval = true)
     @Builder.Default
     private List<Ingredient> ingredients = new ArrayList<>();
 }

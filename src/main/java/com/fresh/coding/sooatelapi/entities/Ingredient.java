@@ -37,7 +37,7 @@ public class Ingredient extends Model implements Serializable  {
     private List<Purchase> purchases = new ArrayList<>();
 
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
     private IngredientGroup group;
 }
