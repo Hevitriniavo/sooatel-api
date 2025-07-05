@@ -1,14 +1,14 @@
 package com.fresh.coding.sooatelapi.services;
 
-import com.fresh.coding.sooatelapi.dtos.categories.CategorySummarized;
+import com.fresh.coding.sooatelapi.dtos.categories.MenuGroupSummarized;
 import com.fresh.coding.sooatelapi.dtos.pagination.PageInfo;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.CategorySearch;
 import com.fresh.coding.sooatelapi.dtos.searchs.UnitSearch;
 import com.fresh.coding.sooatelapi.dtos.unit.UnitSummarized;
-import com.fresh.coding.sooatelapi.entities.Category;
+import com.fresh.coding.sooatelapi.entities.MenuGroup;
 import com.fresh.coding.sooatelapi.entities.Unit;
-import com.fresh.coding.sooatelapi.repositories.CategoryRepository;
+import com.fresh.coding.sooatelapi.repositories.MenuGroupRepository;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.repositories.UnitRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +38,8 @@ public class EntityServiceImpl implements EntityService {
     ) {
         Page<T> entityPage;
 
-        if (repository instanceof CategoryRepository && searchName != null && !searchName.isBlank()) {
-            entityPage = (Page<T>) ((CategoryRepository) repository)
+        if (repository instanceof MenuGroupRepository && searchName != null && !searchName.isBlank()) {
+            entityPage = (Page<T>) ((MenuGroupRepository) repository)
                     .findByNameContainingIgnoreCase(searchName, PageRequest.of(page, size));
         } else if (repository instanceof UnitRepository && searchName != null && !searchName.isBlank()) {
             entityPage = (Page<T>) ((UnitRepository) repository)
@@ -63,7 +63,7 @@ public class EntityServiceImpl implements EntityService {
     }
 
     @Override
-    public Paginate<List<CategorySummarized>> findAllCategories(CategorySearch categorySearch, int page, int size) {
+    public Paginate<List<MenuGroupSummarized>> findAllCategories(CategorySearch categorySearch, int page, int size) {
         var categoryRepository = factory.getCategoryRepository();
         return findEntitiesWithPagination(
                 categorySearch.getName(),
@@ -86,8 +86,8 @@ public class EntityServiceImpl implements EntityService {
         );
     }
 
-    private CategorySummarized toSummarized(Category category) {
-        return new CategorySummarized(
+    private MenuGroupSummarized toSummarized(MenuGroup category) {
+        return new MenuGroupSummarized(
                 category.getId(),
                 category.getName(),
                 category.getCreatedAt(),

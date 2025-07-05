@@ -34,12 +34,12 @@ public class OtpCode  implements Serializable {
     private LocalDateTime expiresAt;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isVerified = false;
 
     @Transient
     public boolean isBefore() {
-        return LocalDateTime.now().isBefore(this.expiresAt) ||
-                LocalDateTime.now().equals(this.expiresAt);
+        var now = LocalDateTime.now();
+        return now.isBefore(this.expiresAt) || now.equals(this.expiresAt);
     }
-
 }

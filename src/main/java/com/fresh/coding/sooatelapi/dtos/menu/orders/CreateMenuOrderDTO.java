@@ -21,9 +21,9 @@ public class CreateMenuOrderDTO implements Serializable {
     @ToString.Include
     private List<MenuItemDTO> menuItems;
 
-    private Integer roomNumber;
+    private Long roomNumber;
 
-    private Integer tableNumber;
+    private Long tableNumber;
 
     @Getter
     @Setter
@@ -37,7 +37,7 @@ public class CreateMenuOrderDTO implements Serializable {
 
         @NotNull(message = "Quantity is required")
         @Min(value = 1, message = "Quantity must be at least 1")
-        private Double quantity;
+        private Long quantity;
     }
 
 }

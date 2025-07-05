@@ -3,7 +3,6 @@ package com.fresh.coding.sooatelapi.controllers.rooms;
 import com.fresh.coding.sooatelapi.dtos.rooms.FloorWithRoomDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.SaveRoomDTO;
-import com.fresh.coding.sooatelapi.enums.RoomStatus;
 import com.fresh.coding.sooatelapi.services.rooms.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,22 +29,12 @@ public class RoomController {
         return roomService.getRoomById(id);
     }
 
-    @PatchMapping("/{id}/status")
-    @ResponseStatus(HttpStatus.OK)
-    public RoomDTO updateRoomStatus(@PathVariable Long id, @RequestBody RoomStatus status) {
-        return roomService.updateRoomStatus(id, status);
-    }
 
 
     @GetMapping("/floor/{floorId}")
     @ResponseStatus(HttpStatus.OK)
     public FloorWithRoomDTO getFloorWithRooms(@PathVariable Long floorId) {
         return roomService.findFloorWithRooms(floorId);
-    }
-
-    @GetMapping("/status")
-    public List<RoomStatus> getRoomById() {
-        return Arrays.asList(RoomStatus.values());
     }
 
 

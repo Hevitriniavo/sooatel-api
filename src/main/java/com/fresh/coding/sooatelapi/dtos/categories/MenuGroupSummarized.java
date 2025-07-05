@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @AllArgsConstructor
-public class CategorySummarized implements Serializable {
+public class MenuGroupSummarized implements Serializable {
     private Long id;
     private String name;
     private LocalDateTime createdAt;

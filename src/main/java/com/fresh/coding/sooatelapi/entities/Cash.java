@@ -28,6 +28,6 @@ public class Cash implements Serializable {
 
     @PrePersist
     protected void beforeUpdate() {
-        this.lastUpdated = LocalDateTime.now();
+        lastUpdated = LocalDateTime.now();
     }
 }

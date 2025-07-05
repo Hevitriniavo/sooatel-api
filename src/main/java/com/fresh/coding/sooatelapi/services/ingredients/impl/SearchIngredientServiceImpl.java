@@ -76,14 +76,14 @@ public class SearchIngredientServiceImpl implements SearchIngredientService {
     private List<Predicate> builderPredicates(IngredientSearch ingredientSearch, CriteriaBuilder builder, Root<Ingredient> root, Join<Ingredient, Unit> unitJoin) {
         var predicates = new ArrayList<Predicate>();
 
-        if (ingredientSearch.getIngredientName() != null && !ingredientSearch.getIngredientName().isBlank() && !ingredientSearch.getIngredientName().isEmpty()) {
+        if (ingredientSearch.getIngredientName() != null && !ingredientSearch.getIngredientName().isBlank()) {
             predicates.add(builder.like(
                     builder.lower(root.get("name")),
                     "%" + ingredientSearch.getIngredientName().toLowerCase() + "%"
             ));
         }
 
-        if (ingredientSearch.getUnitName() != null && !ingredientSearch.getUnitName().isBlank() && !ingredientSearch.getUnitName().isEmpty()) {
+        if (ingredientSearch.getUnitName() != null && !ingredientSearch.getUnitName().isBlank()) {
             predicates.add(builder.like(
                     builder.lower(unitJoin.get("name")),
                     "%" + ingredientSearch.getUnitName().toLowerCase() + "%"

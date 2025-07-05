@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Setter
 public class SaveMenu extends MenuBase implements Serializable {
     private MenuStatus status;
-    public SaveMenu(Long id, String name, String description, Double price, Long categoryId, MenuStatus status) {
+    public SaveMenu(Long id, String name, String description, Long price, Long categoryId, MenuStatus status) {
         super(id, name, description, price, categoryId);
         this.status = status;
     }

@@ -19,8 +19,9 @@ public class MenuOrderDTO implements Serializable {
 
     private Long roomId;
 
-    private Integer tableNumber;
-    private Integer roomNumber;
+    private Long tableNumber;
+
+    private Long roomNumber;
 
     private Long tableId;
 
@@ -37,9 +38,9 @@ public class MenuOrderDTO implements Serializable {
 
         private Long menuId;
 
-        private Double quantity;
+        private Long quantity;
 
-        private Double totalPrice;
+        private Long totalPrice;
 
         private OrderStatus status;
     }

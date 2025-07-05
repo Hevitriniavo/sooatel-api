@@ -6,14 +6,17 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@Table(name = "orders")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MenuOrder extends Model implements Serializable {
+public class Order extends Model implements Serializable {
 
     @ManyToOne
     @JoinColumn
@@ -29,21 +32,19 @@ public class MenuOrder extends Model implements Serializable {
 
     @ManyToOne
     @JoinColumn
-    private RestTable table;
+    private TableEntity table;
+
+    @ManyToOne
+    @JoinColumn
+    private SessionOccupation sessionOccupation;
 
     @Column
     private LocalDateTime orderDate;
 
-    @Column
-    private Double quantity;
-
-    @Column(nullable = false)
-    private Double cost;
-
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn
-    private Payment payment;
+    @OneToMany(mappedBy = "order")
+    @Builder.Default
+    private List<OrderLine> orderLines = new ArrayList<>();
 }

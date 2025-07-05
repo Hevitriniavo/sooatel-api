@@ -13,12 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Category extends Model implements Serializable {
+public class MenuGroup extends Model implements Serializable {
 
     @Column(nullable = false, unique = true)
     private String name;
 
     @Builder.Default
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "menuGroup", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Menu> menus = new ArrayList<>();
 }

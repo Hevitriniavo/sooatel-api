@@ -18,7 +18,7 @@ import java.util.List;
 public class Floor extends Model implements Serializable {
 
     @Column(nullable = false, unique = true)
-    private Integer floorNumber;
+    private Integer number;
 
     @Column(columnDefinition = "TEXT")
     private String description;

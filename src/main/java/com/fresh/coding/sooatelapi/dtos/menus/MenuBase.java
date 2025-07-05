@@ -20,7 +20,7 @@ import lombok.Setter;
     private String description;
 
     @NotNull(message = "Price cannot be null")
-    private Double price;
+    private Long price;
 
     @NotNull(message = "Category ID cannot be null")
     private Long categoryId;

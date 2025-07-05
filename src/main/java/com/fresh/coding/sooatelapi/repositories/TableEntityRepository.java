@@ -1,6 +1,6 @@
 package com.fresh.coding.sooatelapi.repositories;
 
-import com.fresh.coding.sooatelapi.entities.RestTable;
+import com.fresh.coding.sooatelapi.entities.TableEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,15 +12,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TableRepository extends JpaRepository<RestTable, Long> {
+public interface TableEntityRepository extends JpaRepository<TableEntity, Long> {
     @Modifying
     @Transactional
-    @Query("DELETE FROM RestTable r WHERE r.id = :restTableId")
+    @Query("DELETE FROM TableEntity r WHERE r.id = :restTableId")
     int deleteTableById(@Param("restTableId") Long id);
 
-    Optional<RestTable> findByNumber(Integer aLong);
+    @Query("SELECT t FROM TableEntity t WHERE t.number = :number")
+    Optional<TableEntity> findByTableNumber(Long number);
 
-    @Query("SELECT t FROM RestTable t LEFT JOIN FETCH t.menuOrders m WHERE t.menuOrders IS NOT EMPTY AND m.payment IS NULL")
-    List<RestTable> findTableWithMenuOrders();
+    @Query("SELECT DISTINCT t FROM TableEntity t JOIN t.orders o JOIN o.orderLines ol")
+    List<TableEntity> findTableWithMenuOrders();
 
 }

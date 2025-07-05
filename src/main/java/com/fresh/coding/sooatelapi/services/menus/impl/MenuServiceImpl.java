@@ -38,7 +38,7 @@ public class MenuServiceImpl implements MenuService {
         menu.setDescription(toSave.getDescription());
         menu.setPrice(toSave.getPrice());
         menu.setStatus(toSave.getStatus());
-        menu.setCategory(category);
+        menu.setMenuGroup(category);
 
         var savedMenu = menuRepository.save(menu);
 
@@ -92,7 +92,7 @@ public class MenuServiceImpl implements MenuService {
                 menu.getName(),
                 menu.getDescription(),
                 menu.getPrice(),
-                menu.getCategory() != null ? menu.getCategory().getId() : null,
+                menu.getMenuGroup() != null ? menu.getMenuGroup().getId() : null,
                 menu.getCreatedAt(),
                 menu.getUpdatedAt(),
                 menu.getStatus()

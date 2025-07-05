@@ -2,9 +2,7 @@ package com.fresh.coding.sooatelapi.services.tables.impl;
 
 import com.fresh.coding.sooatelapi.dtos.tables.SaveTable;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
-import com.fresh.coding.sooatelapi.dtos.tables.UpdateTableStatus;
-import com.fresh.coding.sooatelapi.entities.RestTable;
-import com.fresh.coding.sooatelapi.enums.TableStatus;
+import com.fresh.coding.sooatelapi.entities.TableEntity;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.services.tables.TableService;
@@ -29,7 +27,7 @@ public class TableServiceImpl implements TableService {
     @Transactional
     public TableSummarized save(SaveTable toSave) {
         var tableRepository = factory.getTableRepository();
-        RestTable restTable;
+        TableEntity restTable;
 
         if (toSave.getId() != null) {
             restTable = tableRepository.findById(toSave.getId())
@@ -37,7 +35,7 @@ public class TableServiceImpl implements TableService {
 
             BeanUtils.copyProperties(toSave, restTable, "id", "createdAt", "updatedAt");
         } else {
-            restTable = new RestTable();
+            restTable = new TableEntity();
             BeanUtils.copyProperties(toSave, restTable);
         }
 
@@ -54,16 +52,6 @@ public class TableServiceImpl implements TableService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    @Transactional
-    public UpdateTableStatus updateTableStatus(Long id, TableStatus status) {
-        var tableRepository = factory.getTableRepository();
-        var table = tableRepository.findById(id)
-                .orElseThrow(() -> new HttpNotFoundException("Table not found with ID: " + id));
-        table.setStatus(status);
-        var savedTable = tableRepository.save(table);
-        return new UpdateTableStatus(savedTable.getId(), savedTable.getStatus());
-    }
 
     @Override
     public void deleteById(Long id) {
@@ -76,8 +64,8 @@ public class TableServiceImpl implements TableService {
 
         reservationRepository.unsetTableReservationById(table.getId());
 
-        if (table.getMenuOrders() != null && !table.getMenuOrders().isEmpty()) {
-            for (var menuOrder : table.getMenuOrders()) {
+        if (table.getOrders() != null && !table.getOrders().isEmpty()) {
+            for (var menuOrder : table.getOrders()) {
                 menuOrder.setTable(null);
                 menuOrderRepository.save(menuOrder);
             }
@@ -92,18 +80,17 @@ public class TableServiceImpl implements TableService {
     @Override
     public List<TableSummarized> getTablesWithMenuOrders() {
         var tableRepository = factory.getTableRepository();
-        List<RestTable> tables = tableRepository.findTableWithMenuOrders();
+        List<TableEntity> tables = tableRepository.findTableWithMenuOrders();
         return tables.stream()
                 .map(this::toTableSummarized)
                 .collect(Collectors.toList());
     }
 
-    public TableSummarized toTableSummarized(RestTable table) {
+    public TableSummarized toTableSummarized(TableEntity table) {
         return new TableSummarized(
                 table.getId(),
                 table.getNumber(),
                 table.getCapacity(),
-                table.getStatus(),
                 table.getCreatedAt(),
                 table.getUpdatedAt()
         );

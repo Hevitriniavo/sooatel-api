@@ -5,8 +5,8 @@ import com.fresh.coding.sooatelapi.dtos.menus.MenusWithCategorySummarized;
 import com.fresh.coding.sooatelapi.dtos.pagination.PageInfo;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.MenuSearch;
-import com.fresh.coding.sooatelapi.entities.Category;
 import com.fresh.coding.sooatelapi.entities.Menu;
+import com.fresh.coding.sooatelapi.entities.MenuGroup;
 import com.fresh.coding.sooatelapi.services.menus.SearchMenuService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -28,8 +28,8 @@ public class SearchMenuServiceImpl implements SearchMenuService {
     @Override
     public Paginate<List<MenusWithCategorySummarized>> findAllMenus(MenuSearch menuSearch, int page, int size) {
         var builder = em.getCriteriaBuilder();
-        var query = builder.createQuery(Category.class);
-        var root = query.from(Category.class);
+        var query = builder.createQuery(MenuGroup.class);
+        var root = query.from(MenuGroup.class);
 
         root.fetch("menus", JoinType.LEFT);
 
@@ -63,7 +63,7 @@ public class SearchMenuServiceImpl implements SearchMenuService {
 
 
 
-    private List<MenusWithCategorySummarized> toSummarized(List<Category> categories) {
+    private List<MenusWithCategorySummarized> toSummarized(List<MenuGroup> categories) {
         return categories.stream().map(category -> new MenusWithCategorySummarized(
                 category.getId(),
                 category.getName(),
@@ -74,7 +74,7 @@ public class SearchMenuServiceImpl implements SearchMenuService {
                         menu.getName(),
                         menu.getDescription(),
                         menu.getPrice(),
-                        menu.getCategory() != null ? menu.getCategory().getId() : null,
+                        menu.getMenuGroup() != null ? menu.getMenuGroup().getId() : null,
                         menu.getCreatedAt(),
                         menu.getUpdatedAt(),
                         menu.getStatus()
@@ -84,7 +84,7 @@ public class SearchMenuServiceImpl implements SearchMenuService {
     public long getTotalCount(MenuSearch menuSearch) {
         var builder = em.getCriteriaBuilder();
         var query = builder.createQuery(Long.class);
-        var root = query.from(Category.class);
+        var root = query.from(MenuGroup.class);
 
         var predicates = buildPredicates(menuSearch, builder, root);
 
@@ -94,7 +94,7 @@ public class SearchMenuServiceImpl implements SearchMenuService {
     }
 
 
-    private List<Predicate> buildPredicates(MenuSearch menuSearch, CriteriaBuilder builder, Root<Category> root) {
+    private List<Predicate> buildPredicates(MenuSearch menuSearch, CriteriaBuilder builder, Root<MenuGroup> root) {
         var predicates = new ArrayList<Predicate>();
 
         if (menuSearch.getCategoryId() != null ) {
@@ -105,7 +105,7 @@ public class SearchMenuServiceImpl implements SearchMenuService {
         }
 
         if (menuSearch.getMenuName() != null && !menuSearch.getMenuName().isBlank()) {
-            Join<Category, Menu> menuJoin = root.join("menus", JoinType.LEFT);
+            Join<MenuGroup, Menu> menuJoin = root.join("menus", JoinType.LEFT);
             predicates.add(builder.like(
                     builder.lower(menuJoin.get("name")),
                     "%" + menuSearch.getMenuName().toLowerCase() + "%"
@@ -114,18 +114,18 @@ public class SearchMenuServiceImpl implements SearchMenuService {
 
 
         if (menuSearch.getStatus() != null) {
-            Join<Category, Menu> menuJoin = root.join("menus", JoinType.LEFT);
+            Join<MenuGroup, Menu> menuJoin = root.join("menus", JoinType.LEFT);
             predicates.add(builder.equal(
                     menuJoin.get("status"), menuSearch.getStatus()
             ));
         }
         if (menuSearch.getPriceMin() != null) {
-            Join<Category, Menu> menuJoin = root.join("menus", JoinType.LEFT);
+            Join<MenuGroup, Menu> menuJoin = root.join("menus", JoinType.LEFT);
             predicates.add(builder.greaterThanOrEqualTo(menuJoin.get("price"), menuSearch.getPriceMin()));
         }
 
         if (menuSearch.getPriceMax() != null) {
-            Join<Category, Menu> menuJoin = root.join("menus", JoinType.LEFT);
+            Join<MenuGroup, Menu> menuJoin = root.join("menus", JoinType.LEFT);
             predicates.add(builder.lessThanOrEqualTo(menuJoin.get("price"), menuSearch.getPriceMax()));
         }
 

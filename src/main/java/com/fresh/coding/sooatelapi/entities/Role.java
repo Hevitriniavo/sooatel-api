@@ -33,5 +33,4 @@ public class Role extends Model implements Serializable {
     @Builder.Default
     @JsonBackReference
     private List<User> users = new ArrayList<>();
-
 }

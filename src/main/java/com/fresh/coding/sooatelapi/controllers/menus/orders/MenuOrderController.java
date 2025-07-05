@@ -48,22 +48,22 @@ public class MenuOrderController {
 
     @GetMapping("/grouped")
     public List<Map<String, Object>> getGroupedOrders(
-            @RequestParam(required = false) Integer tableNumber,
-            @RequestParam(required = false) Integer roomNumber
+            @RequestParam(required = false) Long tableNumber,
+            @RequestParam(required = false) Long roomNumber
     ) {
         return menuOrderService.groupByTableOrRoom(tableNumber, roomNumber);
     }
 
     @GetMapping("/all/table/{tableNumber}")
     public List<MenuOrderSummarized> getAllOrdersByTable(
-            @PathVariable Integer tableNumber
+            @PathVariable Long tableNumber
     ) {
         return menuOrderService.findAllOrdersByTable(tableNumber);
     }
 
     @GetMapping("/all/room/{roomNumber}")
     public List<MenuOrderSummarized> getAllOrdersByRoom(
-            @PathVariable Integer roomNumber
+            @PathVariable Long roomNumber
     ) {
         return menuOrderService.findAllOrdersByRoom(roomNumber);
     }

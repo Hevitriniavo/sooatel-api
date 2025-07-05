@@ -1,6 +1,5 @@
 package com.fresh.coding.sooatelapi.entities;
 
-
 import com.fresh.coding.sooatelapi.enums.PaymentMethod;
 import com.fresh.coding.sooatelapi.enums.TransactionType;
 import jakarta.persistence.*;

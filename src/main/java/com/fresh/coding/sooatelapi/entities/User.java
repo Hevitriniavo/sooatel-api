@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 @Setter
 @Builder
-public class User extends Model implements UserDetails , Serializable {
-
+public class User extends Model implements UserDetails, Serializable {
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -38,22 +37,17 @@ public class User extends Model implements UserDetails , Serializable {
     @Getter
     private String token;
 
-
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     @Builder.Default
     @Getter
     private List<Role> roles = new ArrayList<>();
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles
-                .stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
-                .collect(Collectors.toList());
+        return this.roles.stream()
+            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
+            .collect(Collectors.toList());
     }
-
-
 
     @Override
     public String getUsername() {
@@ -65,23 +59,4 @@ public class User extends Model implements UserDetails , Serializable {
         return username;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }

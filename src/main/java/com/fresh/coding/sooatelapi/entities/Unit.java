@@ -28,5 +28,4 @@ public class Unit extends Model implements Serializable {
     @OneToMany(mappedBy = "unit", orphanRemoval = true)
     @ToString.Exclude
     private List<Ingredient> ingredients = new ArrayList<>();
-
 }

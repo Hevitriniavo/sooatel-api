@@ -1,14 +1,14 @@
 package com.fresh.coding.sooatelapi.services.categories.impl;
 
-import com.fresh.coding.sooatelapi.dtos.categories.CategorySummarized;
+import com.fresh.coding.sooatelapi.dtos.categories.MenuGroupSummarized;
 import com.fresh.coding.sooatelapi.dtos.categories.SaveCategory;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.CategorySearch;
-import com.fresh.coding.sooatelapi.entities.Category;
+import com.fresh.coding.sooatelapi.entities.MenuGroup;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.services.EntityService;
-import com.fresh.coding.sooatelapi.services.categories.CategoryService;
+import com.fresh.coding.sooatelapi.services.categories.MenuGroupService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,20 +19,20 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CategoryServiceImpl implements CategoryService {
+public class ManuGroupServiceImpl implements MenuGroupService {
     private final RepositoryFactory factory;
     private final EntityService entityService;
 
     @Override
-    public CategorySummarized save(SaveCategory toSave) {
+    public MenuGroupSummarized save(SaveCategory toSave) {
         var categoryRepository = factory.getCategoryRepository();
-        Category category;
+        MenuGroup category;
         if (toSave.getId() != null) {
             category = categoryRepository.findById(toSave.getId())
                     .orElseThrow(() -> new RuntimeException("Category not found with id: " + toSave.getId()));
             category.setName(toSave.getName());
         } else {
-            category = Category.builder()
+            category = MenuGroup.builder()
                     .name(toSave.getName())
                     .build();
         }
@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategorySummarized> findAllCategories() {
+    public List<MenuGroupSummarized> findAllCategories() {
         var categoryRepository = factory.getCategoryRepository();
         return categoryRepository.findAll()
                 .stream().map(this::toSummarized)
@@ -51,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Paginate<List<CategorySummarized>> findAllCategories(CategorySearch categorySearch, int page, int size) {
+    public Paginate<List<MenuGroupSummarized>> findAllCategories(CategorySearch categorySearch, int page, int size) {
         return entityService.findAllCategories(categorySearch, page, size);
     }
 
@@ -75,8 +75,8 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    private CategorySummarized toSummarized(Category category){
-        return new CategorySummarized(
+    private MenuGroupSummarized toSummarized(MenuGroup category){
+        return new MenuGroupSummarized(
                 category.getId(),
                 category.getName(),
                 category.getCreatedAt(),

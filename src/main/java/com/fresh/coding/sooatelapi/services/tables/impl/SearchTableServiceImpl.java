@@ -4,7 +4,7 @@ import com.fresh.coding.sooatelapi.dtos.pagination.PageInfo;
 import com.fresh.coding.sooatelapi.dtos.pagination.Paginate;
 import com.fresh.coding.sooatelapi.dtos.searchs.TableSearch;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
-import com.fresh.coding.sooatelapi.entities.RestTable;
+import com.fresh.coding.sooatelapi.entities.TableEntity;
 import com.fresh.coding.sooatelapi.services.tables.SearchTableService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -28,8 +28,8 @@ public class SearchTableServiceImpl implements SearchTableService {
     @Override
     public Paginate<List<TableSummarized>> findAllTables(TableSearch tableSearch, int page, int size) {
         var builder = em.getCriteriaBuilder();
-        var query = builder.createQuery(RestTable.class);
-        var root = query.from(RestTable.class);
+        var query = builder.createQuery(TableEntity.class);
+        var root = query.from(TableEntity.class);
 
 
         var predicates = buildPredicates(tableSearch, builder, root);
@@ -59,12 +59,11 @@ public class SearchTableServiceImpl implements SearchTableService {
     }
 
 
-    private List<TableSummarized> toSummarized(List<RestTable> tables) {
+    private List<TableSummarized> toSummarized(List<TableEntity> tables) {
         return tables.stream().map(category -> new TableSummarized(
                 category.getId(),
                 category.getNumber(),
                 category.getCapacity(),
-                category.getStatus(),
                 category.getCreatedAt(),
                 category.getUpdatedAt()
         )).collect(Collectors.toList());
@@ -73,7 +72,7 @@ public class SearchTableServiceImpl implements SearchTableService {
     public long getTotalCount(TableSearch tableSearch) {
         var builder = em.getCriteriaBuilder();
         var query = builder.createQuery(Long.class);
-        var root = query.from(RestTable.class);
+        var root = query.from(TableEntity.class);
 
         var predicates = buildPredicates(tableSearch, builder, root);
 
@@ -83,14 +82,8 @@ public class SearchTableServiceImpl implements SearchTableService {
     }
 
 
-    private List<Predicate> buildPredicates(TableSearch search, CriteriaBuilder builder, Root<RestTable> root) {
+    private List<Predicate> buildPredicates(TableSearch search, CriteriaBuilder builder, Root<TableEntity> root) {
         var predicates = new ArrayList<Predicate>();
-
-        if (search.getStatus() != null && !search.getStatus().name().isBlank()) {
-            predicates.add(builder.equal(root.get("status"),
-                    "%" + search.getStatus() + "%"
-            ));
-        }
 
         if (search.getCapacityMin() != null) {
             predicates.add(builder.greaterThanOrEqualTo(root.get("capacity"), search.getCapacityMin()));

@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-
 @Getter
 @Setter
 @MappedSuperclass
@@ -24,16 +23,13 @@ public class Model {
 
     @PrePersist
     public void beforeCreate() {
-        if (createdAt == null) {
-            this.createdAt = LocalDateTime.now();
-        }
-        if (updatedAt == null) {
-            this.updatedAt = LocalDateTime.now();
-        }
+        var now = LocalDateTime.now();
+        if (createdAt == null) createdAt = now;
+        if (updatedAt == null) updatedAt = now;
     }
 
     @PreUpdate
     public void beforeUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 }

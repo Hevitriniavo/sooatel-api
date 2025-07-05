@@ -7,12 +7,9 @@ import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.entities.Customer;
 import com.fresh.coding.sooatelapi.entities.Reservation;
-import com.fresh.coding.sooatelapi.entities.RestTable;
 import com.fresh.coding.sooatelapi.entities.Room;
+import com.fresh.coding.sooatelapi.entities.TableEntity;
 import com.fresh.coding.sooatelapi.enums.ReservationStatus;
-import com.fresh.coding.sooatelapi.enums.RoomStatus;
-import com.fresh.coding.sooatelapi.enums.TableStatus;
-import com.fresh.coding.sooatelapi.exceptions.HttpBadRequestException;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import jakarta.transaction.Transactional;
@@ -20,65 +17,109 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
-    private final RepositoryFactory repositoryFactory;
 
+    private final RepositoryFactory repositoryFactory;
 
     @Transactional
     @Override
     public void deleteReservation(Long id) {
-        var reservationRepository = repositoryFactory.getReservationRepository();
-        var tableRepository = repositoryFactory.getTableRepository();
-        var roomRepository = repositoryFactory.getRoomRepository();
-        var reservation = reservationRepository.findById(id);
-
-        if (reservation.isEmpty()) {
-            throw new HttpNotFoundException("Reservation not found");
+        var reservationRepo = repositoryFactory.getReservationRepository();
+        var reservation = reservationRepo.findById(id)
+                .orElseThrow(() -> new HttpNotFoundException("Réservation introuvable avec l'identifiant : " + id));
+        if (reservation.getRoom() != null) {
+            var room = reservation.getRoom();
+            if (room.getReservations() != null) {
+                room.getReservations().remove(reservation);
+            }
+            repositoryFactory.getRoomRepository().save(room);
         }
-
-        var existingReservation = reservation.get();
-
-        existingReservation.getRooms().forEach(room -> {
-            room.setReservation(null);
-            room.setStatus(RoomStatus.AVAILABLE);
-            roomRepository.save(room);
-        });
-
-        existingReservation.getTables().forEach(table -> {
-            table.setReservation(null);
-            table.setStatus(TableStatus.AVAILABLE);
-            tableRepository.save(table);
-        });
-        reservationRepository.deleteById(id);
+        if (reservation.getTable() != null) {
+            var table = reservation.getTable();
+            if (table.getReservations() != null) {
+                table.getReservations().remove(reservation);
+            }
+            repositoryFactory.getTableRepository().save(table);
+        }
+        reservationRepo.delete(reservation);
     }
 
-
-    @Override
     @Transactional
-    public ReservationDTO updateReservation(Long id, SaveReservationDTO saveReservationDTO) {
+    @Override
+    public ReservationDTO saveReservation(SaveReservationDTO dto) {
+        if (dto == null || dto.getCustomer() == null) {
+            throw new IllegalArgumentException("La réservation ou les informations du client sont manquantes.");
+        }
+        var customer = getOrCreateCustomer(dto);
+        Room room = getFirstRoom(dto.getRoomIds());
+        TableEntity table = getFirstTable(dto.getTableIds());
+        var reservation = Reservation.builder()
+                .customer(customer)
+                .room(room)
+                .table(table)
+                .reservationStart(dto.getReservationStart())
+                .reservationEnd(dto.getReservationEnd())
+                .status(ReservationStatus.valueOf(dto.getStatus()))
+                .description(dto.getDescription())
+                .build();
+        if (room != null) {
+            if (room.getReservations() == null) {
+                room.setReservations(new ArrayList<>());
+            }
+            room.getReservations().add(reservation);
+        }
+        if (table != null) {
+            if (table.getReservations() == null) {
+                table.setReservations(new ArrayList<>());
+            }
+            table.getReservations().add(reservation);
+        }
+        var saved = repositoryFactory.getReservationRepository().save(reservation);
+        return mapToDTO(saved);
+    }
+
+    @Transactional
+    @Override
+    public ReservationDTO updateReservation(Long id, SaveReservationDTO dto) {
         var reservation = repositoryFactory.getReservationRepository().findById(id)
-                .orElseThrow(() -> new HttpNotFoundException("Reservation not found"));
-
-        updateReservationFields(reservation, saveReservationDTO);
-        var updatedReservation = repositoryFactory.getReservationRepository().save(reservation);
-        return mapToDTO(updatedReservation);
+                .orElseThrow(() -> new HttpNotFoundException("Réservation introuvable avec l'identifiant : " + id));
+        if (reservation.getRoom() != null && reservation.getRoom().getReservations() != null) {
+            reservation.getRoom().getReservations().remove(reservation);
+        }
+        if (reservation.getTable() != null && reservation.getTable().getReservations() != null) {
+            reservation.getTable().getReservations().remove(reservation);
+        }
+        updateReservationFields(reservation, dto);
+        if (reservation.getRoom() != null) {
+            if (reservation.getRoom().getReservations() == null) {
+                reservation.getRoom().setReservations(new ArrayList<>());
+            }
+            reservation.getRoom().getReservations().add(reservation);
+        }
+        if (reservation.getTable() != null) {
+            if (reservation.getTable().getReservations() == null) {
+                reservation.getTable().setReservations(new ArrayList<>());
+            }
+            reservation.getTable().getReservations().add(reservation);
+        }
+        var updated = repositoryFactory.getReservationRepository().save(reservation);
+        return mapToDTO(updated);
     }
 
-    @Override
     @Transactional
+    @Override
     public ReservationDTO updateReservationStatus(Long id, ReservationStatus status) {
         var reservation = repositoryFactory.getReservationRepository().findById(id)
-                .orElseThrow(() -> new HttpNotFoundException("Reservation not found"));
-
+                .orElseThrow(() -> new HttpNotFoundException("Impossible de mettre à jour le statut : réservation introuvable avec l'identifiant : " + id));
         reservation.setStatus(status);
-
-        var updatedReservation = repositoryFactory.getReservationRepository().save(reservation);
-        return mapToDTO(updatedReservation);
+        var updated = repositoryFactory.getReservationRepository().save(reservation);
+        return mapToDTO(updated);
     }
 
     @Override
@@ -88,118 +129,73 @@ public class ReservationServiceImpl implements ReservationService {
                 .collect(Collectors.toList());
     }
 
-
-    @Override
-    @Transactional
-    public ReservationDTO saveReservation(SaveReservationDTO saveReservationDTO) {
-        if (saveReservationDTO == null || saveReservationDTO.getCustomer() == null) {
-            throw new IllegalArgumentException("La réservation ou les informations du client sont nulles");
+    private void updateReservationFields(Reservation reservation, SaveReservationDTO dto) {
+        if (dto == null || dto.getCustomer() == null) {
+            throw new IllegalArgumentException("Les données de réservation ou du client sont manquantes.");
         }
-
-        var customerRepo = repositoryFactory.getCustomerRepository();
-        var customer = saveReservationDTO.getCustomer().getCustomerId() != null
-                ? customerRepo.findById(saveReservationDTO.getCustomer().getCustomerId())
-                .orElseGet(() -> customerRepo.save(Customer.builder()
-                        .name(saveReservationDTO.getCustomer().getName())
-                        .phoneNumber(saveReservationDTO.getCustomer().getPhoneNumber())
-                        .build()))
-                : customerRepo.save(Customer.builder()
-                .name(saveReservationDTO.getCustomer().getName())
-                .phoneNumber(saveReservationDTO.getCustomer().getPhoneNumber())
-                .build());
-
-        List<Room> rooms = repositoryFactory.getRoomRepository().findAllById(saveReservationDTO.getRoomIds());
-        List<RestTable> tables = repositoryFactory.getTableRepository().findAllById(saveReservationDTO.getTableIds());
-
-        Reservation reservation = Reservation.builder()
-                .customer(customer)
-                .rooms(rooms)
-                .tables(tables)
-                .reservationStart(saveReservationDTO.getReservationStart())
-                .reservationEnd(saveReservationDTO.getReservationEnd())
-                .status(ReservationStatus.valueOf(saveReservationDTO.getStatus()))
-                .description(saveReservationDTO.getDescription())
-                .build();
-
-
-        rooms.forEach(room -> {
-            room.setReservation(reservation);
-        });
-
-        tables.forEach(table -> {
-            table.setReservation(reservation);
-        });
-
-        var savedReservation = repositoryFactory.getReservationRepository().save(reservation);
-
-        return mapToDTO(savedReservation);
+        var customer = getOrCreateCustomer(dto);
+        Room room = getFirstRoom(dto.getRoomIds());
+        TableEntity table = getFirstTable(dto.getTableIds());
+        reservation.setCustomer(customer);
+        reservation.setRoom(room);
+        reservation.setTable(table);
+        reservation.setDescription(dto.getDescription());
+        reservation.setReservationStart(dto.getReservationStart());
+        reservation.setReservationEnd(dto.getReservationEnd());
     }
 
+    private Customer getOrCreateCustomer(SaveReservationDTO dto) {
+        var customerDTO = dto.getCustomer();
+        var repo = repositoryFactory.getCustomerRepository();
+        return customerDTO.getCustomerId() != null
+                ? repo.findById(customerDTO.getCustomerId())
+                .orElseGet(() -> repo.save(Customer.builder()
+                        .name(customerDTO.getName())
+                        .phoneNumber(customerDTO.getPhoneNumber())
+                        .build()))
+                : repo.save(Customer.builder()
+                .name(customerDTO.getName())
+                .phoneNumber(customerDTO.getPhoneNumber())
+                .build());
+    }
 
-    private void updateReservationFields(Reservation reservation, SaveReservationDTO saveReservationDTO) {
-        if (saveReservationDTO == null || saveReservationDTO.getCustomer() == null) {
-            throw new IllegalArgumentException("La réservation ou les informations du client sont nulles");
-        }
+    private Room getFirstRoom(List<Long> roomIds) {
+        if (roomIds == null || roomIds.isEmpty()) return null;
+        Long id = roomIds.get(0);
+        return repositoryFactory.getRoomRepository().findById(id)
+                .orElseThrow(() -> new HttpNotFoundException("Chambre introuvable avec l'identifiant : " + id));
+    }
 
-        var customerRepo = repositoryFactory.getCustomerRepository();
-        var customerDTO = saveReservationDTO.getCustomer();
-
-        var customer = customerRepo.findById(customerDTO.getCustomerId())
-                .orElseGet(() -> {
-                    var toSave = Customer.builder()
-                            .name(customerDTO.getName())
-                            .phoneNumber(customerDTO.getPhoneNumber())
-                            .build();
-
-                    if (customerDTO.getCustomerId() != null) {
-                        toSave.setId(customerDTO.getCustomerId());
-                    }
-
-                    return customerRepo.save(toSave);
-                });
-
-        reservation.setCustomer(customer);
-        reservation.setDescription(saveReservationDTO.getDescription());
-        reservation.setReservationStart(saveReservationDTO.getReservationStart());
-        reservation.setReservationEnd(saveReservationDTO.getReservationEnd());
-
+    private TableEntity getFirstTable(List<Long> tableIds) {
+        if (tableIds == null || tableIds.isEmpty()) return null;
+        Long id = tableIds.get(0);
+        return repositoryFactory.getTableRepository().findById(id)
+                .orElseThrow(() -> new HttpNotFoundException("Table introuvable avec l'identifiant : " + id));
     }
 
     private ReservationDTO mapToDTO(Reservation reservation) {
         var dto = new ReservationDTO();
-        BeanUtils.copyProperties(reservation, dto, "customer", "rooms", "tables");
-
+        BeanUtils.copyProperties(reservation, dto, "customer", "room", "table");
         if (reservation.getCustomer() != null) {
-            CustomerDTO customerDTO = new CustomerDTO();
+            var customerDTO = new CustomerDTO();
             BeanUtils.copyProperties(reservation.getCustomer(), customerDTO);
             dto.setCustomer(customerDTO);
         }
-
-        if (reservation.getRooms() != null) {
-            List<RoomDTO> roomDTOs = reservation.getRooms().stream()
-                    .map(room -> {
-                        RoomDTO roomDTO = new RoomDTO();
-                        BeanUtils.copyProperties(room, roomDTO);
-                        return roomDTO;
-                    })
-                    .collect(Collectors.toList());
-            dto.setRooms(roomDTOs);
+        if (reservation.getRoom() != null) {
+            var roomDTO = new RoomDTO();
+            BeanUtils.copyProperties(reservation.getRoom(), roomDTO);
+            dto.setRooms(List.of(roomDTO));
         }
-
-        if (reservation.getTables() != null) {
-            List<TableSummarized> tableDTOs = reservation.getTables().stream()
-                    .map(table -> new TableSummarized(
-                            table.getId(),
-                            table.getNumber(),
-                            table.getCapacity(),
-                            table.getStatus(),
-                            table.getCreatedAt(),
-                            table.getUpdatedAt()
-                    ))
-                    .collect(Collectors.toList());
-            dto.setTables(tableDTOs);
+        if (reservation.getTable() != null) {
+            var tableDTO = new TableSummarized(
+                    reservation.getTable().getId(),
+                    reservation.getTable().getNumber(),
+                    reservation.getTable().getCapacity(),
+                    reservation.getTable().getCreatedAt(),
+                    reservation.getTable().getUpdatedAt()
+            );
+            dto.setTables(List.of(tableDTO));
         }
-
         return dto;
     }
 }

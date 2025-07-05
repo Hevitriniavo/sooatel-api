@@ -15,13 +15,14 @@ import java.util.Optional;
 public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findByFloorId(Long floorId);
 
-    @Transactional
     @Modifying
+    @Transactional
     @Query("DELETE FROM Room r WHERE r.floor.id = :id")
-    void deleteRoomByFloorId(Long id);
+    void  deleteRoomByFloorId(Long id);
 
-    @Query("SELECT r FROM Room r LEFT JOIN FETCH r.menuOrders m WHERE r.menuOrders IS NOT EMPTY AND m.payment IS NULL")
+    @Query("SELECT r FROM Room r WHERE r.number = :number")
+    Optional<Room> findByRoomNumber(Long number);
+
+    @Query("SELECT DISTINCT r FROM Room r JOIN r.orders o JOIN o.orderLines ol")
     List<Room> findRoomsWithMenuOrders();
-
-    Optional<Room> findByRoomNumber(Integer roomNumber);
 }

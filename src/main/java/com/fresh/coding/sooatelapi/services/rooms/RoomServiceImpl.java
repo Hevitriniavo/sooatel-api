@@ -4,7 +4,6 @@ import com.fresh.coding.sooatelapi.dtos.rooms.FloorWithRoomDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.rooms.SaveRoomDTO;
 import com.fresh.coding.sooatelapi.entities.Room;
-import com.fresh.coding.sooatelapi.enums.RoomStatus;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import lombok.RequiredArgsConstructor;
@@ -79,8 +78,8 @@ public class RoomServiceImpl implements RoomService {
 
        reservationRepository.unsetRoomReservationById(room.getId());
 
-        if (room.getMenuOrders() != null && !room.getMenuOrders().isEmpty()) {
-            for (var menuOrder : room.getMenuOrders()) {
+        if (room.getOrders() != null && !room.getOrders().isEmpty()) {
+            for (var menuOrder : room.getOrders()) {
                 menuOrder.setRoom(null);
                 menuOrderRepository.save(menuOrder);
             }
@@ -88,16 +87,6 @@ public class RoomServiceImpl implements RoomService {
         roomRepository.deleteById(id);
     }
 
-    @Override
-    public RoomDTO updateRoomStatus(Long id, RoomStatus status) {
-        var roomRepository = repositoryFactory.getRoomRepository();
-        var room = roomRepository.findById(id)
-                .orElseThrow(() -> new HttpNotFoundException("Room not found"));
-        room.setStatus(status);
-        room.setUpdatedAt(LocalDateTime.now());
-        roomRepository.save(room);
-        return mapToDTO(room);
-    }
 
     @Override
     public FloorWithRoomDTO findFloorWithRooms(Long floorId) {
@@ -114,7 +103,7 @@ public class RoomServiceImpl implements RoomService {
 
         return new FloorWithRoomDTO(
                 floor.getId(),
-                floor.getFloorNumber(),
+                floor.getNumber(),
                 floor.getDescription(),
                 floor.getCreatedAt(),
                 floor.getUpdatedAt(),

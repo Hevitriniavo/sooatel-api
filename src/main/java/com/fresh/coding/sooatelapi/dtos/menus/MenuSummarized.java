@@ -14,7 +14,7 @@ public  class MenuSummarized extends MenuBase implements Serializable {
     private LocalDateTime updatedAt;
     private MenuStatus status;
 
-    public MenuSummarized(Long id, String name, String description, Double price, Long categoryId, LocalDateTime createdAt, LocalDateTime updatedAt, MenuStatus status) {
+    public MenuSummarized(Long id, String name, String description, Long price, Long categoryId, LocalDateTime createdAt, LocalDateTime updatedAt, MenuStatus status) {
         super(id, name, description, price, categoryId);
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

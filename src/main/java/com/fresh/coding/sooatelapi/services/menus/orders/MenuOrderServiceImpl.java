@@ -6,356 +6,341 @@ import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderSummarized;
 import com.fresh.coding.sooatelapi.dtos.menus.MenuSummarized;
 import com.fresh.coding.sooatelapi.dtos.menus.UpdateOrderStatusDTO;
-import com.fresh.coding.sooatelapi.dtos.payments.PaymentSummarized;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.entities.*;
 import com.fresh.coding.sooatelapi.enums.OperationType;
 import com.fresh.coding.sooatelapi.enums.OrderStatus;
-import com.fresh.coding.sooatelapi.enums.RoomStatus;
-import com.fresh.coding.sooatelapi.enums.TableStatus;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
+import com.fresh.coding.sooatelapi.repositories.OperationRepository;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
+import com.fresh.coding.sooatelapi.repositories.SessionOccupationRepository;
+import com.fresh.coding.sooatelapi.repositories.StockRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class MenuOrderServiceImpl implements MenuOrderService {
-
     private final RepositoryFactory repositoryFactory;
-
 
     @Override
     @Transactional
-    public MenuOrderDTO createMenuOrder(CreateMenuOrderDTO createMenuOrderDTO) {
-        var roomNumber = createMenuOrderDTO.getRoomNumber();
-        var tableNumber = createMenuOrderDTO.getTableNumber();
-        var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
+    public MenuOrderDTO createMenuOrder(CreateMenuOrderDTO dto) {
+        Long roomNumber = dto.getRoomNumber();
+        Long tableNumber = dto.getTableNumber();
 
+        if (roomNumber == null && tableNumber == null)
+            throw new IllegalArgumentException("Vous devez fournir soit un numéro de salle, soit un numéro de table.");
+        if (roomNumber != null && tableNumber != null)
+            throw new IllegalArgumentException("Vous ne pouvez pas fournir à la fois un numéro de salle et un numéro de table.");
 
-        if (roomNumber == null && tableNumber == null) {
-            throw new IllegalArgumentException("Either roomNumber or tableNumber must be provided.");
+        LocalDateTime now = LocalDateTime.now();
+
+        var menuRepo = repositoryFactory.getMenuRepository();
+        var roomRepo = repositoryFactory.getRoomRepository();
+        var tableRepo = repositoryFactory.getTableRepository();
+        var customerRepo = repositoryFactory.getCustomerRepository();
+        var stockRepo = repositoryFactory.getStockRepository();
+        var operationRepo = repositoryFactory.getOperationRepository();
+        var orderRepo = repositoryFactory.getMenuOrderRepository();
+        var orderLineRepo = repositoryFactory.getOrderLineRepository();
+        var sessionRepo = repositoryFactory.getSessionOccupationRepository();
+
+        Customer customer = null;
+        if (dto.getCustomerId() != null) {
+            customer = customerRepo.findById(dto.getCustomerId())
+                    .orElseThrow(() -> new HttpNotFoundException("Aucun client trouvé avec l'ID : " + dto.getCustomerId()));
         }
-
-        if (roomNumber != null && tableNumber != null) {
-            throw new IllegalArgumentException("Cannot have both roomNumber and tableNumber at the same time.");
-        }
-
-
-        var now = LocalDateTime.now();
-        var menuRepository = repositoryFactory.getMenuRepository();
-        var roomRepository = repositoryFactory.getRoomRepository();
-        var tableRepository = repositoryFactory.getTableRepository();
-        var customerRepository = repositoryFactory.getCustomerRepository();
-        var stockRepository = repositoryFactory.getStockRepository();
-        var operationRepository = repositoryFactory.getOperationRepository();
-
-        var customer = createMenuOrderDTO.getCustomerId() != null
-                ? customerRepository.findById(createMenuOrderDTO.getCustomerId())
-                .orElseThrow(() -> new HttpNotFoundException("Customer not found"))
-                : null;
 
         Room room = null;
-        RestTable table = null;
-
-
+        TableEntity table = null;
         if (roomNumber != null) {
-            room = roomRepository.findByRoomNumber(roomNumber)
-                    .orElseThrow(() -> new HttpNotFoundException("Room not found"));
-            room.setStatus(RoomStatus.NOT_AVAILABLE);
+            room = roomRepo.findByRoomNumber(roomNumber)
+                    .orElseThrow(() -> new HttpNotFoundException("Aucune salle trouvée avec le numéro " + roomNumber));
+        } else {
+            table = tableRepo.findByTableNumber(tableNumber)
+                    .orElseThrow(() -> new HttpNotFoundException("Aucune table trouvée avec le numéro " + tableNumber));
         }
 
-        if (tableNumber != null) {
-            table = tableRepository.findByNumber(tableNumber)
-                    .orElseThrow(() -> new HttpNotFoundException("Table not found"));
-            table.setStatus(TableStatus.NOT_AVAILABLE);
-        }
+        SessionOccupation session = getOrCreateActiveSession(sessionRepo, customer, room, table, now);
 
-
-        List<MenuOrder> savedMenuOrders = new ArrayList<>();
         List<String> missingIngredients = new ArrayList<>();
-
-        for (var item : createMenuOrderDTO.getMenuItems()) {
-            var menu = menuRepository.findById(item.getMenuId())
-                    .orElseThrow(() -> new HttpNotFoundException("Menu not found"));
-
-            var ingredientShortages = checkStock(menu, item.getQuantity());
-            if (!ingredientShortages.isEmpty()) {
-                missingIngredients.addAll(ingredientShortages);
-            }
+        for (var item : dto.getMenuItems()) {
+            Menu menu = menuRepo.findById(item.getMenuId())
+                    .orElseThrow(() -> new HttpNotFoundException("Menu introuvable avec l'ID : " + item.getMenuId()));
+            List<String> shortages = checkStock(menu, item.getQuantity());
+            if (!shortages.isEmpty()) missingIngredients.addAll(shortages);
         }
+        if (!missingIngredients.isEmpty())
+            throw new IllegalArgumentException("Ingrédients manquants : " + String.join(", ", missingIngredients));
 
-        if (!missingIngredients.isEmpty()) {
-            throw new IllegalArgumentException( String.join(", ", missingIngredients));
-        }
+        Order order = Order.builder()
+                .customer(customer)
+                .room(room)
+                .table(table)
+                .orderDate(now)
+                .orderStatus(OrderStatus.NOT_DELIVERED)
+                .sessionOccupation(session)
+                .build();
+        order = orderRepo.save(order);
 
-        for (var item : createMenuOrderDTO.getMenuItems()) {
-            var menu = menuRepository.findById(item.getMenuId())
-                    .orElseThrow(() -> new HttpNotFoundException("Menu not found"));
+        List<MenuOrderDTO.MenuItemSummarizedDTO> summarizedItems = new ArrayList<>();
 
-            var menuOrder = MenuOrder.builder()
-                    .customer(customer)
-                    .orderDate(now)
+        for (var item : dto.getMenuItems()) {
+            Menu menu = menuRepo.findById(item.getMenuId())
+                    .orElseThrow(() -> new HttpNotFoundException("Menu introuvable avec l'ID : " + item.getMenuId()));
+
+            var totalPrice = menu.getPrice() * item.getQuantity();
+
+            OrderLine orderLine = OrderLine.builder()
+                    .order(order)
                     .menu(menu)
                     .quantity(item.getQuantity())
-                    .cost(item.getQuantity() * menu.getPrice())
-                    .orderStatus(OrderStatus.NOT_DELIVERED)
+                    .unitPrice(menu.getPrice())
+                    .totalPrice(totalPrice)
                     .build();
+            orderLineRepo.save(orderLine);
+            order.getOrderLines().add(orderLine);
 
-            if (room != null) {
-                menuOrder.setRoom(room);
-            }
-            if (table != null) {
-                menuOrder.setTable(table);
-            }
+            updateStockAndOperations(menu, item.getQuantity(), stockRepo, operationRepo, now, order.getId());
 
-            menuOrderRepository.save(menuOrder);
-            savedMenuOrders.add(menuOrder);
-
-            for (var menuIngredient : menu.getMenuIngredients()) {
-                var stock = menuIngredient.getIngredient().getStock();
-                if (stock != null) {
-                    double requiredQuantity = menuIngredient.getQuantity() * item.getQuantity();
-                    double newQuantity = stock.getQuantity() - requiredQuantity;
-                    stock.setQuantity(newQuantity);
-
-                    stockRepository.save(stock);
-
-                    var operation = Operation.builder()
-                            .stock(stock)
-                            .type(OperationType.SORTIE)
-                            .date(now)
-                            .quantity(requiredQuantity)
-                            .description("Mise à jour du stock suite à la commande #" + menuOrder.getId())
-                            .build();
-                    operationRepository.save(operation);
-                }
-            }
+            summarizedItems.add(new MenuOrderDTO.MenuItemSummarizedDTO(
+                    menu.getId(),
+                    item.getQuantity(),
+                    totalPrice,
+                    OrderStatus.NOT_DELIVERED
+            ));
         }
 
         return MenuOrderDTO.builder()
-                .customerId(createMenuOrderDTO.getCustomerId())
-                .orderDate(now)
-                .roomId(room != null ? room.getId(): null)
-                .tableId(table != null ? table.getId(): null)
-                .tableNumber(tableNumber)
-                .roomNumber(roomNumber)
-                .menuItems(savedMenuOrders.stream()
-                        .map(order -> new MenuOrderDTO.MenuItemSummarizedDTO(
-                                order.getId(),
-                                order.getQuantity(),
-                                order.getCost(),
-                                order.getOrderStatus()
-                        ))
-                        .collect(Collectors.toList()))
+                .customerId(customer != null ? customer.getId() : null)
+                .roomId(room != null ? room.getId() : null)
+                .roomNumber(room != null ? room.getNumber() : null)
+                .tableId(table != null ? table.getId() : null)
+                .tableNumber(table != null ? table.getNumber() : null)
+                .orderDate(order.getOrderDate())
+                .menuItems(summarizedItems)
                 .build();
     }
 
+    private SessionOccupation getOrCreateActiveSession(
+            SessionOccupationRepository sessionRepo,
+            Customer customer,
+            Room room,
+            TableEntity table,
+            LocalDateTime now) {
+        Optional<SessionOccupation> sessionOpt = Optional.empty();
+        if (table != null) {
+            sessionOpt = sessionRepo.findByTableIdAndEndedAtIsNull(table.getId());
+        } else if (room != null) {
+            sessionOpt = sessionRepo.findByRoomIdAndEndedAtIsNull(room.getId());
+        }
+
+        return sessionOpt.orElseGet(() -> {
+            SessionOccupation session = SessionOccupation.builder()
+                    .customer(customer)
+                    .room(room)
+                    .table(table)
+                    .startedAt(now)
+                    .description("Session démarrée automatiquement à la commande.")
+                    .build();
+            return sessionRepo.save(session);
+        });
+    }
+
+    private void updateStockAndOperations(
+            Menu menu,
+            double quantity,
+            StockRepository stockRepo,
+            OperationRepository operationRepo,
+            LocalDateTime now,
+            Long orderId) {
+        for (var ing : menu.getMenuIngredients()) {
+            var stock = ing.getIngredient().getStock();
+            if (stock != null) {
+                double requiredQty = ing.getQuantity() * quantity;
+                stock.setQuantity(stock.getQuantity() - requiredQty);
+                stockRepo.save(stock);
+
+                Operation operation = Operation.builder()
+                        .stock(stock)
+                        .type(OperationType.SORTIE)
+                        .date(now)
+                        .quantity(requiredQty)
+                        .description("Sortie de stock liée à la commande #" + orderId)
+                        .build();
+                operationRepo.save(operation);
+            }
+        }
+    }
 
     @Override
     @Transactional
     public void updateOrderStatus(UpdateOrderStatusDTO orderStatusDTO) {
-        var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
+        var orderRepo = repositoryFactory.getMenuOrderRepository();
         for (Long orderId : orderStatusDTO.getOrderIds()) {
-            MenuOrder menuOrder = menuOrderRepository.findById(orderId)
-                    .orElseThrow(() -> new HttpNotFoundException("Order not found"));
-            menuOrder.setOrderStatus(orderStatusDTO.getOrderStatus());
-            menuOrderRepository.save(menuOrder);
+            Order order = orderRepo.findById(orderId)
+                    .orElseThrow(() -> new HttpNotFoundException("Aucune commande trouvée avec l'ID " + orderId));
+            order.setOrderStatus(orderStatusDTO.getOrderStatus());
+            orderRepo.save(order);
         }
-
     }
 
     @Override
     @Transactional
     public void deleteOrderById(Long orderId) {
-        var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
-        var menuOrder = menuOrderRepository.findById(orderId)
-                .orElseThrow(() -> new HttpNotFoundException("Order not found"));
+        var orderRepo = repositoryFactory.getMenuOrderRepository();
+        var roomRepo = repositoryFactory.getRoomRepository();
+        var tableRepo = repositoryFactory.getTableRepository();
 
-        if (menuOrder.getRoom() != null) {
-            var room = menuOrder.getRoom();
-            room.setStatus(RoomStatus.AVAILABLE);
-            repositoryFactory.getRoomRepository().save(room);
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new HttpNotFoundException("Aucune commande trouvée avec l'ID " + orderId));
+
+        if (order.getRoom() != null) {
+            roomRepo.save(order.getRoom());
+        }
+        if (order.getTable() != null) {
+            tableRepo.save(order.getTable());
         }
 
-        if (menuOrder.getTable() != null) {
-            var table = menuOrder.getTable();
-            table.setStatus(TableStatus.AVAILABLE);
-            repositoryFactory.getTableRepository().save(table);
-        }
-
-        menuOrderRepository.delete(menuOrder);
+        orderRepo.delete(order);
     }
 
     @Override
-    public List<Map<String, Object>> groupByTableOrRoom(Integer tableNumber, Integer roomNumber) {
-        List<MenuOrder> orders;
-        var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
+    public List<Map<String, Object>> groupByTableOrRoom(Long tableNumber, Long roomNumber) {
+        var sessionRepo = repositoryFactory.getSessionOccupationRepository();
 
-        if (tableNumber != null && roomNumber != null) {
-            orders = menuOrderRepository.findAllByRoomNumberOrTableNumber(roomNumber, tableNumber);
+        SessionOccupation session;
+
+        if (tableNumber != null) {
+            var table = repositoryFactory.getTableRepository()
+                    .findByTableNumber(tableNumber)
+                    .orElseThrow(() -> new HttpNotFoundException("Table non trouvée : " + tableNumber));
+            session = sessionRepo.findByTableIdAndEndedAtIsNull(table.getId())
+                    .orElseThrow(() -> new HttpNotFoundException("Aucune session active pour cette table"));
         } else if (roomNumber != null) {
-            orders = menuOrderRepository.findAllByRoomNumber(roomNumber);
-        } else if (tableNumber != null) {
-            orders = menuOrderRepository.findAllByTableNumber(tableNumber);
+            var room = repositoryFactory.getRoomRepository()
+                    .findByRoomNumber(roomNumber)
+                    .orElseThrow(() -> new HttpNotFoundException("Salle non trouvée : " + roomNumber));
+            session = sessionRepo.findByRoomIdAndEndedAtIsNull(room.getId())
+                    .orElseThrow(() -> new HttpNotFoundException("Aucune session active pour cette salle"));
         } else {
-            orders = menuOrderRepository.findAll();
+            throw new IllegalArgumentException("Veuillez fournir un numéro de table ou de salle.");
         }
 
-        return orders.stream()
-                .collect(Collectors.groupingBy(order -> {
-                    Map<String, Object> map = new HashMap<>();
-                    if (order.getRoom() != null) {
-                        map.put("type", "room");
-                        map.put("number", order.getRoom().getRoomNumber());
-                    } else if (order.getTable() != null) {
-                        map.put("type", "table");
-                        map.put("number", order.getTable().getNumber());
-                    }
-                    map.put("orderStatus", order.getOrderStatus());
-                    map.put("payment", order.getPayment() != null ? toPayment(order.getPayment()) : null);
-                    return map;
-                }))
-                .entrySet()
-                .stream()
-                .map(entry -> {
-                    Map<String, Object> key = entry.getKey();
-                    List<MenuOrder> groupedOrders = entry.getValue();
-
-                    List<String> menus = groupedOrders.stream()
-                            .map(order -> order.getMenu().getName())
-                            .distinct()
-                            .collect(Collectors.toList());
-
-                    List<Long> orderIds = groupedOrders.stream()
-                            .map(Model::getId)
-                            .distinct()
-                            .collect(Collectors.toList());
-
-                    key.put("orderIds", orderIds);
-
-                    key.put("menus", menus);
-                    return key;
-                })
-                .collect(Collectors.toList());
-    }
-
-    private PaymentSummarized toPayment(Payment payment) {
-        return new PaymentSummarized(
-                payment.getId(),
-                payment.getReservation() != null ? payment.getReservation().getId() : null,
-                payment.getPaymentDate(),
-                payment.getUpdatedAt(),
-                payment.getAmount(),
-                payment.getPaymentMethod(),
-                payment.getStatus(),
-                payment.getDescription()
-        );
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Order order : session.getOrders()) {
+            for (OrderLine line : order.getOrderLines()) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("sessionId", session.getId());
+                item.put("orderId", order.getId());
+                item.put("orderDate", order.getOrderDate());
+                item.put("menuId", line.getMenu().getId());
+                item.put("menuName", line.getMenu().getName());
+                item.put("quantity", line.getQuantity());
+                item.put("unitPrice", line.getUnitPrice());
+                item.put("totalPrice", line.getTotalPrice());
+                if (order.getTable() != null) {
+                    item.put("tableNumber", order.getTable().getNumber());
+                }
+                if (order.getRoom() != null) {
+                    item.put("roomNumber", order.getRoom().getNumber());
+                }
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     @Override
-    public List<MenuOrderSummarized> findAllOrdersByTable(Integer tableNumber) {
-        var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
-        List<MenuOrder> orders = menuOrderRepository.findAllByTableNumber(tableNumber);
+    public List<MenuOrderSummarized> findAllOrdersByTable(Long tableNumber) {
+        var tableRepo = repositoryFactory.getTableRepository();
+        var orderRepo = repositoryFactory.getMenuOrderRepository();
 
+        TableEntity table = tableRepo.findByTableNumber(tableNumber)
+                .orElseThrow(() -> new HttpNotFoundException("Table non trouvée avec le numéro " + tableNumber));
 
-        return orders.stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        List<Order> orders = orderRepo.findAllByTableId(table.getId());
+
+        return mapOrdersToMenuOrderSummarized(orders);
     }
 
     @Override
-    public List<MenuOrderSummarized> findAllOrdersByRoom(Integer roomNumber) {
-        var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
-        List<MenuOrder> orders = menuOrderRepository.findAllByRoomNumber(roomNumber);
+    public List<MenuOrderSummarized> findAllOrdersByRoom(Long roomNumber) {
+        var roomRepo = repositoryFactory.getRoomRepository();
+        var orderRepo = repositoryFactory.getMenuOrderRepository();
 
-        return orders.stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        Room room = roomRepo.findByRoomNumber(roomNumber)
+                .orElseThrow(() -> new HttpNotFoundException("Salle non trouvée avec le numéro " + roomNumber));
+
+        List<Order> orders = orderRepo.findAllByRoomId(room.getId());
+
+        return mapOrdersToMenuOrderSummarized(orders);
     }
 
+    private List<MenuOrderSummarized> mapOrdersToMenuOrderSummarized(List<Order> orders) {
+        List<MenuOrderSummarized> result = new ArrayList<>();
+        for (Order order : orders) {
+            for (OrderLine orderLine : order.getOrderLines()) {
+                MenuOrderSummarized dto = new MenuOrderSummarized();
+                dto.setId(order.getId());
+
+                if (order.getCustomer() != null)
+                    dto.setCustomer(new CustomerDTO(order.getCustomer()));
+
+                if (order.getRoom() != null)
+                    dto.setRoom(new RoomDTO(order.getRoom()));
+
+                if (order.getTable() != null)
+                    dto.setTable(new TableSummarized(
+                            order.getTable().getId(),
+                            order.getTable().getNumber(),
+                            order.getTable().getCapacity(),
+                            order.getTable().getCreatedAt(),
+                            order.getTable().getUpdatedAt()
+                    ));
+
+                dto.setOrderDate(order.getOrderDate());
+                dto.setQuantity(orderLine.getQuantity().doubleValue());
+                dto.setCost(orderLine.getTotalPrice().doubleValue());
+                dto.setOrderStatus(order.getOrderStatus());
+
+                if (orderLine.getMenu() != null) {
+                    var menu = orderLine.getMenu();
+                    dto.setMenu(new MenuSummarized(
+                            menu.getId(),
+                            menu.getName(),
+                            menu.getDescription(),
+                            menu.getPrice(),
+                            menu.getMenuGroup() != null ? menu.getMenuGroup().getId() : null,
+                            menu.getCreatedAt(),
+                            menu.getUpdatedAt(),
+                            menu.getStatus()
+                    ));
+                }
+
+                result.add(dto);
+            }
+        }
+        return result;
+    }
 
     private List<String> checkStock(Menu menu, double quantityOrdered) {
         List<String> shortages = new ArrayList<>();
-
         for (var menuIngredient : menu.getMenuIngredients()) {
             var stock = menuIngredient.getIngredient().getStock();
             if (stock != null) {
                 double availableQuantity = stock.getQuantity();
                 double requiredQuantity = menuIngredient.getQuantity() * quantityOrdered;
-
-                if (availableQuantity < requiredQuantity) {
+                if (availableQuantity < requiredQuantity)
                     shortages.add(menuIngredient.getIngredient().getName());
-                }
             }
         }
-
         return shortages;
     }
-
-
-    private MenuOrderSummarized mapToDTO(MenuOrder menuOrder) {
-        MenuOrderSummarized dto = new MenuOrderSummarized();
-
-        BeanUtils.copyProperties(menuOrder, dto, "customer", "room", "table", "menu");
-
-        if (menuOrder.getCustomer() != null) {
-            var customerDTO = new CustomerDTO();
-            BeanUtils.copyProperties(menuOrder.getCustomer(), customerDTO);
-            dto.setCustomer(customerDTO);
-        }
-
-        if (menuOrder.getRoom() != null) {
-            RoomDTO roomDTO = new RoomDTO();
-            BeanUtils.copyProperties(menuOrder.getRoom(), roomDTO);
-            dto.setRoom(roomDTO);
-        }
-
-        if (menuOrder.getPayment() != null) {
-            dto.setPaymentId(dto.getPaymentId());
-        }
-
-        if (menuOrder.getMenu() != null) {
-            Menu menu = menuOrder.getMenu();
-
-            var menuDTO = new MenuSummarized(
-                    menu.getId(),
-                    menu.getName(),
-                    menu.getDescription(),
-                    menu.getPrice(),
-                    menu.getCategory().getId(),
-                    menu.getCreatedAt(),
-                    menu.getUpdatedAt(),
-                    menu.getStatus()
-            );
-
-            dto.setMenu(menuDTO);
-        }
-
-
-        if (menuOrder.getTable() != null) {
-            var tableDTO = new TableSummarized(
-                    menuOrder.getTable().getId(),
-                    menuOrder.getTable().getNumber(),
-                    menuOrder.getTable().getCapacity(),
-                    menuOrder.getTable().getStatus(),
-                    menuOrder.getTable().getCreatedAt(),
-                    menuOrder.getTable().getUpdatedAt()
-            );
-            dto.setTable(tableDTO);
-        }
-
-        return dto;
-    }
-
 }

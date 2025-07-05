@@ -1,6 +1,6 @@
 package com.fresh.coding.sooatelapi.dtos.rooms;
 
-import com.fresh.coding.sooatelapi.enums.RoomStatus;
+import com.fresh.coding.sooatelapi.entities.Room;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,10 +18,19 @@ import java.time.LocalDateTime;
 public class RoomDTO implements Serializable {
     private Long id;
     private Long floorId;
-    private Integer roomNumber;
-    private Integer capacity;
-    private RoomStatus status;
-    private Double price;
+    private Long roomNumber;
+    private Long capacity;
+    private Long price;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public RoomDTO(Room room) {
+        this.id = room.getId();
+        this.floorId = room.getFloor().getId();
+        this.roomNumber = room.getNumber();
+        this.capacity = room.getCapacity();
+        this.price = room.getPrice();
+        this.createdAt = room.getCreatedAt();
+        this.updatedAt = room.getUpdatedAt();
+    }
 }

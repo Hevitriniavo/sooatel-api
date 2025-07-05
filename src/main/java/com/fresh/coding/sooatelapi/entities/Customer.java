@@ -25,9 +25,17 @@ public class Customer extends Model  implements Serializable {
 
     @OneToMany(mappedBy = "customer")
     @Builder.Default
-    private List<MenuOrder> menuOrders = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer")
     @Builder.Default
     private List<Reservation> reservations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer")
+    @Builder.Default
+    private List<SessionOccupation> sessionOccupations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer")
+    @Builder.Default
+    private List<Invoice> invoices = new ArrayList<>();
 }

@@ -20,7 +20,7 @@
         public FloorDto createFloor(SaveFloorDto saveFloorDto) {
             var floorRepository = repositoryFactory.getFloorRepository();
             var floor = Floor.builder()
-                    .floorNumber(saveFloorDto.getFloorNumber())
+                    .number(saveFloorDto.getFloorNumber())
                     .description(saveFloorDto.getDescription())
                     .build();
             var savedFloor = floorRepository.save(floor);
@@ -49,7 +49,7 @@
             var floorRepository = repositoryFactory.getFloorRepository();
             var floor = floorRepository.findById(id)
                     .orElseThrow(() -> new HttpNotFoundException("Floor not found"));
-            floor.setFloorNumber(saveFloorDto.getFloorNumber());
+            floor.setNumber(saveFloorDto.getFloorNumber());
             floor.setDescription(saveFloorDto.getDescription());
             var updatedFloor = floorRepository.save(floor);
             return convertToDto(updatedFloor);
@@ -70,7 +70,7 @@
         private FloorDto convertToDto(Floor floor) {
             return new FloorDto(
                     floor.getId(),
-                    floor.getFloorNumber(),
+                    floor.getNumber(),
                     floor.getDescription(),
                     floor.getCreatedAt(),
                     floor.getUpdatedAt()

@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.repositories;
 
+import com.fresh.coding.sooatelapi.entities.OrderLine;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -25,8 +26,16 @@ public class RepositoryFactory {
         return getRepositoryFor("userRepository");
     }
 
-    public PaymentRepository getPaymentRepository() {
-        return getRepositoryFor("paymentRepository");
+    public InvoiceRepository getInvoiceRepository() {
+        return getRepositoryFor("invoiceRepository");
+    }
+
+    public OrderLineRepository  getOrderLineRepository() {
+        return getRepositoryFor("orderLineRepository");
+    }
+
+    public InvoiceLineRepository getInvoiceLineRepository() {
+        return getRepositoryFor("invoiceLineRepository");
     }
 
 
@@ -41,6 +50,10 @@ public class RepositoryFactory {
 
     public RoomRepository getRoomRepository() {
         return getRepositoryFor("roomRepository");
+    }
+
+   public SessionOccupationRepository getSessionOccupationRepository() {
+        return getRepositoryFor("sessionOccupationRepository");
     }
 
     public FloorRepository getFloorRepository() {
@@ -75,7 +88,7 @@ public class RepositoryFactory {
         return getRepositoryFor("operationRepository");
     }
 
-    public CategoryRepository getCategoryRepository() {
+    public MenuGroupRepository getCategoryRepository() {
         return getRepositoryFor("categoryRepository");
     }
 
@@ -83,7 +96,7 @@ public class RepositoryFactory {
         return getRepositoryFor("menuRepository");
     }
 
-    public TableRepository getTableRepository() {
+    public TableEntityRepository getTableRepository() {
         return getRepositoryFor("tableRepository");
     }
 

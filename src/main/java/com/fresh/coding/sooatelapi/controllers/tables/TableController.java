@@ -2,8 +2,6 @@ package com.fresh.coding.sooatelapi.controllers.tables;
 
 import com.fresh.coding.sooatelapi.dtos.tables.SaveTable;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
-import com.fresh.coding.sooatelapi.dtos.tables.UpdateTableStatus;
-import com.fresh.coding.sooatelapi.enums.TableStatus;
 import com.fresh.coding.sooatelapi.services.tables.TableService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -34,19 +31,6 @@ public class TableController {
     @GetMapping("/tables-with-menu-orders")
     public List<TableSummarized> getRoomsWithMenuOrders() {
         return tableService.getTablesWithMenuOrders();
-    }
-
-    @GetMapping("/status")
-    public List<TableStatus> getTableStatuses() {
-        return Arrays.asList(TableStatus.values());
-    }
-
-    @PutMapping("/status")
-    public UpdateTableStatus updateStatus(@Valid @RequestBody UpdateTableStatus updateTableStatus) {
-        return tableService.updateTableStatus(
-                updateTableStatus.getId(),
-                updateTableStatus.getStatus()
-        );
     }
 
     @DeleteMapping("/{id}")

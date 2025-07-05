@@ -24,11 +24,11 @@ public class Menu extends Model implements Serializable {
     private String description;
 
     @Column(nullable = false)
-    private Double price;
+    private Long price;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Category category;
+    private MenuGroup menuGroup;
 
     @Builder.Default
     @OneToMany(mappedBy = "menu")
@@ -42,5 +42,16 @@ public class Menu extends Model implements Serializable {
     @OneToMany(mappedBy = "menu")
     @Builder.Default
     @ToString.Exclude
-    private List<MenuOrder> menuOrders = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "menu")
+    @Builder.Default
+    @ToString.Exclude
+    private List<OrderLine> orderLines = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "menu")
+    @Builder.Default
+    @ToString.Exclude
+    private List<InvoiceLine> invoiceLines = new ArrayList<>();
 }

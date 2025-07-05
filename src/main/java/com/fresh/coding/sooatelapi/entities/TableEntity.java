@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "tables")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Room extends Model  implements Serializable {
+public class TableEntity extends Model  implements Serializable {
 
     @Column(nullable = false, unique = true)
     private Long number;
@@ -21,23 +22,15 @@ public class Room extends Model  implements Serializable {
     @Column(nullable = false)
     private Long capacity;
 
-    @Column(nullable = false)
-    private Long price;
-
-    @ManyToOne
-    @JoinColumn
-    private Floor floor;
-
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "table")
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "table")
     @Builder.Default
     private List<SessionOccupation> sessionOccupations = new ArrayList<>();
 
-
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "table")
     @Builder.Default
     private List<Reservation> reservations = new ArrayList<>();
 }

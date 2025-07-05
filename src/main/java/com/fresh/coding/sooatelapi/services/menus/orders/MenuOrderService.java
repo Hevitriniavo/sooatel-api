@@ -15,10 +15,10 @@ public interface MenuOrderService {
 
     void deleteOrderById(Long orderId);
 
-    List<Map<String, Object>> groupByTableOrRoom(Integer tableNumber, Integer roomNumber);
+    List<Map<String, Object>> groupByTableOrRoom(Long tableNumber, Long roomNumber);
 
-    List<MenuOrderSummarized> findAllOrdersByTable(Integer tableNumber);
+    List<MenuOrderSummarized> findAllOrdersByTable(Long tableNumber);
 
-    List<MenuOrderSummarized> findAllOrdersByRoom(Integer roomNumber);
+    List<MenuOrderSummarized> findAllOrdersByRoom(Long roomNumber);
 
 }

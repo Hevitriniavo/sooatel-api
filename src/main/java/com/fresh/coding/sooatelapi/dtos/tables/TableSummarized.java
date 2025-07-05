@@ -1,6 +1,5 @@
 package com.fresh.coding.sooatelapi.dtos.tables;
 
-import com.fresh.coding.sooatelapi.enums.TableStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,8 +11,8 @@ import java.time.LocalDateTime;
 public final class TableSummarized extends TableBase implements Serializable {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    public TableSummarized(Long id, Integer number, Integer capacity, TableStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        super(id, number, capacity, status);
+    public TableSummarized(Long id, Long number, Long capacity, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        super(id, number, capacity);
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

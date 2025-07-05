@@ -6,8 +6,6 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -15,24 +13,24 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Reservation extends Model  implements Serializable {
+public class Reservation extends Model implements Serializable {
 
     @ManyToOne
     @JoinColumn
     private Customer customer;
 
-    @OneToMany(mappedBy = "reservation", cascade = {CascadeType.ALL},  fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<Room> rooms = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn
+    private Room room;
 
-    @OneToMany(mappedBy = "reservation", fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
-    @Builder.Default
-    private List<RestTable> tables = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn
+    private TableEntity table;
 
-    @Column
+    @Column(nullable = false)
     private LocalDateTime reservationStart;
 
-    @Column
+    @Column(nullable = false)
     private LocalDateTime reservationEnd;
 
     @Column(nullable = false)
@@ -41,16 +39,4 @@ public class Reservation extends Model  implements Serializable {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-
-    @OneToMany(mappedBy = "reservation")
-    @Builder.Default
-    private List<Payment> payments = new ArrayList<>();
-
-
-    public double calculateTotalReservationAmount() {
-        return payments.stream()
-                .mapToDouble(Payment::getAmount)
-                .sum();
-    }
-
 }

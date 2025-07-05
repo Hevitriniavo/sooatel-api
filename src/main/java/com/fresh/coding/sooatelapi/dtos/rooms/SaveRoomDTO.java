@@ -1,6 +1,5 @@
 package com.fresh.coding.sooatelapi.dtos.rooms;
 
-import com.fresh.coding.sooatelapi.enums.RoomStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,9 +22,6 @@ public class SaveRoomDTO implements Serializable  {
     @NotNull(message = "Capacity is required")
     @Min(value = 1, message = "Capacity must be at least 1")
     private Integer capacity;
-
-    @NotNull(message = "Status is required")
-    private RoomStatus status;
 
     @NotNull(message = "Price is required")
     @Min(value = 0, message = "Price must be non-negative")
