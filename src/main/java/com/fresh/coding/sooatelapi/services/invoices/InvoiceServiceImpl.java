@@ -20,6 +20,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final RepositoryFactory repositoryFactory;
 
     @Transactional
+    @Override
     public InvoiceDTO generateInvoiceIfOrderDelivered(Long orderId) {
         var orderRepository = repositoryFactory.getMenuOrderRepository();
         var order = orderRepository.findById(orderId)
@@ -32,6 +33,11 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         if (invoiceRepository.existsBySessionOccupation(order.getSessionOccupation())) {
             throw new IllegalStateException("Une facture existe déjà pour cette session d'occupation");
+        }
+        var session = order.getSessionOccupation();
+        if (session.getEndedAt() == null) {
+            session.setEndedAt(LocalDateTime.now());
+            repositoryFactory.getSessionOccupationRepository().save(session);
         }
         var invoice = Invoice.builder()
                 .customer(order.getCustomer())
