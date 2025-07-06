@@ -34,7 +34,7 @@ public class Order extends Model implements Serializable {
     @JoinColumn
     private TableEntity table;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private SessionOccupation sessionOccupation;
 
