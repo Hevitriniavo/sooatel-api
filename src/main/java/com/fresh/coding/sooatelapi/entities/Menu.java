@@ -42,11 +42,6 @@ public class Menu extends Model implements Serializable {
     @OneToMany(mappedBy = "menu")
     @Builder.Default
     @ToString.Exclude
-    private List<Order> orders = new ArrayList<>();
-
-    @OneToMany(mappedBy = "menu")
-    @Builder.Default
-    @ToString.Exclude
     private List<OrderLine> orderLines = new ArrayList<>();
 
 

@@ -89,7 +89,7 @@ public class RepositoryFactory {
     }
 
     public MenuGroupRepository getCategoryRepository() {
-        return getRepositoryFor("categoryRepository");
+        return getRepositoryFor("menuGroupRepository");
     }
 
     public MenuRepository getMenuRepository() {

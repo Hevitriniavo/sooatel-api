@@ -24,10 +24,6 @@ public class Order extends Model implements Serializable {
 
     @ManyToOne
     @JoinColumn
-    private Menu menu;
-
-    @ManyToOne
-    @JoinColumn
     private Room room;
 
     @ManyToOne

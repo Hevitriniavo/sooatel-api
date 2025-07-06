@@ -36,6 +36,11 @@ public interface MenuOrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findAllByTableId(Long tableId);
 
+    List<Order> findAllByRoomNumberOrTableNumber(Long roomNumber, Long tableNumber);
+
     List<Order> findAllByRoomId(Long roomId);
 
+    List<Order> findAllByTableNumber(Long number);
+
+    List<Order> findAllByRoomNumber(Long number);
 }

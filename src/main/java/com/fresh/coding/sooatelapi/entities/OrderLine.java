@@ -18,7 +18,7 @@ public class OrderLine {
     @JoinColumn
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private Menu menu;
 

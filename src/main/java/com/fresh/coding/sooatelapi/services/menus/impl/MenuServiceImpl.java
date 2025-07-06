@@ -57,7 +57,6 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public void deleteById(Long id) {
         var menuRepository = factory.getMenuRepository();
-        var deletedMenuOrderRows = menuRepository.deleteMenuMenuOrderById(id);
         var deletedIngredientRows = menuRepository.deleteMenuIngredientById(id);
         var deletedMenuRows = menuRepository.deleteMenuById(id);
 
@@ -66,7 +65,7 @@ public class MenuServiceImpl implements MenuService {
             throw new HttpNotFoundException("Menu not found");
         }
 
-        if (deletedMenuOrderRows == 0 && deletedIngredientRows == 0) {
+        if (deletedIngredientRows == 0) {
             log.warn("No related orders or ingredients found to delete for menu ID: {}", id);
         }
     }

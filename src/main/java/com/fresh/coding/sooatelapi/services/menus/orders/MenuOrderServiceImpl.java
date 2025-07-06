@@ -231,48 +231,40 @@ public class MenuOrderServiceImpl implements MenuOrderService {
 
     @Override
     public List<Map<String, Object>> groupByTableOrRoom(Long tableNumber, Long roomNumber) {
-        var sessionRepo = repositoryFactory.getSessionOccupationRepository();
+        List<Order> orders;
+        var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
 
-        SessionOccupation session;
-
-        if (tableNumber != null) {
-            var table = repositoryFactory.getTableRepository()
-                    .findByTableNumber(tableNumber)
-                    .orElseThrow(() -> new HttpNotFoundException("Table non trouvée : " + tableNumber));
-            session = sessionRepo.findByTableIdAndEndedAtIsNull(table.getId())
-                    .orElseThrow(() -> new HttpNotFoundException("Aucune session active pour cette table"));
+        if (tableNumber != null && roomNumber != null) {
+            orders = menuOrderRepository.findAllByRoomNumberOrTableNumber(roomNumber, tableNumber);
         } else if (roomNumber != null) {
-            var room = repositoryFactory.getRoomRepository()
-                    .findByRoomNumber(roomNumber)
-                    .orElseThrow(() -> new HttpNotFoundException("Salle non trouvée : " + roomNumber));
-            session = sessionRepo.findByRoomIdAndEndedAtIsNull(room.getId())
-                    .orElseThrow(() -> new HttpNotFoundException("Aucune session active pour cette salle"));
+            orders = menuOrderRepository.findAllByRoomNumber(roomNumber);
+        } else if (tableNumber != null) {
+            orders = menuOrderRepository.findAllByTableNumber(tableNumber);
         } else {
-            throw new IllegalArgumentException("Veuillez fournir un numéro de table ou de salle.");
+            orders = menuOrderRepository.findAll();
+        }
+        return groupOrders(orders);
+    }
+
+    private List<Map<String, Object>> groupOrders(List<Order> orders) {
+        List<Map<String, Object>> res = new ArrayList<>();
+        for (var order : orders) {
+            Map<String, Object> orderMap = new HashMap<>();
+            orderMap.put("id", order.getId());
+            orderMap.put("orderDate", order.getOrderDate());
+            orderMap.put("status", order.getOrderStatus());
+            orderMap.put("orderLines", order.getOrderLines());
+            orderMap.put("sessionOccupation", order.getSessionOccupation());
+            if (order.getRoom() != null) {
+                orderMap.put("room", order.getRoom());
+            }
+            if (order.getTable() != null) {
+                orderMap.put("table", order.getTable());
+            }
+            res.add(orderMap);
         }
 
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (Order order : session.getOrders()) {
-            for (OrderLine line : order.getOrderLines()) {
-                Map<String, Object> item = new HashMap<>();
-                item.put("sessionId", session.getId());
-                item.put("orderId", order.getId());
-                item.put("orderDate", order.getOrderDate());
-                item.put("menuId", line.getMenu().getId());
-                item.put("menuName", line.getMenu().getName());
-                item.put("quantity", line.getQuantity());
-                item.put("unitPrice", line.getUnitPrice());
-                item.put("totalPrice", line.getTotalPrice());
-                if (order.getTable() != null) {
-                    item.put("tableNumber", order.getTable().getNumber());
-                }
-                if (order.getRoom() != null) {
-                    item.put("roomNumber", order.getRoom().getNumber());
-                }
-                result.add(item);
-            }
-        }
-        return result;
+        return res;
     }
 
     @Override
