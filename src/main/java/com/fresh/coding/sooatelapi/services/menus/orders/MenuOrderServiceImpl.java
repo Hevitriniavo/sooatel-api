@@ -16,6 +16,7 @@ import com.fresh.coding.sooatelapi.repositories.OperationRepository;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.repositories.SessionOccupationRepository;
 import com.fresh.coding.sooatelapi.repositories.StockRepository;
+import com.fresh.coding.sooatelapi.services.invoices.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class MenuOrderServiceImpl implements MenuOrderService {
     private final RepositoryFactory repositoryFactory;
+    private final InvoiceService invoiceService;
 
     @Override
     @Transactional
@@ -188,6 +190,22 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                     .orElseThrow(() -> new HttpNotFoundException("Aucune commande trouvée avec l'ID " + orderId));
             order.setOrderStatus(orderStatusDTO.getOrderStatus());
             orderRepo.save(order);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        var orderRepository = repositoryFactory.getMenuOrderRepository();
+        var order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+
+        var previousStatus = order.getOrderStatus();
+        order.setOrderStatus(newStatus);
+        orderRepository.save(order);
+
+        if (!OrderStatus.DELIVERED.equals(previousStatus) && OrderStatus.DELIVERED.equals(newStatus)) {
+            invoiceService.generateInvoiceIfOrderDelivered(order.getId());
         }
     }
 

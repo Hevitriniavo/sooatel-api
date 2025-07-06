@@ -28,11 +28,11 @@ public class InvoiceLine implements Serializable {
     private Menu menu;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private Long quantity;
 
     @Column(nullable = false)
-    private Double unitPrice;
+    private Long unitPrice;
 
     @Column(nullable = false)
-    private Double totalPrice;
+    private Long totalPrice;
 }

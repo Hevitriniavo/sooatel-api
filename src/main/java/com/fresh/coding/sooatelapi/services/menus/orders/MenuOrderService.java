@@ -12,7 +12,7 @@ import java.util.Map;
 public interface MenuOrderService {
     MenuOrderDTO createMenuOrder(CreateMenuOrderDTO createMenuOrderDTO);
     void updateOrderStatus(UpdateOrderStatusDTO orderStatusDTO);
-
+    void updateOrderStatus(Long orderId, OrderStatus newStatus);
     void deleteOrderById(Long orderId);
 
     List<Map<String, Object>> groupByTableOrRoom(Long tableNumber, Long roomNumber);

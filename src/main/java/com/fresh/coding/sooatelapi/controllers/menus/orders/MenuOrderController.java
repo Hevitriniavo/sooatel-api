@@ -40,6 +40,14 @@ public class MenuOrderController {
         menuOrderService.updateOrderStatus(updateOrderStatusDTO);
     }
 
+    @PutMapping("/{orderId}/status")
+    public void updateOrderStatus(
+            @PathVariable Long orderId,
+            @RequestParam OrderStatus status
+    ) {
+        menuOrderService.updateOrderStatus(orderId, status);
+    }
+
     @DeleteMapping("/{orderId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOrder(@PathVariable Long orderId) {

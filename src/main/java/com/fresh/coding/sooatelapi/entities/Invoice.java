@@ -36,14 +36,18 @@ public class Invoice implements Serializable {
     private LocalDateTime issuedAt = LocalDateTime.now();
 
     @Column(nullable = false)
-    private Double totalAmount;
+    private Long totalAmount;
 
     @Column
-    private Double amountPaid;
+    private Long amountPaid;
 
     @Enumerated(EnumType.STRING)
     @Column
     private PaymentMethod paymentMethod;
+
+    @OneToOne
+    @JoinColumn
+    private Order order;
 
     @Column
     @Builder.Default
@@ -57,7 +61,7 @@ public class Invoice implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<InvoiceLine> lines = new ArrayList<>();
 

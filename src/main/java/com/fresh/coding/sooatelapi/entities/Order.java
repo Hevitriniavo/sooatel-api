@@ -44,7 +44,7 @@ public class Order extends Model implements Serializable {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     @Builder.Default
     private List<OrderLine> orderLines = new ArrayList<>();
 }
