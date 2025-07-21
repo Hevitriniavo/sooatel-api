@@ -53,7 +53,7 @@ public class MenuIngredientServiceImpl implements MenuIngredientService {
         dto.setMenuId((Long) firstRow[0]);
         dto.setMenuName((String) firstRow[1]);
         dto.setMenuDesc((String) firstRow[2]);
-        dto.setMenuPrice((Double) firstRow[3]);
+        dto.setMenuPrice((Long) firstRow[3]);
         dto.setStatus((MenuStatus) firstRow[4]);
 
         var ingredients = results.stream()

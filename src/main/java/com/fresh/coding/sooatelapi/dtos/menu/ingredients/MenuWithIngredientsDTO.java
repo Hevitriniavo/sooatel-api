@@ -20,7 +20,7 @@ public class MenuWithIngredientsDTO implements Serializable {
     private Long menuId;
     private String menuName;
     private String menuDesc;
-    private Double menuPrice;
+    private Long menuPrice;
     private MenuStatus status;
     private List<IngredientWithMenuWithUnitName> ingredients = new ArrayList<>();
 

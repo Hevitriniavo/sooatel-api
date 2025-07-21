@@ -21,5 +21,4 @@ public  class MenuSummarized extends MenuBase implements Serializable {
         this.status = status;
     }
 
-
 }

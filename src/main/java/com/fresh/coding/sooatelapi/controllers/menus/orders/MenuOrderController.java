@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.controllers.menus.orders;
 
+import com.fresh.coding.sooatelapi.dtos.OrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.CreateMenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderSummarized;
@@ -55,7 +56,7 @@ public class MenuOrderController {
     }
 
     @GetMapping("/grouped")
-    public List<Map<String, Object>> getGroupedOrders(
+    public List<OrderDTO> getGroupedOrders(
             @RequestParam(required = false) Long tableNumber,
             @RequestParam(required = false) Long roomNumber
     ) {

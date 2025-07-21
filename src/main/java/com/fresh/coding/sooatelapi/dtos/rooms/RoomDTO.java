@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class RoomDTO implements Serializable {
     private Long id;
     private Long floorId;
-    private Long roomNumber;
+    private Long number;
     private Long capacity;
     private Long price;
     private LocalDateTime createdAt;
@@ -27,7 +27,7 @@ public class RoomDTO implements Serializable {
     public RoomDTO(Room room) {
         this.id = room.getId();
         this.floorId = room.getFloor().getId();
-        this.roomNumber = room.getNumber();
+        this.number = room.getNumber();
         this.capacity = room.getCapacity();
         this.price = room.getPrice();
         this.createdAt = room.getCreatedAt();

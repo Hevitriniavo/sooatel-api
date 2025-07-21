@@ -1,5 +1,6 @@
 package com.fresh.coding.sooatelapi.services.menus.orders;
 
+import com.fresh.coding.sooatelapi.dtos.OrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.CreateMenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderSummarized;
@@ -15,7 +16,7 @@ public interface MenuOrderService {
     void updateOrderStatus(Long orderId, OrderStatus newStatus);
     void deleteOrderById(Long orderId);
 
-    List<Map<String, Object>> groupByTableOrRoom(Long tableNumber, Long roomNumber);
+    List<OrderDTO> groupByTableOrRoom(Long tableNumber, Long roomNumber);
 
     List<MenuOrderSummarized> findAllOrdersByTable(Long tableNumber);
 

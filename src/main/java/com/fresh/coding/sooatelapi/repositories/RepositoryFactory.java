@@ -97,7 +97,7 @@ public class RepositoryFactory {
     }
 
     public TableEntityRepository getTableRepository() {
-        return getRepositoryFor("tableRepository");
+        return getRepositoryFor("tableEntityRepository");
     }
 
     public MenuIngredientRepository getMenuIngredientRepository() {

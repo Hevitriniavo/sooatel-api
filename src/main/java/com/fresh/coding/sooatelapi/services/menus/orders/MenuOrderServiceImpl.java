@@ -1,5 +1,7 @@
 package com.fresh.coding.sooatelapi.services.menus.orders;
 
+import com.fresh.coding.sooatelapi.dtos.OrderDTO;
+import com.fresh.coding.sooatelapi.dtos.OrderLineDto;
 import com.fresh.coding.sooatelapi.dtos.customers.CustomerDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.CreateMenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderDTO;
@@ -12,6 +14,7 @@ import com.fresh.coding.sooatelapi.entities.*;
 import com.fresh.coding.sooatelapi.enums.OperationType;
 import com.fresh.coding.sooatelapi.enums.OrderStatus;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
+import com.fresh.coding.sooatelapi.mappers.OrderLineMapper;
 import com.fresh.coding.sooatelapi.repositories.OperationRepository;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.repositories.SessionOccupationRepository;
@@ -81,7 +84,7 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         if (!missingIngredients.isEmpty())
             throw new IllegalArgumentException("Ingrédients manquants : " + String.join(", ", missingIngredients));
 
-        Order order = Order.builder()
+        var order = Order.builder()
                 .customer(customer)
                 .room(room)
                 .table(table)
@@ -94,12 +97,12 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         List<MenuOrderDTO.MenuItemSummarizedDTO> summarizedItems = new ArrayList<>();
 
         for (var item : dto.getMenuItems()) {
-            Menu menu = menuRepo.findById(item.getMenuId())
+            var menu = menuRepo.findById(item.getMenuId())
                     .orElseThrow(() -> new HttpNotFoundException("Menu introuvable avec l'ID : " + item.getMenuId()));
 
             var totalPrice = menu.getPrice() * item.getQuantity();
 
-            OrderLine orderLine = OrderLine.builder()
+            var orderLine = OrderLine.builder()
                     .order(order)
                     .menu(menu)
                     .quantity(item.getQuantity())
@@ -230,11 +233,11 @@ public class MenuOrderServiceImpl implements MenuOrderService {
     }
 
     @Override
-    public List<Map<String, Object>> groupByTableOrRoom(Long tableNumber, Long roomNumber) {
-        List<Order> orders;
+    public List<OrderDTO> groupByTableOrRoom(Long tableNumber, Long roomNumber) {
         var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
+        List<Order> orders;
 
-        if (tableNumber != null && roomNumber != null) {
+        if (roomNumber != null && tableNumber != null) {
             orders = menuOrderRepository.findAllByRoomNumberOrTableNumber(roomNumber, tableNumber);
         } else if (roomNumber != null) {
             orders = menuOrderRepository.findAllByRoomNumber(roomNumber);
@@ -243,28 +246,30 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         } else {
             orders = menuOrderRepository.findAll();
         }
+
         return groupOrders(orders);
     }
 
-    private List<Map<String, Object>> groupOrders(List<Order> orders) {
-        List<Map<String, Object>> res = new ArrayList<>();
-        for (var order : orders) {
-            Map<String, Object> orderMap = new HashMap<>();
-            orderMap.put("id", order.getId());
-            orderMap.put("orderDate", order.getOrderDate());
-            orderMap.put("status", order.getOrderStatus());
-            orderMap.put("orderLines", order.getOrderLines());
-            orderMap.put("sessionOccupation", order.getSessionOccupation());
-            if (order.getRoom() != null) {
-                orderMap.put("room", order.getRoom());
-            }
-            if (order.getTable() != null) {
-                orderMap.put("table", order.getTable());
-            }
-            res.add(orderMap);
+
+    private List<OrderDTO> groupOrders(List<Order> orders) {
+        List<OrderDTO> result = new ArrayList<>();
+
+        for (Order order : orders) {
+            List<OrderLineDto> orderLineDTOs = order.getOrderLines().stream().map(OrderLineMapper::toDto
+            ).toList();
+
+            var dto = OrderDTO.builder()
+                    .id(order.getId())
+                    .orderDate(order.getOrderDate())
+                    .orderStatus(order.getOrderStatus())
+                    .orderLines(orderLineDTOs)
+                    // .table(order.getTable())
+                    //.room(order.getRoom())
+                    .build();
+            result.add(dto);
         }
 
-        return res;
+        return result;
     }
 
     @Override

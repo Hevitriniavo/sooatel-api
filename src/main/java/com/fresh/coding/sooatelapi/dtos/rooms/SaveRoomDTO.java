@@ -17,15 +17,15 @@ import java.io.Serializable;
 @Builder
 public class SaveRoomDTO implements Serializable  {
     @NotNull(message = "Room number is required")
-    private Integer roomNumber;
+    private Long number;
 
     @NotNull(message = "Capacity is required")
     @Min(value = 1, message = "Capacity must be at least 1")
-    private Integer capacity;
+    private Long capacity;
 
     @NotNull(message = "Price is required")
     @Min(value = 0, message = "Price must be non-negative")
-    private Double price;
+    private Long price;
 
     @NotNull(message = "Floor ID is required")
     private Long floorId;
