@@ -1,6 +1,9 @@
 package com.fresh.coding.sooatelapi.services.invoices;
 
+import com.fresh.coding.sooatelapi.dtos.UpdateInvoicePaymentStatusRequest;
 import com.fresh.coding.sooatelapi.dtos.invoices.InvoiceDTO;
+import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
+import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.entities.Invoice;
 import com.fresh.coding.sooatelapi.entities.InvoiceLine;
 import com.fresh.coding.sooatelapi.enums.PaymentStatus;
@@ -30,10 +33,10 @@ public class InvoiceServiceImpl implements InvoiceService {
             throw new IllegalArgumentException("L'ordre n'est pas associé à une session d'occupation");
         }
         var invoiceRepository = repositoryFactory.getInvoiceRepository();
-
         if (invoiceRepository.existsBySessionOccupation(order.getSessionOccupation())) {
             throw new IllegalStateException("Une facture existe déjà pour cette session d'occupation");
         }
+
         var session = order.getSessionOccupation();
         if (session.getEndedAt() == null) {
             session.setEndedAt(LocalDateTime.now());
@@ -43,6 +46,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .customer(order.getCustomer())
                 .sessionOccupation(order.getSessionOccupation())
                 .issuedAt(LocalDateTime.now())
+                .order(order)
                 .paymentStatus(PaymentStatus.UNPAID)
                 .paymentDate(null)
                 .description("Facture automatique pour la commande #" + order.getId())
@@ -65,10 +69,55 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         invoice.setLines(lines);
         invoice.setTotalAmount(total);
+
         return toDto(invoiceRepository.save(invoice));
     }
 
+
+    @Override
+    public List<InvoiceDTO> getAllInvoicesOrderedByDate() {
+        var invoiceRepository = repositoryFactory.getInvoiceRepository();
+        return invoiceRepository.findAllWithDetailsOrderByIssuedAtDesc().stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+
+    @Override
+    @Transactional
+    public InvoiceDTO updateInvoicePaymentStatus(Long invoiceId, UpdateInvoicePaymentStatusRequest request) {
+        var invoiceRepository = repositoryFactory.getInvoiceRepository();
+        var invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new HttpNotFoundException("Facture non trouvée avec l'ID: " + invoiceId));
+
+        invoice.setPaymentStatus(request.getPaymentStatus());
+
+        if (request.getAmountPaid() != null) {
+            invoice.setAmountPaid(request.getAmountPaid());
+        }
+
+        if (request.getPaymentMethod() != null) {
+            invoice.setPaymentMethod(request.getPaymentMethod());
+        }
+
+        invoice.setPaymentDate(request.getPaymentDate() != null ? request.getPaymentDate() : LocalDateTime.now());
+
+        return toDto(invoiceRepository.save(invoice));
+    }
+
+
+    @Override
+    public InvoiceDTO findInvoiceById(Long invoiceId) {
+        var invoiceRepository = repositoryFactory.getInvoiceRepository();
+        var invoice = invoiceRepository.findInvoiceWithDetailsById(invoiceId)
+                .orElseThrow(() -> new HttpNotFoundException("Facture non trouvée avec l'ID: " + invoiceId));
+        return toDto(invoice);
+    }
+
+
     public InvoiceDTO toDto(Invoice invoice) {
+        var order = invoice.getOrder();
+
         return InvoiceDTO.builder()
                 .id(invoice.getId())
                 .customerId(invoice.getCustomer() != null ? invoice.getCustomer().getId() : null)
@@ -80,6 +129,17 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .paymentDate(invoice.getPaymentDate())
                 .paymentStatus(invoice.getPaymentStatus())
                 .description(invoice.getDescription())
+                .table(order != null && order.getTable() != null
+                        ? new TableSummarized(
+                        order.getTable().getId(),
+                        order.getTable().getNumber(),
+                        order.getTable().getCapacity(),
+                        order.getTable().getCreatedAt(),
+                        order.getTable().getUpdatedAt()
+                ) : null)
+                .room(order != null && order.getRoom() != null
+                        ? new RoomDTO(order.getRoom())
+                        : null)
                 .lines(invoice.getLines().stream().map(line -> InvoiceDTO.InvoiceLineDTO.builder()
                                 .id(line.getId())
                                 .menuId(line.getMenu() != null ? line.getMenu().getId() : null)
@@ -90,5 +150,6 @@ public class InvoiceServiceImpl implements InvoiceService {
                         .toList())
                 .build();
     }
+
 
 }

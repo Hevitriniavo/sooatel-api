@@ -1,5 +1,7 @@
 package com.fresh.coding.sooatelapi.dtos.invoices;
 
+import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
+import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.enums.PaymentStatus;
 import com.fresh.coding.sooatelapi.enums.PaymentMethod;
 import lombok.*;
@@ -23,7 +25,8 @@ public class InvoiceDTO {
     private LocalDateTime paymentDate;
     private PaymentStatus paymentStatus;
     private String description;
-
+    private TableSummarized table;
+    private RoomDTO room;
     private List<InvoiceLineDTO> lines;
 
     @Getter

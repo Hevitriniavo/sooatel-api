@@ -76,5 +76,4 @@ public class MenuOrderController {
     ) {
         return menuOrderService.findAllOrdersByRoom(roomNumber);
     }
-
 }

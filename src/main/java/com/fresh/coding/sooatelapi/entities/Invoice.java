@@ -45,7 +45,7 @@ public class Invoice implements Serializable {
     @Column
     private PaymentMethod paymentMethod;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private Order order;
 
