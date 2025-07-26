@@ -18,7 +18,7 @@ public class OrderDTO {
     private LocalDateTime orderDate;
     private OrderStatus orderStatus;
     private List<OrderLineDto> orderLines;
-    private SessionOccupationDTO sessionOccupation;
+    private Long sessionOccupationId;
     private RoomDTO room;
     private TableSummarized table;
 }

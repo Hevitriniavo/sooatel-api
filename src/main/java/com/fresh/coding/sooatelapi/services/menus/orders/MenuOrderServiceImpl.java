@@ -14,18 +14,19 @@ import com.fresh.coding.sooatelapi.entities.*;
 import com.fresh.coding.sooatelapi.enums.OperationType;
 import com.fresh.coding.sooatelapi.enums.OrderStatus;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
-import com.fresh.coding.sooatelapi.mappers.OrderLineMapper;
 import com.fresh.coding.sooatelapi.repositories.OperationRepository;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
 import com.fresh.coding.sooatelapi.repositories.SessionOccupationRepository;
 import com.fresh.coding.sooatelapi.repositories.StockRepository;
 import com.fresh.coding.sooatelapi.services.invoices.InvoiceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -246,30 +247,20 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         } else {
             orders = menuOrderRepository.findAll();
         }
-
-        return groupOrders(orders);
+        return orders.stream().map(this::groupOrders).collect(Collectors.toList());
     }
 
 
-    private List<OrderDTO> groupOrders(List<Order> orders) {
-        List<OrderDTO> result = new ArrayList<>();
-
-        for (Order order : orders) {
-            List<OrderLineDto> orderLineDTOs = order.getOrderLines().stream().map(OrderLineMapper::toDto
-            ).toList();
-
-            var dto = OrderDTO.builder()
-                    .id(order.getId())
-                    .orderDate(order.getOrderDate())
-                    .orderStatus(order.getOrderStatus())
-                    .orderLines(orderLineDTOs)
-                    // .table(order.getTable())
-                    //.room(order.getRoom())
-                    .build();
-            result.add(dto);
-        }
-
-        return result;
+    private OrderDTO groupOrders(Order order) {
+        return OrderDTO.builder()
+                .id(order.getId())
+                .orderDate(order.getOrderDate())
+                .orderStatus(order.getOrderStatus())
+                .orderLines(order.getOrderLines().stream().map(this::toOrderLineSummarized).toList())
+                .table(toTableSummarized(order.getTable()))
+                .sessionOccupationId(order.getSessionOccupation() == null ? null : order.getSessionOccupation().getId() )
+                .room(toRoomSummarized(order.getRoom()))
+                .build();
     }
 
     @Override
@@ -357,5 +348,61 @@ public class MenuOrderServiceImpl implements MenuOrderService {
             }
         }
         return shortages;
+    }
+
+
+    public TableSummarized toTableSummarized(TableEntity table) {
+        if (table == null){
+            return  null;
+        }
+        return new TableSummarized(
+                table.getId(),
+                table.getNumber(),
+                table.getCapacity(),
+                table.getCreatedAt(),
+                table.getUpdatedAt()
+        );
+    }
+
+
+    private RoomDTO toRoomSummarized(Room room) {
+        if (room == null){
+            return  null;
+        }
+        var roomDTO = new RoomDTO();
+        BeanUtils.copyProperties(room, roomDTO);
+        if (room.getFloor() != null){
+            roomDTO.setFloorId(room.getFloor().getId());
+        }
+        return roomDTO;
+    }
+
+    private OrderLineDto toOrderLineSummarized(OrderLine orderLine) {
+        if (orderLine == null) {
+            return null;
+        }
+
+        return OrderLineDto.builder()
+                .id(orderLine.getId())
+                .quantity(orderLine.getQuantity())
+                .unitPrice(orderLine.getUnitPrice())
+                .totalPrice(orderLine.getTotalPrice())
+                .menu(toMenuSummarized(orderLine.getMenu()))
+                .build();
+    }
+
+
+
+    private MenuSummarized toMenuSummarized(Menu menu) {
+        return new MenuSummarized(
+                menu.getId(),
+                menu.getName(),
+                menu.getDescription(),
+                menu.getPrice(),
+                menu.getMenuGroup() != null ? menu.getMenuGroup().getId() : null,
+                menu.getCreatedAt(),
+                menu.getUpdatedAt(),
+                menu.getStatus()
+        );
     }
 }
