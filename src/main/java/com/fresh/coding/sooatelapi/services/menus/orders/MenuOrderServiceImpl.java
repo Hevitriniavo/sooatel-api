@@ -234,6 +234,62 @@ public class MenuOrderServiceImpl implements MenuOrderService {
     }
 
     @Override
+    @Transactional
+    public void attachOrderLines(Long orderId, List<CreateMenuOrderDTO.MenuItemDTO> menuItems) {
+        var orderRepository = repositoryFactory.getMenuOrderRepository();
+        var menuRepository = repositoryFactory.getMenuRepository();
+
+        var order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new HttpNotFoundException("Commande introuvable avec ID: " + orderId));
+
+        for (var item : menuItems) {
+            var menu = menuRepository.findById(item.getMenuId())
+                    .orElseThrow(() -> new HttpNotFoundException("Menu introuvable avec ID: " + item.getMenuId()));
+
+            var orderLine = OrderLine.builder()
+                    .order(order)
+                    .menu(menu)
+                    .quantity(item.getQuantity())
+                    .unitPrice(menu.getPrice())
+                    .totalPrice(menu.getPrice() * item.getQuantity())
+                    .build();
+
+            order.getOrderLines().add(orderLine);
+        }
+
+        orderRepository.save(order);
+    }
+
+
+    @Override
+    public List<MenuOrderDTO> getAllOrdersWithLines() {
+        var orderRepository = repositoryFactory.getMenuOrderRepository();
+        List<Order> orders = orderRepository.findAll();
+
+        return orders.stream()
+                .map(order -> MenuOrderDTO.builder()
+                        .customerId(order.getCustomer() != null ? order.getCustomer().getId() : null)
+                        .roomId(order.getRoom() != null ? order.getRoom().getId() : null)
+                        .roomNumber(order.getRoom() != null ? order.getRoom().getNumber() : null)
+                        .tableId(order.getTable() != null ? order.getTable().getId() : null)
+                        .tableNumber(order.getTable() != null ? order.getTable().getNumber() : null)
+                        .orderDate(order.getOrderDate())
+                        .menuItems(order.getOrderLines().stream().map(line ->
+                                new MenuOrderDTO.MenuItemSummarizedDTO(
+                                        line.getMenu().getId(),
+                                        line.getQuantity(),
+                                        line.getTotalPrice(),
+                                        order.getOrderStatus()
+                                )
+                        ).toList())
+                        .build()
+                )
+                .toList();
+    }
+
+
+
+    @Override
     public List<OrderDTO> groupByTableOrRoom(Long tableNumber, Long roomNumber) {
         var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
         List<Order> orders;

@@ -15,7 +15,8 @@ public interface MenuOrderService {
     void updateOrderStatus(UpdateOrderStatusDTO orderStatusDTO);
     void updateOrderStatus(Long orderId, OrderStatus newStatus);
     void deleteOrderById(Long orderId);
-
+    void attachOrderLines(Long orderId, List<CreateMenuOrderDTO.MenuItemDTO> menuItems);
+    List<MenuOrderDTO> getAllOrdersWithLines();
     List<OrderDTO> groupByTableOrRoom(Long tableNumber, Long roomNumber);
 
     List<MenuOrderSummarized> findAllOrdersByTable(Long tableNumber);

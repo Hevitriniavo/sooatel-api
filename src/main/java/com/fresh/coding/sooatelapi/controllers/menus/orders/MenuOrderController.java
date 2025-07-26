@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/menu-orders")
@@ -27,6 +26,22 @@ public class MenuOrderController {
     public MenuOrderDTO createMenuOrder(@Valid @RequestBody CreateMenuOrderDTO createMenuOrderDTO) {
         return menuOrderService.createMenuOrder(createMenuOrderDTO);
     }
+
+    @PostMapping("/{orderId}/order-lines")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void attachOrderLinesToOrder(
+            @PathVariable Long orderId,
+            @Valid @RequestBody List<CreateMenuOrderDTO.MenuItemDTO> menuItems
+    ) {
+        menuOrderService.attachOrderLines(orderId, menuItems);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<MenuOrderDTO> getAllOrders() {
+        return menuOrderService.getAllOrdersWithLines();
+    }
+
 
     @GetMapping("/status")
     @ResponseStatus(HttpStatus.OK)

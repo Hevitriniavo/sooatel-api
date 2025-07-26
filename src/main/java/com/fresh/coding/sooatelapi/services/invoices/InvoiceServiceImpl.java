@@ -87,7 +87,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Transactional
     public InvoiceDTO updateInvoicePaymentStatus(Long invoiceId, UpdateInvoicePaymentStatusRequest request) {
         var invoiceRepository = repositoryFactory.getInvoiceRepository();
-        var invoice = invoiceRepository.findById(invoiceId)
+        var invoice = invoiceRepository.findInvoiceWithDetailsById(invoiceId)
                 .orElseThrow(() -> new HttpNotFoundException("Facture non trouvée avec l'ID: " + invoiceId));
 
         invoice.setPaymentStatus(request.getPaymentStatus());
