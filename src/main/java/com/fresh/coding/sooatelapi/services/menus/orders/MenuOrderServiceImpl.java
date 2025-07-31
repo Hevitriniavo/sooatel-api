@@ -274,6 +274,7 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                         .tableId(order.getTable() != null ? order.getTable().getId() : null)
                         .tableNumber(order.getTable() != null ? order.getTable().getNumber() : null)
                         .orderDate(order.getOrderDate())
+                        .orderId(order.getId())
                         .menuItems(order.getOrderLines().stream().map(line ->
                                 new MenuOrderDTO.MenuItemSummarizedDTO(
                                         line.getMenu().getId(),
