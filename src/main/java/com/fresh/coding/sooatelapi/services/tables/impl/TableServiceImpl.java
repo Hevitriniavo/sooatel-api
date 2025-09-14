@@ -53,28 +53,30 @@ public class TableServiceImpl implements TableService {
     }
 
 
+    @Transactional
     @Override
     public void deleteById(Long id) {
         var tableRepository = factory.getTableRepository();
-        var menuOrderRepository = factory.getMenuOrderRepository();
-        var reservationRepository = factory.getReservationRepository();
 
         var table = tableRepository.findById(id)
                 .orElseThrow(() -> new HttpNotFoundException("Table not found with id: " + id));
 
-        reservationRepository.unsetTableReservationById(table.getId());
 
-        if (table.getOrders() != null && !table.getOrders().isEmpty()) {
-            for (var menuOrder : table.getOrders()) {
-                menuOrder.setTable(null);
-                menuOrderRepository.save(menuOrder);
-            }
+        if (table.getOrders() != null) {
+            table.getOrders().clear();
         }
 
-        int deletedTablesCount = tableRepository.deleteTableById(id);
-        if (deletedTablesCount > 0) {
-            log.info("{} table deleted with id: {}", deletedTablesCount, id);
+        if (table.getReservations() != null) {
+            table.getReservations().clear();
         }
+
+        if (table.getSessionOccupations() != null) {
+            table.getSessionOccupations().clear();
+        }
+
+        tableRepository.delete(table);
+
+        log.info("Table deleted with id: {}", id);
     }
 
     @Override

@@ -1,14 +1,18 @@
 package com.fresh.coding.sooatelapi.services.invoices;
 
 import com.fresh.coding.sooatelapi.dtos.UpdateInvoicePaymentStatusRequest;
+import com.fresh.coding.sooatelapi.dtos.cash.CashDTO;
 import com.fresh.coding.sooatelapi.dtos.invoices.InvoiceDTO;
+import com.fresh.coding.sooatelapi.dtos.invoices.InvoiceLineRequest;
 import com.fresh.coding.sooatelapi.dtos.rooms.RoomDTO;
 import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.entities.Invoice;
 import com.fresh.coding.sooatelapi.entities.InvoiceLine;
 import com.fresh.coding.sooatelapi.enums.PaymentStatus;
+import com.fresh.coding.sooatelapi.enums.TransactionType;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
+import com.fresh.coding.sooatelapi.services.cash.CashService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InvoiceServiceImpl implements InvoiceService {
     private final RepositoryFactory repositoryFactory;
+    private final CashService cashService;
 
     @Transactional
     @Override
@@ -74,6 +79,39 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
 
+    @Transactional
+    public void createInvoiceInline(Long invoiceId, List<InvoiceLineRequest> lineRequests, String description) {
+        var menuRepository = repositoryFactory.getMenuRepository();
+        var invoiceRepository = repositoryFactory.getInvoiceRepository();
+
+        var invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new HttpNotFoundException("Facture introuvable avec ID: " + invoiceId));
+
+
+        List<InvoiceLine> lines = new ArrayList<>();
+        long total = 0L;
+
+        for (var req : lineRequests) {
+            var menu = menuRepository.findById(req.menuId())
+                    .orElseThrow(() -> new HttpNotFoundException("Menu introuvable avec ID: " + req.menuId()));
+
+            long totalLine = menu.getPrice() * req.quantity();
+            var line = InvoiceLine.builder()
+                    .invoice(invoice)
+                    .menu(menu)
+                    .quantity(req.quantity())
+                    .unitPrice(menu.getPrice())
+                    .totalPrice(totalLine)
+                    .build();
+            lines.add(line);
+            total += totalLine;
+        }
+
+        invoice.setLines(lines);
+        invoice.setTotalAmount(total);
+
+        toDto(invoiceRepository.save(invoice));
+    }
     @Override
     public List<InvoiceDTO> getAllInvoicesOrderedByDate() {
         var invoiceRepository = repositoryFactory.getInvoiceRepository();
@@ -98,6 +136,16 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         if (request.getPaymentMethod() != null) {
             invoice.setPaymentMethod(request.getPaymentMethod());
+
+            if (request.getPaymentStatus() == PaymentStatus.PAID){
+                var cashDTO = new CashDTO(
+                        request.getAmountPaid(),
+                        TransactionType.MENU_SALE_DEPOSIT,
+                        request.getPaymentMethod(),
+                        request.getDescription()
+                );
+                cashService.processCashTransaction(cashDTO);
+            }
         }
 
         invoice.setPaymentDate(request.getPaymentDate() != null ? request.getPaymentDate() : LocalDateTime.now());

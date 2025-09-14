@@ -6,6 +6,7 @@ import com.fresh.coding.sooatelapi.dtos.rooms.SaveRoomDTO;
 import com.fresh.coding.sooatelapi.entities.Room;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -68,25 +69,26 @@ public class RoomServiceImpl implements RoomService {
         return mapToDTO(room);
     }
 
-    @Override
-    public void deleteRoom(Long id) {
-        var menuOrderRepository = repositoryFactory.getMenuOrderRepository();
+    @Transactional
+    public void deleteRoom(Long roomId) {
         var roomRepository = repositoryFactory.getRoomRepository();
-        var reservationRepository = repositoryFactory.getReservationRepository();
-        var room = roomRepository.findById(id)
+        var room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new HttpNotFoundException("Room not found"));
 
-       reservationRepository.unsetRoomReservationById(room.getId());
-
-        if (room.getOrders() != null && !room.getOrders().isEmpty()) {
-            for (var menuOrder : room.getOrders()) {
-                menuOrder.setRoom(null);
-                menuOrderRepository.save(menuOrder);
-            }
+        if (room.getReservations() != null) {
+            room.getReservations().clear();
         }
-        roomRepository.deleteById(id);
-    }
 
+        if (room.getOrders() != null) {
+            room.getOrders().clear();
+        }
+
+        if (room.getSessionOccupations() != null) {
+            room.getSessionOccupations().clear();
+        }
+
+        roomRepository.delete(room);
+    }
 
     @Override
     public FloorWithRoomDTO findFloorWithRooms(Long floorId) {

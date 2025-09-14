@@ -3,6 +3,8 @@ package com.fresh.coding.sooatelapi.services.menus.orders;
 import com.fresh.coding.sooatelapi.dtos.OrderDTO;
 import com.fresh.coding.sooatelapi.dtos.OrderLineDto;
 import com.fresh.coding.sooatelapi.dtos.customers.CustomerDTO;
+import com.fresh.coding.sooatelapi.dtos.invoices.InvoiceDTO;
+import com.fresh.coding.sooatelapi.dtos.invoices.InvoiceLineRequest;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.CreateMenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderDTO;
 import com.fresh.coding.sooatelapi.dtos.menu.orders.MenuOrderSummarized;
@@ -13,6 +15,7 @@ import com.fresh.coding.sooatelapi.dtos.tables.TableSummarized;
 import com.fresh.coding.sooatelapi.entities.*;
 import com.fresh.coding.sooatelapi.enums.OperationType;
 import com.fresh.coding.sooatelapi.enums.OrderStatus;
+import com.fresh.coding.sooatelapi.enums.PaymentStatus;
 import com.fresh.coding.sooatelapi.exceptions.HttpNotFoundException;
 import com.fresh.coding.sooatelapi.repositories.OperationRepository;
 import com.fresh.coding.sooatelapi.repositories.RepositoryFactory;
@@ -213,51 +216,100 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         }
     }
 
+
     @Override
     @Transactional
     public void deleteOrderById(Long orderId) {
         var orderRepo = repositoryFactory.getMenuOrderRepository();
-        var roomRepo = repositoryFactory.getRoomRepository();
-        var tableRepo = repositoryFactory.getTableRepository();
+        var invoiceRepo = repositoryFactory.getInvoiceRepository();
 
-        Order order = orderRepo.findById(orderId)
+        var order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new HttpNotFoundException("Aucune commande trouvée avec l'ID " + orderId));
 
-        if (order.getRoom() != null) {
-            roomRepo.save(order.getRoom());
+        if (order.getInvoice() != null) {
+            invoiceRepo.delete(order.getInvoice());
         }
-        if (order.getTable() != null) {
-            tableRepo.save(order.getTable());
+
+        if (order.getOrderLines() != null) {
+            order.getOrderLines().forEach(line -> line.setOrder(null));
+            order.getOrderLines().clear();
         }
 
         orderRepo.delete(order);
+
+        invoiceRepo.deleteAllByOrderIsNull();
     }
+
+
+
 
     @Override
     @Transactional
     public void attachOrderLines(Long orderId, List<CreateMenuOrderDTO.MenuItemDTO> menuItems) {
-        var orderRepository = repositoryFactory.getMenuOrderRepository();
-        var menuRepository = repositoryFactory.getMenuRepository();
+        var orderRepo = repositoryFactory.getMenuOrderRepository();
+        var menuRepo = repositoryFactory.getMenuRepository();
+        var invoiceRepo = repositoryFactory.getInvoiceRepository();
 
-        var order = orderRepository.findById(orderId)
+        Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new HttpNotFoundException("Commande introuvable avec ID: " + orderId));
 
+        List<InvoiceLine> newInvoiceLines = new ArrayList<>();
         for (var item : menuItems) {
-            var menu = menuRepository.findById(item.getMenuId())
+            var menu = menuRepo.findById(item.getMenuId())
                     .orElseThrow(() -> new HttpNotFoundException("Menu introuvable avec ID: " + item.getMenuId()));
 
-            var orderLine = OrderLine.builder()
+            var missingIngredients = checkStock(menu, item.getQuantity());
+            if (!missingIngredients.isEmpty()) {
+                throw new IllegalArgumentException("Stock insuffisant pour le menu " + menu.getName()
+                        + ". Ingrédients manquants: " + String.join(", ", missingIngredients));
+            }
+
+            OrderLine orderLine = OrderLine.builder()
                     .order(order)
                     .menu(menu)
                     .quantity(item.getQuantity())
                     .unitPrice(menu.getPrice())
                     .totalPrice(menu.getPrice() * item.getQuantity())
                     .build();
-
             order.getOrderLines().add(orderLine);
+
+            InvoiceLine invoiceLine = InvoiceLine.builder()
+                    .invoice(null)
+                    .menu(menu)
+                    .quantity(item.getQuantity())
+                    .unitPrice(menu.getPrice())
+                    .totalPrice(menu.getPrice() * item.getQuantity())
+                    .build();
+            newInvoiceLines.add(invoiceLine);
         }
 
-        orderRepository.save(order);
+        orderRepo.save(order);
+
+        Invoice invoice;
+        var existingInvoices = invoiceRepo.findAllByOrder(order);
+        if (!existingInvoices.isEmpty()) {
+            invoice = existingInvoices.getFirst();
+        } else {
+            invoice = Invoice.builder()
+                    .order(order)
+                    .customer(order.getCustomer())
+                    .totalAmount(0L)
+                    .build();
+            invoiceRepo.save(invoice);
+            order.setInvoice(invoice);
+            orderRepo.save(order);
+        }
+
+        for (InvoiceLine line : newInvoiceLines) {
+            line.setInvoice(invoice);
+            invoice.getLines().add(line);
+        }
+
+        long totalAmount = invoice.getLines().stream()
+                .mapToLong(InvoiceLine::getTotalPrice)
+                .sum();
+        invoice.setTotalAmount(totalAmount);
+        invoiceRepo.save(invoice);
     }
 
 

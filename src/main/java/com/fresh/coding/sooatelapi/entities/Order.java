@@ -18,15 +18,15 @@ import java.util.List;
 @Builder
 public class Order extends Model implements Serializable {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private Customer customer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private Room room;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private TableEntity table;
 
@@ -40,7 +40,12 @@ public class Order extends Model implements Serializable {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderLine> orderLines = new ArrayList<>();
+
+    @OneToOne(mappedBy = "order")
+    private Invoice invoice;
+
 }

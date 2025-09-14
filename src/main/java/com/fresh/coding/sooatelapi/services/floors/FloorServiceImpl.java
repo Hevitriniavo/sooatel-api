@@ -59,11 +59,9 @@
         @Transactional
         public void deleteFloor(Long id) {
             var floorRepository = repositoryFactory.getFloorRepository();
-            var roomRepository = repositoryFactory.getRoomRepository();
             if (!floorRepository.existsById(id)) {
                 throw new HttpNotFoundException("Floor not found");
             }
-            roomRepository.deleteRoomByFloorId(id);
             floorRepository.deleteById(id);
         }
 

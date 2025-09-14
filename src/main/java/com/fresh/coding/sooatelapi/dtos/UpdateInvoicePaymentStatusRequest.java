@@ -16,10 +16,12 @@ public class UpdateInvoicePaymentStatusRequest {
     private PaymentStatus paymentStatus;
 
     @Min(value = 0, message = "Le montant payé doit être positif ou nul")
-    private Long amountPaid;
+    private Double amountPaid;
 
     private PaymentMethod paymentMethod;
 
     @PastOrPresent(message = "La date de paiement ne peut pas être dans le futur")
     private LocalDateTime paymentDate;
+
+    private String description;
 }

@@ -20,7 +20,7 @@ public class InvoiceDTO {
     private Long sessionOccupationId;
     private LocalDateTime issuedAt;
     private Long totalAmount;
-    private Long amountPaid;
+    private Double amountPaid;
     private PaymentMethod paymentMethod;
     private LocalDateTime paymentDate;
     private PaymentStatus paymentStatus;

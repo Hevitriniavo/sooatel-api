@@ -22,15 +22,15 @@ public class TableEntity extends Model  implements Serializable {
     @Column(nullable = false)
     private Long capacity;
 
-    @OneToMany(mappedBy = "table")
+    @OneToMany(mappedBy = "table", cascade = CascadeType.ALL,  orphanRemoval = true)
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "table")
+    @OneToMany(mappedBy = "table", cascade = CascadeType.ALL,  orphanRemoval = true)
     @Builder.Default
     private List<SessionOccupation> sessionOccupations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "table")
+    @OneToMany(mappedBy = "table", cascade = CascadeType.ALL,  orphanRemoval = true)
     @Builder.Default
     private List<Reservation> reservations = new ArrayList<>();
 }

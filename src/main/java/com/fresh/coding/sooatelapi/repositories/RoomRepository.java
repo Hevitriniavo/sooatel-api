@@ -15,11 +15,6 @@ import java.util.Optional;
 public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findByFloorId(Long floorId);
 
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Room r WHERE r.floor.id = :id")
-    void  deleteRoomByFloorId(Long id);
-
     @Query("SELECT r FROM Room r WHERE r.number = :number")
     Optional<Room> findByRoomNumber(Long number);
 

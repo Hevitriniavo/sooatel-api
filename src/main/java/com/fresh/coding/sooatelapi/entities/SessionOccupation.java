@@ -44,10 +44,10 @@ public class SessionOccupation {
     private String description;
 
     @Builder.Default
-    @OneToMany(mappedBy = "sessionOccupation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sessionOccupation", cascade = CascadeType.ALL, fetch = FetchType.EAGER,  orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "sessionOccupation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sessionOccupation", cascade = CascadeType.ALL, fetch = FetchType.EAGER,  orphanRemoval = true)
     private List<Invoice> invoices = new ArrayList<>();
 }

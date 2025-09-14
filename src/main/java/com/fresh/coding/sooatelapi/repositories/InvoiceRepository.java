@@ -1,6 +1,7 @@
 package com.fresh.coding.sooatelapi.repositories;
 
 import com.fresh.coding.sooatelapi.entities.Invoice;
+import com.fresh.coding.sooatelapi.entities.Order;
 import com.fresh.coding.sooatelapi.entities.SessionOccupation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -35,4 +36,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
         """)
     Optional<Invoice> findInvoiceWithDetailsById(@Param("invoiceId") Long invoiceId);
 
+    void deleteAllByOrderIsNull();
+
+    List<Invoice> findAllByOrder(Order order);
 }

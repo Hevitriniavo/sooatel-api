@@ -31,7 +31,7 @@ public class Menu extends Model implements Serializable {
     private MenuGroup menuGroup;
 
     @Builder.Default
-    @OneToMany(mappedBy = "menu")
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<MenuIngredient> menuIngredients = new ArrayList<>();
 
@@ -39,13 +39,14 @@ public class Menu extends Model implements Serializable {
     @Column(nullable = false)
     private MenuStatus status;
 
-    @OneToMany(mappedBy = "menu")
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     @ToString.Exclude
     private List<OrderLine> orderLines = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "menu")
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
+
     @Builder.Default
     @ToString.Exclude
     private List<InvoiceLine> invoiceLines = new ArrayList<>();
