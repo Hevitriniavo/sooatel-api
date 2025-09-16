@@ -359,19 +359,6 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         return orders.stream().map(this::groupOrders).collect(Collectors.toList());
     }
 
-
-    private OrderDTO groupOrders(Order order) {
-        return OrderDTO.builder()
-                .id(order.getId())
-                .orderDate(order.getOrderDate())
-                .orderStatus(order.getOrderStatus())
-                .orderLines(order.getOrderLines().stream().map(this::toOrderLineSummarized).toList())
-                .table(toTableSummarized(order.getTable()))
-                .sessionOccupationId(order.getSessionOccupation() == null ? null : order.getSessionOccupation().getId() )
-                .room(toRoomSummarized(order.getRoom()))
-                .build();
-    }
-
     @Override
     public List<MenuOrderSummarized> findAllOrdersByTable(Long tableNumber) {
         var tableRepo = repositoryFactory.getTableRepository();
@@ -396,6 +383,14 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         List<Order> orders = orderRepo.findAllByRoomId(room.getId());
 
         return mapOrdersToMenuOrderSummarized(orders);
+    }
+
+    @Override
+    public OrderDTO getOrderWithLines(Long orderId) {
+        var orderRepo = repositoryFactory.getMenuOrderRepository();
+        var order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new HttpNotFoundException("Commande non trouvée avec l'ID " + orderId));
+        return groupOrders(order);
     }
 
     private List<MenuOrderSummarized> mapOrdersToMenuOrderSummarized(List<Order> orders) {
@@ -513,5 +508,17 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                 menu.getUpdatedAt(),
                 menu.getStatus()
         );
+    }
+
+    private OrderDTO groupOrders(Order order) {
+        return OrderDTO.builder()
+                .id(order.getId())
+                .orderDate(order.getOrderDate())
+                .orderStatus(order.getOrderStatus())
+                .orderLines(order.getOrderLines().stream().map(this::toOrderLineSummarized).toList())
+                .table(toTableSummarized(order.getTable()))
+                .sessionOccupationId(order.getSessionOccupation() == null ? null : order.getSessionOccupation().getId() )
+                .room(toRoomSummarized(order.getRoom()))
+                .build();
     }
 }

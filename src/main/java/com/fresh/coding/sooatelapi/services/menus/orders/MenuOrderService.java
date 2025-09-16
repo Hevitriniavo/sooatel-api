@@ -20,7 +20,7 @@ public interface MenuOrderService {
     List<OrderDTO> groupByTableOrRoom(Long tableNumber, Long roomNumber);
 
     List<MenuOrderSummarized> findAllOrdersByTable(Long tableNumber);
-
     List<MenuOrderSummarized> findAllOrdersByRoom(Long roomNumber);
+    OrderDTO getOrderWithLines(Long orderId);
 
 }

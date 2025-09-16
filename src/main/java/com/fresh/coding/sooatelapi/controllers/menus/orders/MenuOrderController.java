@@ -78,6 +78,13 @@ public class MenuOrderController {
         return menuOrderService.groupByTableOrRoom(tableNumber, roomNumber);
     }
 
+    @GetMapping("/{orderId}/details")
+    @ResponseStatus(HttpStatus.OK)
+    public OrderDTO getOrderWithOrderLines(@PathVariable Long orderId) {
+        return menuOrderService.getOrderWithLines(orderId);
+    }
+
+
     @GetMapping("/all/table/{tableNumber}")
     public List<MenuOrderSummarized> getAllOrdersByTable(
             @PathVariable Long tableNumber
