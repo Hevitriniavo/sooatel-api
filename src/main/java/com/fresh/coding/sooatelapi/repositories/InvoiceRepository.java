@@ -43,10 +43,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     @Query("DELETE FROM Invoice i WHERE i.order IS NULL")
     void deleteInvoicesWithNullOrder();
 
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Invoice i WHERE i.lines IS EMPTY")
-    void deleteOrphanInvoices();
 
     List<Invoice> findAllByOrder(Order order);
 }

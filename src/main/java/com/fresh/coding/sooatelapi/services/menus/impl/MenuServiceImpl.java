@@ -56,29 +56,15 @@ public class MenuServiceImpl implements MenuService {
     @Override
     @Transactional
     public void deleteById(Long menuId) {
-        var menuRepo = factory.getMenuRepository();
-        var invoiceLineRepo = factory.getInvoiceLineRepository();
-        var orderLineRepo = factory.getOrderLineRepository();
-        var invoiceRepo = factory.getInvoiceRepository();
-
-        Menu menu = menuRepo.findById(menuId)
+        var menuRepository = factory.getMenuRepository();
+        menuRepository.findById(menuId)
                 .orElseThrow(() -> new HttpNotFoundException("Menu introuvable"));
-
-        if (!menu.getOrderLines().isEmpty()) {
-            orderLineRepo.deleteByMenuId(menuId);
-        }
-
-        if (!menu.getInvoiceLines().isEmpty()) {
-            invoiceLineRepo.deleteByMenuId(menuId);
-        }
-
-        invoiceRepo.deleteOrphanInvoices();
-
-        if (!menu.getMenuIngredients().isEmpty()) {
-            menu.getMenuIngredients().clear();
-        }
-
-        menuRepo.delete(menu);
+        menuRepository.deleteInvoiceLinesByMenuId(menuId);
+        menuRepository.deleteOrderLinesByMenuId(menuId);
+        menuRepository.deleteMenuIngredientsByMenuId(menuId);
+        menuRepository.deleteMenuByIdNative(menuId);
+        menuRepository.deleteOrphanInvoices();
+        menuRepository.deleteOrphanOrders();
     }
 
 
