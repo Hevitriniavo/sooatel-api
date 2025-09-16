@@ -242,7 +242,6 @@ public class MenuOrderServiceImpl implements MenuOrderService {
 
 
 
-
     @Override
     @Transactional
     public void attachOrderLines(Long orderId, List<CreateMenuOrderDTO.MenuItemDTO> menuItems) {
@@ -250,8 +249,19 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         var menuRepo = repositoryFactory.getMenuRepository();
         var invoiceRepo = repositoryFactory.getInvoiceRepository();
 
-        Order order = orderRepo.findById(orderId)
+        var order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new HttpNotFoundException("Commande introuvable avec ID: " + orderId));
+
+        Invoice invoice = null;
+        var existingInvoices = invoiceRepo.findAllByOrder(order);
+        if (!existingInvoices.isEmpty()) {
+            invoice = existingInvoices.getFirst();
+            if (PaymentStatus.PAID.equals(invoice.getPaymentStatus())) {
+                throw new IllegalStateException(
+                        "Impossible d'ajouter des lignes : la facture de la commande " + orderId + " est déjà payée."
+                );
+            }
+        }
 
         List<InvoiceLine> newInvoiceLines = new ArrayList<>();
         for (var item : menuItems) {
@@ -264,7 +274,7 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                         + ". Ingrédients manquants: " + String.join(", ", missingIngredients));
             }
 
-            OrderLine orderLine = OrderLine.builder()
+            var orderLine = OrderLine.builder()
                     .order(order)
                     .menu(menu)
                     .quantity(item.getQuantity())
@@ -273,43 +283,30 @@ public class MenuOrderServiceImpl implements MenuOrderService {
                     .build();
             order.getOrderLines().add(orderLine);
 
-            InvoiceLine invoiceLine = InvoiceLine.builder()
-                    .invoice(null)
-                    .menu(menu)
-                    .quantity(item.getQuantity())
-                    .unitPrice(menu.getPrice())
-                    .totalPrice(menu.getPrice() * item.getQuantity())
-                    .build();
-            newInvoiceLines.add(invoiceLine);
+            if (invoice != null) {
+                var invoiceLine = InvoiceLine.builder()
+                        .invoice(invoice)
+                        .menu(menu)
+                        .quantity(item.getQuantity())
+                        .unitPrice(menu.getPrice())
+                        .totalPrice(menu.getPrice() * item.getQuantity())
+                        .build();
+                newInvoiceLines.add(invoiceLine);
+            }
         }
 
         orderRepo.save(order);
 
-        Invoice invoice;
-        var existingInvoices = invoiceRepo.findAllByOrder(order);
-        if (!existingInvoices.isEmpty()) {
-            invoice = existingInvoices.getFirst();
-        } else {
-            invoice = Invoice.builder()
-                    .order(order)
-                    .customer(order.getCustomer())
-                    .totalAmount(0L)
-                    .build();
+        if (invoice != null) {
+            for (InvoiceLine line : newInvoiceLines) {
+                invoice.getLines().add(line);
+            }
+            long totalAmount = invoice.getLines().stream()
+                    .mapToLong(InvoiceLine::getTotalPrice)
+                    .sum();
+            invoice.setTotalAmount(totalAmount);
             invoiceRepo.save(invoice);
-            order.setInvoice(invoice);
-            orderRepo.save(order);
         }
-
-        for (InvoiceLine line : newInvoiceLines) {
-            line.setInvoice(invoice);
-            invoice.getLines().add(line);
-        }
-
-        long totalAmount = invoice.getLines().stream()
-                .mapToLong(InvoiceLine::getTotalPrice)
-                .sum();
-        invoice.setTotalAmount(totalAmount);
-        invoiceRepo.save(invoice);
     }
 
 
