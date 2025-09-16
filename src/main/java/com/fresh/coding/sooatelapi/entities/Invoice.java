@@ -46,7 +46,7 @@ public class Invoice implements Serializable {
     private PaymentMethod paymentMethod;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "invoice_id")
+    @JoinColumn
     private Order order;
 
     @Column

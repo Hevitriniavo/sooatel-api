@@ -46,7 +46,6 @@ public class Menu extends Model implements Serializable {
 
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
-
     @Builder.Default
     @ToString.Exclude
     private List<InvoiceLine> invoiceLines = new ArrayList<>();

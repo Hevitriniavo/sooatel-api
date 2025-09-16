@@ -53,21 +53,32 @@ public class MenuServiceImpl implements MenuService {
                 .map(this::toMenuSummarized).collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
-    public void deleteById(Long id) {
-        var menuRepository = factory.getMenuRepository();
-        var deletedIngredientRows = menuRepository.deleteMenuIngredientById(id);
-        var deletedMenuRows = menuRepository.deleteMenuById(id);
+    @Transactional
+    public void deleteById(Long menuId) {
+        var menuRepo = factory.getMenuRepository();
+        var invoiceLineRepo = factory.getInvoiceLineRepository();
+        var orderLineRepo = factory.getOrderLineRepository();
+        var invoiceRepo = factory.getInvoiceRepository();
 
-        if (deletedMenuRows == 0) {
-            log.error("Menu with id {} not found", id);
-            throw new HttpNotFoundException("Menu not found");
+        Menu menu = menuRepo.findById(menuId)
+                .orElseThrow(() -> new HttpNotFoundException("Menu introuvable"));
+
+        if (!menu.getOrderLines().isEmpty()) {
+            orderLineRepo.deleteByMenuId(menuId);
         }
 
-        if (deletedIngredientRows == 0) {
-            log.warn("No related orders or ingredients found to delete for menu ID: {}", id);
+        if (!menu.getInvoiceLines().isEmpty()) {
+            invoiceLineRepo.deleteByMenuId(menuId);
         }
+
+        invoiceRepo.deleteOrphanInvoices();
+
+        if (!menu.getMenuIngredients().isEmpty()) {
+            menu.getMenuIngredients().clear();
+        }
+
+        menuRepo.delete(menu);
     }
 
 

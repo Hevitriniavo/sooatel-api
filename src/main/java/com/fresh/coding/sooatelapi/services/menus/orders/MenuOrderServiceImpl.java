@@ -223,11 +223,17 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         var orderRepo = repositoryFactory.getMenuOrderRepository();
         var invoiceRepo = repositoryFactory.getInvoiceRepository();
 
-        var order = orderRepo.findById(orderId)
+        Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new HttpNotFoundException("Aucune commande trouvée avec l'ID " + orderId));
 
-        if (order.getInvoice() != null) {
-            invoiceRepo.delete(order.getInvoice());
+        Invoice invoice = order.getInvoice();
+        if (invoice != null) {
+            if (invoice.getLines() != null) {
+                invoice.getLines().forEach(line -> line.setInvoice(null));
+                invoice.getLines().clear();
+            }
+            invoice.setOrder(null);
+            invoiceRepo.delete(invoice);
         }
 
         if (order.getOrderLines() != null) {
@@ -235,10 +241,16 @@ public class MenuOrderServiceImpl implements MenuOrderService {
             order.getOrderLines().clear();
         }
 
+        if (order.getSessionOccupation() != null) {
+            order.getSessionOccupation().getOrders().remove(order);
+            order.setSessionOccupation(null);
+        }
+
         orderRepo.delete(order);
 
-        invoiceRepo.deleteAllByOrderIsNull();
+        invoiceRepo.deleteInvoicesWithNullOrder();
     }
+
 
 
 
