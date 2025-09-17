@@ -23,4 +23,5 @@ public interface MenuOrderService {
     List<MenuOrderSummarized> findAllOrdersByRoom(Long roomNumber);
     OrderDTO getOrderWithLines(Long orderId);
 
+    void deleteOrderLineById(Long orderLineId);
 }

@@ -402,6 +402,23 @@ public class MenuOrderServiceImpl implements MenuOrderService {
         return groupOrders(order);
     }
 
+    @Override
+    @Transactional
+    public void deleteOrderLineById(Long orderLineId) {
+        var orderLineRepository = repositoryFactory.getOrderLineRepository();
+        var orderLine = orderLineRepository.findById(orderLineId)
+                .orElseThrow(() -> new HttpNotFoundException(
+                        "OrderLine avec l'id " + orderLineId + " n'existe pas"));
+        Order order = orderLine.getOrder();
+        if (order != null) {
+            order.getOrderLines().remove(orderLine);
+        }
+        orderLineRepository.delete(orderLine);
+    }
+
+
+
+
     private List<MenuOrderSummarized> mapOrdersToMenuOrderSummarized(List<Order> orders) {
         List<MenuOrderSummarized> result = new ArrayList<>();
         for (Order order : orders) {

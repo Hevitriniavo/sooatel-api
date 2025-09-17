@@ -98,4 +98,10 @@ public class MenuOrderController {
     ) {
         return menuOrderService.findAllOrdersByRoom(roomNumber);
     }
+
+    @DeleteMapping("/order-lines/{orderLineId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteOrderLine(@PathVariable Long orderLineId) {
+        menuOrderService.deleteOrderLineById(orderLineId);
+    }
 }
